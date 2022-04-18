@@ -1,0 +1,5 @@
+{
+  "name": "triggerNoFields",
+  "description": "An example of a very efficient 2-byte message with no fields used to trigger the remote application to do someting predefined.",
+  "min": 1
+}

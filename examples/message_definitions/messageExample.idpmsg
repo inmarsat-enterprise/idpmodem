@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MessageDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Services>
+    <Service>
+      <Name>messageExample</Name>
+      <SIN>128</SIN>
+      <ForwardMessages>
+        <Message>
+          <Name>triggerNoFields</Name>
+          <Description>An example of a very efficient 2-byte message with no fields used to trigger the remote application to do someting predefined.</Description>
+          <MIN>1</MIN>
+        </Message>
+        <Message>
+          <Name>configExample</Name>
+          <Description>A configuration message might contain multiple optional fields for setting parameters in an embedded application.</Description>
+          <MIN>2</MIN>
+          <Fields>
+            <Field xsi:type="UnsignedIntField">
+              <Name>reportInterval</Name>
+              <Description>An example of a reporting interval defined in minutes. 11 bits allows values 0 to 1440. Optional means the configuration might not always change the report interval.</Description>
+              <Optional>true</Optional>
+              <Size>11</Size>
+            </Field>
+            <Field xsi:type="UnsignedIntField">
+              <Name>measurementInterval</Name>
+              <Description>Another example defines a measurement interval in seconds from 0 to 86400 (17 bits).</Description>
+              <Optional>true</Optional>
+              <Size>17</Size>
+            </Field>
+            <Field xsi:type="BooleanField">
+              <Name>confirmChanges</Name>
+              <Description>An example where a flag to the application indicates if an ack is sufficient (implicit confirmation) or a change report will be sent with details.</Description>
+              <Default>true</Default>
+            </Field>
+          </Fields>
+        </Message>
+      </ForwardMessages>
+      <ReturnMessages>
+        <Message>
+          <Name>allTypes</Name>
+          <Description>Includes all field types.</Description>
+          <MIN>1</MIN>
+          <Fields>
+            <Field xsi:type="EnumField">
+              <Name>enum</Name>
+              <Description>Enum maps strings to a number. Size is total bits used. Default tag is optional if defaulting to first item in list.</Description>
+              <Items>
+                <string>thingOne</string>
+                <string>thingTwo</string>
+                <string>thingThree</string>
+              </Items>
+              <Size>2</Size>
+            </Field>
+            <Field xsi:type="BooleanField">
+              <Name>bool</Name>
+              <Description>Booleans always use a single bit. Making optional is pointless since that would consume 2 bits when present.</Description>
+            </Field>
+            <Field xsi:type="UnsignedIntField">
+              <Name>uint32</Name>
+              <Description>Uint can be arbitrary size in bits. Note: some older SkyWave/Orbcomm terminals may not support uint larger than 31 bits.</Description>
+              <Size>32</Size>
+            </Field>
+            <Field xsi:type="SignedIntField">
+              <Name>int32</Name>
+              <Description>Int can be arbitrary size in bits, caution must be used when decoding two's complement for non-standard word sizes.</Description>
+              <Size>32</Size>
+            </Field>
+            <Field xsi:type="SignedIntField">
+              <Name>int25</Name>
+              <Description>Fields do not need to align to byte boundaries. An example 25 bit int field is longitude in milliminutes (i.e. /60000 to get decimal degrees with precision around 1.5m)</Description>
+              <Size>25</Size>
+            </Field>
+            <Field xsi:type="UnsignedIntField">
+              <Name>optionalInt</Name>
+              <Description>Optional fields need not be included if they would hold no meaningful data. The optional flag adds 1 bit to the field size when present, but consumes only 1 bit when not present.</Description>
+              <Optional>true</Optional>
+              <Size>16</Size>
+            </Field>
+            <Field xsi:type="StringField">
+              <Name>variableString160</Name>
+              <Description>Strings can be fixed or variable (default) length, where size is the maximum number of characters. For example up to 160 characters is like a classical SMS.</Description>
+              <Size>160</Size>
+            </Field>
+            <Field xsi:type="DataField">
+              <Name>dataKB</Name>
+              <Description>Data fields can be fixed or variable (default) length, where size is the maximum number of bytes. On the network API they will appear as base64 strings.</Description>
+              <Size>1024</Size>
+            </Field>
+            <Field xsi:type="ArrayField">
+              <Name>arrayOfTypes</Name>
+              <Description>Array structures are a list of fields, where size is the maximum number of elements.</Description>
+              <Fields>
+                <Field xsi:type="EnumField">
+                  <Name>arrayEnum</Name>
+                  <Description>A nested enum, with size in bits. Enum could also be optional, in this case using 6 bits when present or 1 bit not present.</Description>
+                  <Optional>true</Optional>
+                  <Items>
+                    <string>aOne</string>
+                    <string>aTwo</string>
+                    <string>aThree</string>
+                    <string>aFour</string>
+                    <string>aFive</string>
+                  </Items>
+                  <Size>3</Size>
+                </Field>
+                <Field xsi:type="DataField">
+                  <Name>arrayData</Name>
+                  <Description>An example might be a set of 32-bit (4-byte) IEEE754 floating point values, which might be encrypted.</Description>
+                  <Size>4</Size>
+                </Field>
+              </Fields>
+              <Size>100</Size>
+            </Field>
+          </Fields>
+        </Message>
+      </ReturnMessages>
+    </Service>
+  </Services>
+</MessageDefinition>

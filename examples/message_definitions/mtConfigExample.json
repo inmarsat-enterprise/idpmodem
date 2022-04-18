@@ -1,0 +1,27 @@
+{
+  "name": "configExample",
+  "description": "A configuration message might contain multiple optional fields for setting parameters in an embedded application.",
+  "min": 2,
+  "fields": [
+      {
+          "type": "unsignedInt",
+          "name": "reportInterval",
+          "description": "An example of a reporting interval defined in minutes. 11 bits allows values 0 to 1440. Optional means the configuration might not always change the report interval.",
+          "optional": true,
+          "size": 11
+      },
+      {
+          "type": "unsignedInt",
+          "name": "measurementInterval",
+          "description": "Another example defines a measurement interval in seconds from 0 to 86400 (17 bits).",
+          "optional": true,
+          "size": 17
+      },
+      {
+          "type": "boolean",
+          "name": "confirmChanges",
+          "description": "An example where a flag to the application indicates if an ack is sufficient (implicit confirmation) or a change report will be sent with details.",
+          "default": true
+      }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "name": "allTypes",
+  "description": null,
+  "min": 1,
+  "fields": [
+    {
+        "type": "enum",
+        "name": "enum",
+        "description": "Enum maps strings to a number. Size is total bits used. Default tag is optional if defaulting to first item in list.",
+        "items": [
+            "thingOne",
+            "thingTwo",
+            "thingThree"
+        ],
+        "size": 2
+    },
+    {
+        "type": "boolean",
+        "name": "bool",
+        "description": "Booleans always use a single bit. Making optional is pointless since that would consume 2 bits when present.",
+        "default": false
+    },
+    {
+        "type": "unsignedInt",
+        "name": "uint32",
+        "description": "Uint can be arbitrary size in bits. Note: some older SkyWave/Orbcomm terminals may not support uint larger than 31 bits.",
+        "size": 32
+    },
+    {
+      "type": "signedInt",
+      "name": "int32",
+      "description": "Int can be arbitrary size in bits, caution must be used when decoding two's complement for non-standard word sizes.",
+      "size": 32
+    },
+    {
+      "type": "signedInt",
+      "name": "int25",
+      "description": "Fields do not need to align to byte boundaries. An example 25 bit int field is longitude in milliminutes (i.e. /60000 to get decimal degrees with precision around 1.5m)",
+      "size": 25
+    },
+    {
+        "type": "unsignedInt",
+        "name": "optionalUint",
+        "description": "Optional fields need not be included if they would hold no meaningful data. The optional flag adds 1 bit to the field size when present, but consumes only 1 bit when not present.",
+        "optional": true,
+        "size": 16
+    },
+    {
+        "type": "string",
+        "name": "variableString160",
+        "description": "Strings can be fixed or variable (default) length, where size is the maximum number of characters. For example up to 160 characters is like a classical SMS.",
+        "fixed": false,
+        "size": 160
+    },
+    {
+        "type": "data",
+        "name": "dataKB",
+        "description": "Data fields can be fixed or variable (default) length, where size is the maximum number of bytes. On the network API they will appear as base64 strings.",
+        "size": 1024
+    },
+    {
+        "type": "array",
+        "name": "arrayOfTypes",
+        "description": "Array structures are a list of fields, where size is the maximum number of elements.",
+        "fields": [
+            {
+                "type": "enum",
+                "name": "arrayEnum",
+                "description": "A nested enum, with size in bits. Enum could also be optional, in this case using 6 bits when present or 1 bit not present.",
+                "items": [
+                    "aOne",
+                    "aTwo",
+                    "aThree",
+                    "aFour",
+                    "aFive"
+                ],
+                "optional": true,
+                "size": 5
+            },
+            {
+                "type": "data",
+                "name": "arrayData",
+                "description": "An example might be a set of 32-bit (4-byte) IEEE754 floating point values, which might be encrypted.",
+                "size": 4
+            }
+        ],
+        "size": 100
+    }
+  ]
+}

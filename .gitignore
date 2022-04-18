@@ -1,0 +1,18 @@
+# Mac
+.DS_Store
+
+# VirtualEnv
+.venv
+
+# Private
+.env
+private.*
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Custom
+*.old
