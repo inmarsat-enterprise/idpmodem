@@ -155,7 +155,6 @@ class IdpModem:
         self.commands.put(command)
         res: list = self.protocol.command(command, filter, timeout, self.debug)
         if self.error_detail and res and res[0] == 'ERROR':
-            _log.error(f'Error received for command {command}')
             err_res = self.protocol.command('ATS80?')
             if not err_res or err_res[0] == 'ERROR':
                 raise AtException('Unhandled error getting last error code')
@@ -164,6 +163,7 @@ class IdpModem:
             if int(last_err_code) in AT_ERROR_CODES:
                 detail = AT_ERROR_CODES[int(last_err_code)]
             res.append(f'{detail} ({last_err_code})')
+            _log.warning(f'AT error: {detail} for command {command}')
         self.commands.get()
         self.commands.task_done()
         return res
