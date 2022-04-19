@@ -19,6 +19,9 @@ from idpmodem.aterror import AtCrcError, AtTimeout
 from idpmodem.crcxmodem import get_crc, validate_crc
 
 
+_log = logging.getLogger(__name__)
+
+
 class AtProtocol(LineReader):
     """Threaded protocol factory for the IDP Modem.
     
@@ -156,7 +159,7 @@ class AtProtocol(LineReader):
             try:
                 self.handle_event(self.events.get())
             except:
-                logging.exception(f'Unexpected _run_event error')
+                _log.exception(f'Unexpected _run_event error')
 
     def handle_event(self, unsolicited: str):
         """Calls a user-defined function with the unicode string.
@@ -171,7 +174,7 @@ class AtProtocol(LineReader):
             else: 
                 unsolicited = unsolicited.replace('\r', '<cr>')
                 unsolicited = unsolicited.replace('\n', '<lf>')
-                logging.warning(f'Unhandled event: {unsolicited}')
+                _log.warning(f'Unhandled event: {unsolicited}')
 
     def _clean_response(self,
                         lines: 'list[str]',
@@ -196,8 +199,8 @@ class AtProtocol(LineReader):
             raise ValueError('filter must be a list of strings')
         if debug:
             latency = round(self.response_time - self.command_time, 3)
-            logging.debug(f'Command {self.pending_command}'
-                          f' latency: {latency} seconds')
+            _log.debug(f'Command {self.pending_command}'
+                       f' latency: {latency} seconds')
         for l in range(len(lines)):
             lines[l] = lines[l].strip()
             if isinstance(filter, list) and len(filter) > 0:
@@ -250,7 +253,8 @@ class AtProtocol(LineReader):
                         pass   # ignore echo
                     elif content == 'OK':
                         lines.append(line)
-                        if '%CRC=0' in self.pending_command:
+                        if self.crc and '%CRC=0' in self.pending_command:
+                            _log.debug('CRC disabled by command')
                             self.crc = False
                         if (not self.crc and
                             '%CRC=1' not in self.pending_command):
@@ -259,7 +263,7 @@ class AtProtocol(LineReader):
                     elif content.startswith('*'):
                         if not self.crc:
                             if not '%CRC=1' in self.pending_command:
-                                logging.warning('Inferring CRC enabled')
+                                _log.debug('Found CRC enabled')
                             self.crc = True
                         crc = content.replace('*', '')
                         if not validate_crc(''.join(lines), crc):

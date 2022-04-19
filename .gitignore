@@ -16,3 +16,4 @@ __pycache__/
 
 # Custom
 *.old
+dist/archive

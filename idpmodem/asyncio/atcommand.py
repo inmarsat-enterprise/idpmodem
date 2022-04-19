@@ -13,6 +13,8 @@ import serial_asyncio
 from idpmodem.aterror import AtCrcError, AtTimeout
 from idpmodem.crcxmodem import get_crc, validate_crc
 
+_log = logging.getLogger(__name__)
+
 
 class AtProtocol(asyncio.Protocol):
     
@@ -42,10 +44,10 @@ class AtProtocol(asyncio.Protocol):
 
     def connection_made(self, transport) -> None:
         self.transport = transport
-        logging.debug('Serial AT protocol connection opened')
+        _log.debug('Serial AT protocol connection opened')
     
     def connection_lost(self, exc) -> None:
-        logging.warning('Serial AT procotol connection lost')
+        _log.warning('Serial AT procotol connection lost')
         self.transport.loop.stop()
         self.transport = None
         if isinstance(exc, Exception):
@@ -111,7 +113,7 @@ class AtProtocol(asyncio.Protocol):
             else: 
                 unsolicited = unsolicited.replace('\r', '<cr>')
                 unsolicited = unsolicited.replace('\n', '<lf>')
-                logging.warning(f'Unhandled event: {unsolicited}')
+                _log.warning(f'Unhandled event: {unsolicited}')
 
     def handle_response(self, line: str):
         content = line.strip()
@@ -129,7 +131,7 @@ class AtProtocol(asyncio.Protocol):
         elif content.startswith('*'):
             if not self.crc:
                 if not '%CRC=1' in self.pending_command:
-                    logging.warning('Inferring CRC enabled')
+                    _log.warning('Inferring CRC enabled')
                 self.crc = True
             crc = content.replace('*', '')
             if not validate_crc(''.join(self.response), crc):
@@ -162,7 +164,7 @@ class AtProtocol(asyncio.Protocol):
             raise ValueError('filter must be a list of strings')
         if debug:
             latency = round(self.response_time - self.command_time, 3)
-            logging.debug(f'Command {self.pending_command}'
+            _log.debug(f'Command {self.pending_command}'
                           f' latency: {latency} seconds')
         for l in range(len(lines)):
             lines[l] = lines[l].strip()

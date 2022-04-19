@@ -1,12 +1,13 @@
 """Utilities for validating and parsing NMEA data into a `Location` object.
 
 """
-
+import logging
 from calendar import timegm
 from datetime import datetime
 from functools import reduce
 from operator import xor
-from typing import Tuple
+
+_log = logging.getLogger(__name__)
 
 
 class NmeaException(Exception):
@@ -22,6 +23,27 @@ class NmeaInvalid(NmeaException):
 class NmeaChecksumError(NmeaException):
     """NMEA sentence checksum error."""
     pass
+
+
+class GnssSatelliteInfo(object):
+    """Information specific to a GNSS satellite.
+    
+    Attributes:
+        prn: The PRN code (Pseudo-Random Number sequence)
+        elevation: The satellite elevation
+        azimuth: The satellite azimuth
+        snr: The satellite Signal-to-Noise Ratio
+    """
+    def __init__(self,
+                    prn: int,
+                    elevation: int,
+                    azimuth: int,
+                    snr: int):
+        """Initializes GNSS satellite details."""
+        self.prn = prn
+        self.elevation = elevation
+        self.azimuth = azimuth
+        self.snr = snr
 
 
 class Location:
@@ -81,37 +103,18 @@ class Location:
         self.hdop = 99.9
         self.vdop = 99.9
         self.time_iso = datetime.utcfromtimestamp(timestamp).isoformat()
-        self.satellites_info = []
+        self.satellites_info: 'list[GnssSatelliteInfo]' = []
 
-    class GnssSatelliteInfo(object):
-        """Information specific to a GNSS satellite.
-        
-        Attributes:
-            prn: The PRN code (Pseudo-Random Number sequence)
-            elevation: The satellite elevation
-            azimuth: The satellite azimuth
-            snr: The satellite Signal-to-Noise Ratio
-        """
-        def __init__(self,
-                     prn: int,
-                     elevation: int,
-                     azimuth: int,
-                     snr: int):
-            """Initializes GNSS satellite details."""
-            self.prn = prn
-            self.elevation = elevation
-            self.azimuth = azimuth
-            self.snr = snr
-
-    def _update_satellites_info(self, satellites_info: list):
+    def _update_satellites_info(self,
+                                satellites_info: 'list[GnssSatelliteInfo]'):
         """Populates satellite information based on NMEA GSV data."""
         for satellite_info in satellites_info:
-            if isinstance(satellite_info, self.GnssSatelliteInfo):
+            if isinstance(satellite_info, GnssSatelliteInfo):
                 new = True
-                for info in self.satellites_info:
+                for i, info in enumerate(self.satellites_info):
                     if info.prn == satellite_info.prn:
                         new = False
-                        info = satellite_info
+                        self.satellites_info[i] = satellite_info
                         break
                 if new:
                     self.satellites_info.append(satellite_info)
@@ -120,9 +123,18 @@ class Location:
         """Sets the `time_iso` attribute from `timestamp`"""
         self.time_iso = (datetime.utcfromtimestamp(self.timestamp).isoformat() +
                          'Z')
+    
+    def serialize(self, include_satellite_details: bool = False) -> str:
+        d = vars(self)
+        if include_satellite_details:
+            for i, satellite_info in enumerate(d['satellites_info']):
+                d['satellites_info'][i] = vars(satellite_info)
+        else:
+            del d['satellites_info']
+        return d
 
 
-def validate_nmea_checksum(sentence: str) -> Tuple[bool, str]:
+def validate_nmea_checksum(sentence: str) -> 'tuple[bool, str]':
     """Validates NMEA sentence using checksum according to the standard.
 
     Args:
@@ -227,14 +239,21 @@ def location_from_nmea(nmea_data_set: 'list[str]',
             loc.timestamp = int(timegm(dt.timetuple()))
             # Convert to decimal degrees latitude/longitude
             if rmc_longitude_dms != '' and rmc_longitude_dms != '':
-                loc.latitude = round(float(rmc_latitude_dms[0:2]) + float(rmc_latitude_dms[2:]) / 60.0, degrees_resolution)
+                loc.latitude = round(float(rmc_latitude_dms[0:2]) +
+                                     float(rmc_latitude_dms[2:]) /
+                                     60.0, degrees_resolution)
                 if rmc_latitude_ns == 'S':
                     loc.latitude *= -1
-                loc.longitude = round(float(rmc_longitude_dms[0:3]) + float(rmc_longitude_dms[3:]) / 60.0, degrees_resolution)
+                loc.longitude = round(float(rmc_longitude_dms[0:3]) +
+                                      float(rmc_longitude_dms[3:]) /
+                                      60.0, degrees_resolution)
                 if rmc_longitude_ew == 'W':
                     loc.longitude *= -1
             loc.speed = float(rmc_speed_knots) if rmc_speed_knots != '' else 0.0  # multiply by 1.852 for kph
-            loc.heading = float(rmc_heading_deg_true) if rmc_heading_deg_true != '' else 0.0
+            if rmc_heading_deg_true:
+                loc.heading = float(rmc_heading_deg_true)
+            else:
+                loc.heading = 0.0
             loc._isotime_set()
 
         elif sentence_type == 'GSA':                    # GSA is used for DOP and active satellites
@@ -277,7 +296,10 @@ def location_from_nmea(nmea_data_set: 'list[str]',
                 elevation = int(gsv[i*4+1]) if gsv[i*4+1] != '' else 0   # Elevation in degrees
                 azimuth = int(gsv[i*4+2]) if gsv[i*4+2] != '' else 0     # Azimuth in degrees
                 snr = int(gsv[i*4+3]) if gsv[i*4+3] != '' else 0         # Signal to Noise Ratio
-                satellites_info.append(Location.GnssSatelliteInfo(prn, elevation, azimuth, snr))
+                satellites_info.append(GnssSatelliteInfo(prn,
+                                                         elevation,
+                                                         azimuth,
+                                                         snr))
             loc._update_satellites_info(satellites_info)
             satellites = int(gsv_satellites) if gsv_satellites != '' else 0
             if loc.satellites < satellites:
@@ -287,6 +309,6 @@ def location_from_nmea(nmea_data_set: 'list[str]',
                 pass
 
         else:
-            error = "{} NMEA sentence type not recognized".format(sentence[0:3])
-            raise NmeaException(error)
+            err = f'{sentence[0:3]} NMEA sentence type not recognized'
+            raise NmeaException(err)
     return loc

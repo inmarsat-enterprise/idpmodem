@@ -37,13 +37,7 @@ from idpmodem.constants import (AT_ERROR_CODES, CONTROL_STATES, POWER_MODES,
 from idpmodem.crcxmodem import get_crc, validate_crc
 from idpmodem.location import Location, location_from_nmea
 
-LOGGING_VERBOSE_LEVEL = 9
-logging.addLevelName(LOGGING_VERBOSE_LEVEL, 'VERBOSE')
-def verbose(self, message, *args, **kwargs):
-    if self.isEnabledFor(LOGGING_VERBOSE_LEVEL):
-        logging(LOGGING_VERBOSE_LEVEL, message, args, **kwargs)
-logging.Logger.verbose = verbose
-logging.VERBOSE = LOGGING_VERBOSE_LEVEL
+_log = logging.getLogger(__name__)
 
 BAUDRATES = [2400, 4800, 9600, 19200, 38400, 57600, 115200]
 
@@ -125,8 +119,8 @@ class IdpModemAsyncioClient:
                  port: str = '/dev/ttyUSB0',
                  baudrate: int = 9600,
                  loop: AbstractEventLoop = None,
-                 logger: logging.Logger = None,
-                 log_level: int = logging.INFO):
+                 log_verbose: bool = False,
+                 ):
         """Initializes the class.
         
         Args:
@@ -138,6 +132,7 @@ class IdpModemAsyncioClient:
             log_level: Level for the logger to record
 
         """
+        self._verbose = log_verbose
         self.port = port
         self.baudrate = baudrate
         self.crc = None
@@ -159,7 +154,7 @@ class IdpModemAsyncioClient:
         valid = len(glob(value)) == 1
         if not valid:
             err_msg = 'Serial port {} not found'.format(value)
-            logging.error(err_msg)
+            _log.error(err_msg)
             raise ValueError(err_msg)
         self._port = value
 
@@ -189,7 +184,7 @@ class IdpModemAsyncioClient:
 
         """
         error_str = AT_ERROR_CODES[int(err_code)]
-        logging.error("{} Exception: {}".format(at_command, error_str))
+        _log.error("{} Exception: {}".format(at_command, error_str))
         if return_value is None:
             raise AtException(error_str)
         return return_value
@@ -208,7 +203,8 @@ class IdpModemAsyncioClient:
             data = get_crc(data)
         self._pending_command = data
         to_send = self._pending_command + '\r'
-        logging.verbose('Sending {}'.format(_printable(to_send)))
+        if self._verbose:
+            _log.debug('Sending {}'.format(_printable(to_send)))
         self._pending_command_time = time()
         await self._serial.write_async(to_send.encode())
         return data
@@ -240,7 +236,8 @@ class IdpModemAsyncioClient:
                 msg += chars
                 verbose_response += chars
                 if msg.endswith('\r\n'):
-                    logging.verbose('Processing {}'.format(_printable(msg)))
+                    if self._verbose:
+                        _log.debug('Processing {}'.format(_printable(msg)))
                     msg = msg.strip()
                     if msg != self._pending_command:
                         if msg != '':
@@ -250,8 +247,8 @@ class IdpModemAsyncioClient:
                     else:
                         # remove echo for possible CRC calculation
                         echo = self._pending_command + '\r'
-                        logging.verbose('Removing echo {}'.format(
-                            _printable(echo)))
+                        if self._verbose:
+                            _log.debug(f'Removing echo {_printable(echo)}')
                         verbose_response = verbose_response.replace(echo, '')
                     if msg in ['OK', 'ERROR']:
                         try:
@@ -267,10 +264,10 @@ class IdpModemAsyncioClient:
                                     err_msg = '{} CRC error for {}'.format(
                                         response_crc,
                                         _printable(verbose_response))
-                                    logging.error(err_msg)
+                                    _log.error(err_msg)
                                     raise AtCrcError(err_msg)
-                                else:
-                                    logging.verbose('CRC {} ok for {}'.format(
+                                elif self._verbose:
+                                    _log.debug('CRC {} ok for {}'.format(
                                         response_crc,
                                         _printable(verbose_response)))
                                 if not self.crc:
@@ -312,7 +309,7 @@ class IdpModemAsyncioClient:
 
         """
         if current_thread() != self._thread:
-            logging.warning('Call from external thread may crash or hang')
+            _log.warning('Call from external thread may crash or hang')
             loop = get_running_loop()
             set_event_loop(loop)
             await sleep(1)   #: add a slight delay to mitigate race condition
@@ -348,22 +345,25 @@ class IdpModemAsyncioClient:
         try:
             self._event.set()
             try:
-                logging.verbose('Opening serial port {}'.format(self.port))
+                if self._verbose:
+                    _log.debug('Opening serial port {}'.format(self.port))
                 self._serial = AioSerial(port=self.port,
                                             baudrate=self.baudrate,
                                             loop=self.loop)
             except Exception as e:
-                logging.error('Error connecting to aioserial: {}'.format(e))
+                _log.error('Error connecting to aioserial: {}'.format(e))
             try:
-                logging.verbose('Checking unsolicited data prior to {}'.format(
-                    at_command))
+                if self._verbose:
+                    _log.debug('Checking unsolicited data'
+                               f' prior to {at_command}')
                 self._pending_command_time = time()
                 unsolicited = await self._recv(timeout=0.25)
                 if unsolicited:
-                    logging.warning('Unsolicited data: {}'.format(unsolicited))
+                    _log.warning('Unsolicited data: {}'.format(unsolicited))
                     # raise AtUnsolicited('Unsolicited data: {}'.format(unsolicited))
             except AtTimeout:
-                logging.verbose('No unsolicited data found')
+                if self._verbose:
+                    _log.debug('No unsolicited data found')
             tasks = [self._send(at_command),
                 self._recv(timeout=timeout)]
             echo, response = await gather(*tasks)
@@ -372,18 +372,18 @@ class IdpModemAsyncioClient:
             if len(response) > 0:
                 self._retry_count = 0
                 if response[0] == 'ERROR':
-                    logging.debug('AT error detected - getting reason')
+                    _log.debug('AT error detected - getting reason')
                     error_code = await self.command('ATS80?')
                     if error_code is not None:
                         response.append(error_code[0])
                     else:
-                        logging.error('Failed to get error_code from S80')
+                        _log.error('Failed to get error_code from S80')
                 return response
             raise AtException('No response received for {}'.format(at_command))
         except AtCrcError:
             self._retry_count += 1
             if self._retry_count < retries:
-                logging.error('CRC error retrying')
+                _log.error('CRC error retrying')
                 return await self.command(
                     at_command, timeout=timeout, retries=retries)
             else:
@@ -393,7 +393,8 @@ class IdpModemAsyncioClient:
                 raise AtException(error_message)
         finally:
             if self._serial:
-                logging.verbose('Closing serial port {}'.format(self.port))
+                if self._verbose:
+                    _log.debug('Closing serial port {}'.format(self.port))
                 self._serial.close()
                 self._serial = None
             self._event.clear()
@@ -411,7 +412,7 @@ class IdpModemAsyncioClient:
             AtException on errors other than CRC enabled
 
         """
-        logging.debug('Initializing modem{}'.format(
+        _log.debug('Initializing modem{}'.format(
             ' (CRC enabled)' if crc else ''))
         cmd = 'ATZ;E1;V1'
         cmd += ';%CRC=1' if crc else ''
@@ -419,7 +420,7 @@ class IdpModemAsyncioClient:
         if success[0] == 'ERROR':
             if int(success[1]) == 100:
                 if crc and self.crc:
-                    logging.debug('CRC already enabled')
+                    _log.debug('CRC already enabled')
                     return True
                 else:
                     self.crc = True
@@ -435,7 +436,7 @@ class IdpModemAsyncioClient:
         Returns:
             Boolean success.
         """
-        logging.debug('Restoring non-volatile configuration')
+        _log.debug('Restoring non-volatile configuration')
         cmd = 'ATZ'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -444,7 +445,7 @@ class IdpModemAsyncioClient:
 
     async def config_restore_factory(self) -> bool:
         """Sends the AT&F command and returns True on success."""
-        logging.debug('Restoring factory defaults')
+        _log.debug('Restoring factory defaults')
         cmd = 'AT&F'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -460,7 +461,7 @@ class IdpModemAsyncioClient:
             reg_config with S-register tags and integer values
 
         """
-        logging.debug('Querying configuration')
+        _log.debug('Querying configuration')
         cmd = 'AT&V'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -482,7 +483,7 @@ class IdpModemAsyncioClient:
 
     async def config_save(self) -> bool:
         """Sends the AT&W command and returns True if successful."""
-        logging.debug('Saving S-registers to non-volatile memory')
+        _log.debug('Saving S-registers to non-volatile memory')
         cmd = 'AT&W'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -495,7 +496,7 @@ class IdpModemAsyncioClient:
         Args:
             crc: enable CRC if true
         """
-        logging.debug('{} CRC'.format('Enabling' if crc else 'Disabling'))
+        _log.debug('{} CRC'.format('Enabling' if crc else 'Disabling'))
         cmd = 'AT%CRC={}'.format(1 if crc else 0)
         response = await self.command(cmd)
         if response[0] == 'ERROR' and self.crc != crc:
@@ -513,7 +514,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying device Mobile ID')
+        _log.debug('Querying device Mobile ID')
         cmd = 'AT+GSN'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -530,7 +531,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying device version info')
+        _log.debug('Querying device version info')
         cmd = 'AT+GMR'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -552,7 +553,7 @@ class IdpModemAsyncioClient:
             True if successful setting.
 
         """
-        logging.debug('Setting GNSS refresh to {} seconds'.format(interval))
+        _log.debug('Setting GNSS refresh to {} seconds'.format(interval))
         cmd = 'AT%TRK={}{}'.format(interval, ',{}'.format(1 if doppler else 0))
         if interval < 0 or interval > 30:
             raise ValueError('GNSS continuous interval must be in range 0..30')
@@ -582,7 +583,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Requesting GNSS fix information')
+        _log.debug('Requesting GNSS fix information')
         NMEA_SUPPORTED = ['RMC', 'GGA', 'GSA', 'GSV']
         BUFFER_SECONDS = 5
         if (stale_secs not in range(1, 600+1) or
@@ -626,7 +627,7 @@ class IdpModemAsyncioClient:
             AtGnssTimeout if no location data is available
         
         """
-        logging.debug('Querying location')
+        _log.debug('Querying location')
         nmea_sentences = await self.gnss_nmea_get(stale_secs, wait_secs)
         return location_from_nmea(nmea_sentences)
 
@@ -644,7 +645,7 @@ class IdpModemAsyncioClient:
         """
         if power_mode not in POWER_MODES:
             raise ValueError('Invalid power mode {}'.format(power_mode))
-        logging.debug('Setting power mode {}'.format(
+        _log.debug('Setting power mode {}'.format(
             POWER_MODES[power_mode]))
         cmd = 'ATS50={}'.format(power_mode)
         response = await self.command(cmd)
@@ -662,7 +663,7 @@ class IdpModemAsyncioClient:
             AtException if an error was returned
 
         """
-        logging.debug('Getting power mode')
+        _log.debug('Getting power mode')
         cmd = 'ATS50?'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -684,7 +685,7 @@ class IdpModemAsyncioClient:
         """
         if wakeup_period not in WAKEUP_PERIODS:
             raise ValueError('Invalid wakeup period {}'.format(wakeup_period))
-        logging.debug('Setting wakeup period {}'.format(
+        _log.debug('Setting wakeup period {}'.format(
             WAKEUP_PERIODS[wakeup_period]))
         cmd = 'ATS51={}'.format(wakeup_period)
         response = await self.command(cmd)
@@ -702,7 +703,7 @@ class IdpModemAsyncioClient:
             AtException if an error was returned
 
         """
-        logging.debug('Getting wakeup period')
+        _log.debug('Getting wakeup period')
         cmd = 'ATS51?'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -720,7 +721,7 @@ class IdpModemAsyncioClient:
         Returns:
             True if successful
         """
-        logging.debug('Enabling low power notifications')
+        _log.debug('Enabling low power notifications')
         cmd = 'AT%EVMON=3.1;S88=1030'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -729,7 +730,7 @@ class IdpModemAsyncioClient:
 
     async def lowpower_notifications_check(self) -> list:
         """Returns a list of relevant events."""
-        logging.debug('Querying low power notifications')
+        _log.debug('Querying low power notifications')
         relevant = []
         try:
             reason = await self.notification_check()
@@ -741,7 +742,7 @@ class IdpModemAsyncioClient:
                 if reason['message_mo_complete'] == True:
                     relevant.append('message_mo_complete')
         except AtException:
-            logging.warning('Notification check returned AT exception')
+            _log.warning('Notification check returned AT exception')
         finally:
             return relevant
 
@@ -769,14 +770,14 @@ class IdpModemAsyncioClient:
         Returns:
             Name of the message if successful, or the error string
         """
-        logging.debug('Submitting message named {}'.format(name))
+        _log.debug('Submitting message named {}'.format(name))
         if name is None:
             # Use the 8 least-signficant numbers of unix timestamp as unique
             name = str(int(time()))[-8:]
-            logging.debug('Assigned name {}'.format(name))
+            _log.debug('Assigned name {}'.format(name))
         elif len(name) > 8:
             name = name[0:8]   # risk duplicates create an ERROR resposne
-            logging.warning('Truncated name to {}'.format(name))
+            _log.warning('Truncated name to {}'.format(name))
         _min = '.{}'.format(min) if min is not None else ''
         if data_format == 1:
             data = '"{}"'.format(data)
@@ -807,7 +808,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying transmit message state{}'.format(
+        _log.debug('Querying transmit message state{}'.format(
             ' ={}'.format(name) if name else 's'))
         cmd = 'AT%MGRS{}'.format('="{}"'.format(name) if name else '')
         response = await self.command(cmd)
@@ -838,7 +839,7 @@ class IdpModemAsyncioClient:
 
     async def message_mo_cancel(self, name: str) -> bool:
         """Cancels a mobile-originated message in the Tx ready state."""
-        logging.debug('Cancelling message {}'.format(name))
+        _log.debug('Cancelling message {}'.format(name))
         cmd = 'AT%MGRC="{}"'.format(name)
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -855,7 +856,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Clearing transmit queue of return messages')
+        _log.debug('Clearing transmit queue of return messages')
         cancelled_count = 0
         open_count = 0
         cmd = 'AT%MGRS'
@@ -879,7 +880,7 @@ class IdpModemAsyncioClient:
                 else:
                     cancelled_count += 1
         if open_count > 0:
-            logging.warning('{} messages still in transmit queue'.format(
+            _log.warning('{} messages still in transmit queue'.format(
                 open_count))
         return cancelled_count
 
@@ -893,7 +894,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Checking receive queue for forward messages')
+        _log.debug('Checking receive queue for forward messages')
         cmd = 'AT%MGFN'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -977,7 +978,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Retrieving forward message {}'.format(name))
+        _log.debug('Retrieving forward message {}'.format(name))
         cmd = 'AT%MGFG="{}",{}'.format(name, data_format)
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -995,7 +996,7 @@ class IdpModemAsyncioClient:
             True if the operation succeeded
 
         """
-        logging.debug('Marking forward message {} for deletion'.format(name))
+        _log.debug('Marking forward message {} for deletion'.format(name))
         cmd = 'AT%MGFM="{}"'.format(name)
         try:
             response = await self.command(cmd)
@@ -1017,7 +1018,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying monitored events')
+        _log.debug('Querying monitored events')
         cmd = 'AT%EVMON'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -1043,7 +1044,7 @@ class IdpModemAsyncioClient:
             True if successfully set
 
         """
-        logging.debug('Setting event monitors: {}'.format(eventlist))
+        _log.debug('Setting event monitors: {}'.format(eventlist))
         #: AT%EVMON{ = <c1.s1>[, <c2.s2> ..]}
         cmd = 'AT%EVMON='
         if eventlist is not None:
@@ -1073,7 +1074,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying events: {}'.format(event))
+        _log.debug('Querying events: {}'.format(event))
         #: AT%EVNT=c,s
         #: res %EVNT: <dataCount>,<signedBitmask>,<MTID>,<timestamp>,
         # <class>,<subclass>,<priority>,<data0>,<data1>,..,<dataN>
@@ -1118,7 +1119,7 @@ class IdpModemAsyncioClient:
             True if successful.
             
         """
-        logging.debug('Setting event notifications: {}'.format(event_map))
+        _log.debug('Setting event notifications: {}'.format(event_map))
         #: ATS88=bitmask
         notifications_changed = False
         old_notifications = await self.notification_control_get()
@@ -1157,7 +1158,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying event notification controls')
+        _log.debug('Querying event notification controls')
         cmd =  'ATS88?'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -1176,7 +1177,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying event notification triggers')
+        _log.debug('Querying event notification triggers')
         cmd = 'ATS89?'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -1194,7 +1195,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying satellite status/SNR')
+        _log.debug('Querying satellite status/SNR')
         cmd = 'ATS90=3 S91=1 S92=1 S116? S122? S123?'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -1238,7 +1239,7 @@ class IdpModemAsyncioClient:
             AtException if error returned by modem
 
         """
-        logging.debug('Querying transmitter status')
+        _log.debug('Querying transmitter status')
         cmd = 'ATS54?'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -1248,7 +1249,7 @@ class IdpModemAsyncioClient:
 
     async def shutdown(self) -> bool:
         """Tell the modem to prepare for power-down."""
-        logging.debug('Requesting power down')
+        _log.debug('Requesting power down')
         cmd = 'AT%OFF'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -1265,7 +1266,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Requesting UTC network time')
+        _log.debug('Requesting UTC network time')
         cmd = 'AT%UTC'
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -1285,7 +1286,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying register value S{}'.format(register))
+        _log.debug('Querying register value S{}'.format(register))
         cmd = 'ATS{}?'.format(register)
         response = await self.command(cmd)
         if response[0] == 'ERROR':
@@ -1303,7 +1304,7 @@ class IdpModemAsyncioClient:
             AtException
 
         """
-        logging.debug('Querying S-register values')
+        _log.debug('Querying S-register values')
         cmd = 'AT%SREG'
         #: Sreg, RSV, CurrentVal, DefaultVal, MinimumVal, MaximumVal
         response = await self.command(cmd)

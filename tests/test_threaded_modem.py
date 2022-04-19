@@ -1,3 +1,4 @@
+import json
 import os
 import pytest
 import pytest_mock
@@ -153,3 +154,12 @@ def test_transmitter_status(modem_configured):
     modem: IdpModem = modem_configured
     tstatus = modem.transmitter_status
     assert isinstance(tstatus, TransmitterStatus)
+
+def test_location(modem_configured):
+    modem: IdpModem = modem_configured
+    loc = modem.location
+    try:
+        j = json.dumps(loc.serialize(), skipkeys=True)
+    except:
+        j = 'UNKNOWN'
+    assert isinstance(j, str)

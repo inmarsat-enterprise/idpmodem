@@ -5,7 +5,7 @@ This module provides mapping of constants used within an IDP modem.
 
 """
 
-from enum import IntEnum, IntFlag
+from enum import Enum, IntEnum, IntFlag
 
 
 class MessagePriority(IntEnum):
@@ -143,6 +143,32 @@ GNSS_DPM_MODES = {
     7: 'AIR_2G',
     8: 'AIR_4G'
 }
+
+
+class SignalLevelRegional(Enum):
+    """Qualitative descriptors for SNR/CN0 values for a IDP Regional Beam.
+    
+    BARS_n: *n* is a scale from 0..5 to be used as greaterThan threshold
+    NONE, MARGINAL, GOOD: a scale to be used as greaterOrEqual threshold
+
+    """
+    BARS_0 = 0
+    BARS_1 = 37.0
+    BARS_2 = 39.0
+    BARS_3 = 41.0
+    BARS_4 = 43.0
+    BARS_5 = 45.5
+    INVALID = 55.0
+
+
+class SignalQuality(IntEnum):
+    NONE = 0
+    WEAK = 1
+    LOW = 2
+    MID = 3
+    GOOD = 4
+    STRONG = 5
+    WARNING = 6
 
 
 class EventNotification(IntFlag):

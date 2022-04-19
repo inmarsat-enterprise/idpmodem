@@ -26,6 +26,8 @@ GNSS_STALE_SECS = 1
 GNSS_WAIT_SECS = 35
 SAT_STATUS_HOLDOFF = 5
 
+_log = logging.getLogger(__name__)
+
 
 class ModemBusy(Exception):
     """Indicates the modem is busy processing a prior command."""
@@ -94,7 +96,7 @@ class IdpModem:
     def connect(self):
         self.transport, self.protocol = self.loop.run_until_complete(self.coro)
         self.loop.run_forever()
-        logging.debug(f'Transport: {self.transport}')
+        _log.debug(f'Transport: {self.transport}')
         # self.serial_port = Serial(**self.serial_kwargs)
 
     def disconnect(self):
@@ -158,7 +160,7 @@ class IdpModem:
         # TODO: allow for async(?)
         res: list = self.protocol.command(command, filter, timeout, self.debug)
         if self.error_detail and res and res[0] == 'ERROR':
-            logging.error(f'Error received for command {command}')
+            _log.error(f'Error received for command {command}')
             err_res = self.protocol.command('ATS80?')
             if not err_res or err_res[0] == 'ERROR':
                 raise AtException('Unhandled error getting last error code')
@@ -562,7 +564,7 @@ class IdpModem:
         for msg in list_response:
             del_response = self.atcommand(f'AT%MGRD={msg}C')
             if del_response[0] == 'ERROR':
-                logging.error(f'Error clearing messages from transmit queue')
+                _log.error(f'Error clearing messages from transmit queue')
                 return -1
         return message_count
 
@@ -632,7 +634,7 @@ class IdpModem:
             data_format = DataFormat.BASE64
         response = self.atcommand(f'AT%MGFG={name},{data_format}')
         if response[0] == 'ERROR':
-            logging.error(f'Error retrieving message {name}')
+            _log.error(f'Error retrieving message {name}')
             self._handle_at_exception(response)
         #: name, number, priority, sin, state, length, data_format, data
         try:
@@ -663,7 +665,7 @@ class IdpModem:
                 'data': data
             }
         except Exception as err:
-            logging.exception(err)
+            _log.exception(err)
 
     def message_mt_delete(self, name: str) -> bool:
         """Marks a Return message for deletion by the modem.
@@ -678,7 +680,7 @@ class IdpModem:
         response = self.atcommand(f'AT%MGFM="{name}"')
         if response[0] == 'ERROR':
             err = f' ({response[1]})' if self.error_detail else ''
-            logging.error(f'Error deleting message {name}{err}')
+            _log.error(f'Error deleting message {name}{err}')
         return response[0] == 'OK'
 
     @property
@@ -815,7 +817,7 @@ class IdpModem:
                                 pass   # new_value stays as value
                     event['data'][i] = { tag: new_value }
             except Exception as err:
-                logging.exception(err)
+                _log.exception(err)
         return event
 
     @staticmethod
@@ -910,9 +912,9 @@ class IdpModem:
         """
         if ('sat_status' in self._holdoffs and
             int(time()) - self._holdoffs['sat_status'] < SAT_STATUS_HOLDOFF):
-            logging.debug('Ignoring repeat satellite status query')
+            _log.debug('Ignoring repeat satellite status query')
             return
-        logging.debug('Querying satellite status')
+        _log.debug('Querying satellite status')
         self._holdoffs['sat_status'] = int(time())
         # Trace events:
         #   Class 3 Subclass 1 C/N, Satellite Control State, Beam Search State
@@ -938,7 +940,7 @@ class IdpModem:
 
     def shutdown(self) -> bool:
         """Tell the modem to prepare for power-down."""
-        logging.warning('Attempting to shut down')
+        _log.warning('Attempting to shut down')
         response = self.atcommand('AT%OFF')
         if response[0] == 'ERROR':
             self._handle_at_exception(response)
@@ -946,7 +948,7 @@ class IdpModem:
 
     def utc_time(self) -> str:
         """Returns current UTC time of the modem in ISO8601 format."""
-        logging.debug('Querying system time')
+        _log.debug('Querying system time')
         response = self.atcommand('AT%UTC', filter=['%UTC:'])
         if response[0] == 'ERROR':
             self._handle_at_exception(response)
@@ -966,7 +968,7 @@ class IdpModem:
                 register = int(register.replace('S', ''))
             except ValueError:
                 raise ValueError(f'Invalid S-register {register}')
-        logging.debug(f'Querying S-register {register}')
+        _log.debug(f'Querying S-register {register}')
         response = self.atcommand(f'ATS{register}?')
         if response[0] == 'ERROR':
             self._handle_at_exception(response)
@@ -980,7 +982,7 @@ class IdpModem:
             command += f'{reg}?'
         response = self.atcommand(command)
         if response[0] == 'ERROR':
-            logging.error('Could not read S-registers')
+            _log.error('Could not read S-registers')
             raise
         index = 0
         for name, register in self.s_registers.items():

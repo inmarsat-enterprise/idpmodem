@@ -1,4 +1,5 @@
 import logging
+import os
 import queue
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
@@ -8,14 +9,18 @@ from idpmodem.aterror import AtException, AtGnssTimeout
 from idpmodem.constants import (AT_ERROR_CODES, EVENT_TRACES, GEOBEAMS,
                                 POWER_MODES, WAKEUP_PERIODS, BeamSearchState,
                                 DataFormat, EventNotification, MessagePriority,
-                                MessageState, SatlliteControlState, TransmitterStatus)
+                                MessageState, SatlliteControlState,
+                                SignalLevelRegional, SignalQuality,
+                                TransmitterStatus)
 from idpmodem.location import Location, location_from_nmea
 from idpmodem.s_registers import SRegisters
 from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
 
-GNSS_STALE_SECS = 1
-GNSS_WAIT_SECS = 35
+GNSS_STALE_SECS = int(os.getenv('GNSS_STALE_SECS', 1))
+GNSS_WAIT_SECS = int(os.getenv('GNSS_WAIT_SECS', 35))
 SAT_STATUS_HOLDOFF = 5
+
+_log = logging.getLogger(__name__)
 
 
 class ModemBusy(Exception):
@@ -59,6 +64,8 @@ class IdpModem:
         self._at_config = AtConfiguration()
         self._mobile_id: str = None
         self._versions: dict = None
+        self._manufacturer: str = None
+        self._model: str = None
         self._power_mode: int = None
         self._wakeup_period: int = None
         self._ctrl_state: int = None
@@ -146,10 +153,9 @@ class IdpModem:
                 raise ModemBusy
             pass
         self.commands.put(command)
-        # TODO: allow for async(?)
         res: list = self.protocol.command(command, filter, timeout, self.debug)
         if self.error_detail and res and res[0] == 'ERROR':
-            logging.error(f'Error received for command {command}')
+            _log.error(f'Error received for command {command}')
             err_res = self.protocol.command('ATS80?')
             if not err_res or err_res[0] == 'ERROR':
                 raise AtException('Unhandled error getting last error code')
@@ -164,10 +170,12 @@ class IdpModem:
     
     def _handle_at_exception(self, response: 'list[str]') -> None:
         err = response[1] if self.error_detail else response[0]
+        _log.error(f'AT Exception: {err}')
         raise AtException(err)
 
     def config_init(self, crc: bool = False) -> bool:
         """Initializes modem communications with Echo, Verbose. CRC optional."""
+        _log.debug(f'Initializing modem Echo|Verbose{"|CRC" if crc else ""}')
         def attempt(command: str) -> bool:
             response = self.atcommand(command)
             return response[0] == 'OK'
@@ -183,6 +191,7 @@ class IdpModem:
 
     def config_restore_nvm(self) -> bool:
         """Sends ATZ to restore config from non-volatile memory."""
+        _log.debug('Restoring modem stored configuration')
         response = self.atcommand('ATZ')
         if response[0] == 'ERROR':
             return False
@@ -190,6 +199,7 @@ class IdpModem:
 
     def config_restore_factory(self) -> bool:
         """Sends AT&F to restore factory default and returns True on success."""
+        _log.debug('Restoring modem factory defaults')
         response = self.atcommand('AT&F')
         if response[0] == 'ERROR':
             return False
@@ -207,6 +217,7 @@ class IdpModem:
             AtException if an error was returned.
 
         """
+        _log.debug('Retrieving modem verbose configuration')
         response = self.atcommand('AT&V')
         if response[0] == 'ERROR':
             self._handle_at_exception(response)
@@ -257,6 +268,7 @@ class IdpModem:
 
     def config_nvm_save(self) -> bool:
         """Sends the AT&W command and returns True if successful."""
+        _log.debug('Saving modem configuration to non-volatile memory')
         response = self.atcommand('AT&W')
         return response[0] == 'OK'
 
@@ -270,6 +282,7 @@ class IdpModem:
             True if the operation succeeded else False
 
         """
+        _log.debug(f'{"en" if enable else "dis"}abling modem CRC')
         command = f'AT%CRC={1 if enable else 0}'
         response = self.atcommand(command)
         if response[0] == 'ERROR':
@@ -300,6 +313,24 @@ class IdpModem:
                     'at': at_ver,
                 }
         return self._versions
+
+    @property
+    def manufacturer(self) -> str:
+        if not self._manufacturer:
+            response = self.atcommand('ATI0')
+            if response[0] == 'ERROR':
+                self._handle_at_exception(response)
+            self._manufacturer = response[0]
+        return self._manufacturer
+
+    @property
+    def model(self) -> str:
+        if not self._model:
+            response = self.atcommand('ATI4')
+            if response[0] == 'ERROR':
+                self._handle_at_exception(response)
+            self._model = response[0]
+        return self._model
 
     @property
     def power_mode(self) -> 'str|None':
@@ -553,7 +584,7 @@ class IdpModem:
         for msg in list_response:
             del_response = self.atcommand(f'AT%MGRD={msg}C')
             if del_response[0] == 'ERROR':
-                logging.error(f'Error clearing messages from transmit queue')
+                _log.error(f'Error clearing messages from transmit queue')
                 return -1
         return message_count
 
@@ -623,7 +654,7 @@ class IdpModem:
             data_format = DataFormat.BASE64
         response = self.atcommand(f'AT%MGFG={name},{data_format}')
         if response[0] == 'ERROR':
-            logging.error(f'Error retrieving message {name}')
+            _log.error(f'Error retrieving message {name}')
             self._handle_at_exception(response)
         #: name, number, priority, sin, state, length, data_format, data
         try:
@@ -654,7 +685,7 @@ class IdpModem:
                 'data': data
             }
         except Exception as err:
-            logging.exception(err)
+            _log.exception(err)
 
     def message_mt_delete(self, name: str) -> bool:
         """Marks a Return message for deletion by the modem.
@@ -669,7 +700,7 @@ class IdpModem:
         response = self.atcommand(f'AT%MGFM="{name}"')
         if response[0] == 'ERROR':
             err = f' ({response[1]})' if self.error_detail else ''
-            logging.error(f'Error deleting message {name}{err}')
+            _log.error(f'Error deleting message {name}{err}')
         return response[0] == 'OK'
 
     @property
@@ -806,7 +837,7 @@ class IdpModem:
                                 pass   # new_value stays as value
                     event['data'][i] = { tag: new_value }
             except Exception as err:
-                logging.exception(err)
+                _log.exception(err)
         return event
 
     @staticmethod
@@ -852,6 +883,10 @@ class IdpModem:
         return SatlliteControlState(self._ctrl_state).name
 
     @property
+    def registered(self) -> bool:
+        return self.control_state == 10
+
+    @property
     def beamsearch_state(self) -> 'int|None':
         self.satellite_status_get()
         return BeamSearchState(self._beamsearch_state)
@@ -867,6 +902,24 @@ class IdpModem:
         self.satellite_status_get()
         return self._snr
             
+    @property
+    def signal_quality(self) -> SignalQuality:
+        signal_quality = SignalQuality.NONE
+        if self.snr:
+            if self.snr > SignalLevelRegional.INVALID.value:
+                signal_quality = SignalQuality.WARNING
+            elif self.snr > SignalLevelRegional.BARS_5.value:
+                signal_quality = SignalQuality.STRONG
+            elif self.snr > SignalLevelRegional.BARS_4.value:
+                signal_quality = SignalQuality.GOOD
+            elif self.snr > SignalLevelRegional.BARS_3.value:
+                signal_quality = SignalQuality.MID
+            elif self.snr > SignalLevelRegional.BARS_2.value:
+                signal_quality = SignalQuality.LOW
+            elif self.snr > SignalLevelRegional.BARS_1.value:
+                signal_quality = SignalQuality.WEAK
+        return signal_quality
+    
     @property
     def satellite(self) -> 'str|None':
         if self._geo_beam_id is None:
@@ -901,9 +954,9 @@ class IdpModem:
         """
         if ('sat_status' in self._holdoffs and
             int(time()) - self._holdoffs['sat_status'] < SAT_STATUS_HOLDOFF):
-            logging.debug('Ignoring repeat satellite status query')
+            _log.debug('Ignoring repeat satellite status query')
             return
-        logging.debug('Querying satellite status')
+        _log.debug('Querying satellite status')
         self._holdoffs['sat_status'] = int(time())
         # Trace events:
         #   Class 3 Subclass 1 C/N, Satellite Control State, Beam Search State
@@ -929,7 +982,7 @@ class IdpModem:
 
     def shutdown(self) -> bool:
         """Tell the modem to prepare for power-down."""
-        logging.warning('Attempting to shut down')
+        _log.warning('Attempting to shut down')
         response = self.atcommand('AT%OFF')
         if response[0] == 'ERROR':
             self._handle_at_exception(response)
@@ -937,7 +990,7 @@ class IdpModem:
 
     def utc_time(self) -> str:
         """Returns current UTC time of the modem in ISO8601 format."""
-        logging.debug('Querying system time')
+        _log.debug('Querying system time')
         response = self.atcommand('AT%UTC', filter=['%UTC:'])
         if response[0] == 'ERROR':
             self._handle_at_exception(response)
@@ -957,7 +1010,7 @@ class IdpModem:
                 register = int(register.replace('S', ''))
             except ValueError:
                 raise ValueError(f'Invalid S-register {register}')
-        logging.debug(f'Querying S-register {register}')
+        _log.debug(f'Querying S-register {register}')
         response = self.atcommand(f'ATS{register}?')
         if response[0] == 'ERROR':
             self._handle_at_exception(response)
@@ -971,7 +1024,7 @@ class IdpModem:
             command += f'{reg}?'
         response = self.atcommand(command)
         if response[0] == 'ERROR':
-            logging.error('Could not read S-registers')
+            _log.error('Could not read S-registers')
             raise
         index = 0
         for name, register in self.s_registers.items():

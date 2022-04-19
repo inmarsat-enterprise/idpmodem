@@ -3,17 +3,18 @@
 Also supported on ORBCOMM IGWS.
 
 """
-
+import logging
+import xml.etree.ElementTree as ET
 from binascii import b2a_base64
-from math import log2, ceil
+from math import ceil, log2
 from struct import pack, unpack
 from warnings import warn
-import xml.etree.ElementTree as ET
 from xml.dom.minidom import parseString
 
 from idpmodem.constants import DataFormat
 
 __version__ = '2.0.0'
+_log = logging.getLogger(__name__)
 
 
 DATA_TYPES = {
