@@ -68,42 +68,27 @@ class Location:
 
     """
 
-    def __init__(self,
-                 latitude=90.0,
-                 longitude=180.0,
-                 altitude=0.0,
-                 speed=0.0,
-                 heading=0.0,
-                 timestamp=0,
-                 satellites=0,
-                 fix_type=1):
-        """Initializes a Location with default latitude/longitude 90/180
+    def __init__(self, **kwargs):
+        """Initializes a Location with default latitude/longitude 90/180."""
+        self.latitude = float(kwargs.get('latitude', 90.0))
+        self.longitude = float(kwargs.get('longitude', 180.0))
+        self.resolution = int(kwargs.get('resolution', 6))
+        self.altitude = float(kwargs.get('altitude', 0.0))   # metres
+        self.speed = float(kwargs.get('speed', 0.0))  # knots
+        self.heading = float(kwargs.get('heading', 0.0))   # degrees
+        self.timestamp = int(kwargs.get('timestamp', 0))   # seconds (unix)
+        self.satellites = int(kwargs.get('satellites', 0))
+        self.fix_type = int(kwargs.get('fix_type', 1))
+        self.pdop = float(kwargs.get('pdop', 99.9))
+        self.hdop = float(kwargs.get('hdop', 99.9))
+        self.vdop = float(kwargs.get('vdop', 99.9))
+        self.satellites_info: 'list[GnssSatelliteInfo]' = kwargs.get(
+            'satellites_info', []
+        )
 
-        Args:
-            latitude: (float) in decimal degrees (6 places precision)
-            longitude: (float) in decimal degrees (6 places precision)
-            altitude: (float) in metres
-            speed: (float) in knots
-            heading: (float) in degrees relative to North
-            timestamp: (int) in seconds since 1970-01-01T00:00:00Z
-            satellites: (int) number of satellites in view at time of fix
-            fix_type: (int) 1=None, 2=2D or 3=3D
-
-        """
-        self.latitude = latitude
-        self.longitude = longitude
-        self.resolution = 6
-        self.altitude = altitude  # metres
-        self.speed = speed  # knots
-        self.heading = heading  # degrees
-        self.timestamp = timestamp  # seconds since 1/1/1970 unix epoch
-        self.satellites = satellites
-        self.fix_type = fix_type
-        self.pdop = 99.9
-        self.hdop = 99.9
-        self.vdop = 99.9
-        self.time_iso = datetime.utcfromtimestamp(timestamp).isoformat()
-        self.satellites_info: 'list[GnssSatelliteInfo]' = []
+    @property
+    def time_iso(self) -> str:
+        return f'{datetime.utcfromtimestamp(self.timestamp).isoformat()}Z'
 
     def _update_satellites_info(self,
                                 satellites_info: 'list[GnssSatelliteInfo]'):
@@ -118,11 +103,6 @@ class Location:
                         break
                 if new:
                     self.satellites_info.append(satellite_info)
-    
-    def _isotime_set(self):
-        """Sets the `time_iso` attribute from `timestamp`"""
-        self.time_iso = (datetime.utcfromtimestamp(self.timestamp).isoformat() +
-                         'Z')
     
     def serialize(self, include_satellite_details: bool = False) -> str:
         d = vars(self)
@@ -212,7 +192,7 @@ def location_from_nmea(nmea_data_set: 'list[str]',
                 pass
             loc.altitude = float(gga_altitude) if gga_altitude != '' else 0.0
             loc.hdop = min(float(gga_hdop), 32.0) if gga_hdop != '' else 32.0
-
+        # RMC
         elif sentence_type == 'RMC':          # RMC Recommended Minimum is used for most location information
             rmc = nmea_data.split(',')        # $GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A
             rmc_fixtime_utc_hhmmss = rmc[1]   # fix taken at 12:35:19 UTC
@@ -254,8 +234,7 @@ def location_from_nmea(nmea_data_set: 'list[str]',
                 loc.heading = float(rmc_heading_deg_true)
             else:
                 loc.heading = 0.0
-            loc._isotime_set()
-
+        # GSA
         elif sentence_type == 'GSA':                    # GSA is used for DOP and active satellites
             gsa = nmea_data.split(',')                  # $GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39
             #: gsa_auto = gsa[1]                           # Auto selection of 2D or 3D fix (M = manual)
@@ -277,7 +256,7 @@ def location_from_nmea(nmea_data_set: 'list[str]',
             loc.fix_type = int(gsa_fix_type) if gsa_fix_type != '' else 0
             loc.pdop = min(float(gsa_pdop), 32.0) if gsa_pdop != '' else 32.0
             loc.vdop = min(float(gsa_vdop), 32.0) if gsa_vdop != '' else 32.0
-
+        # GSV
         elif sentence_type == 'GSV':         # Satellites in View
             gsv = nmea_data.split(',')       # $GPGSV,2,1,08,01,40,083,46,02,17,308,41,12,07,344,39,14,22,228,45*75
             '''
@@ -307,7 +286,6 @@ def location_from_nmea(nmea_data_set: 'list[str]',
             else:
                 # TODO: log this case; should be limited to GPS simulation in Modem Simulator (3 satellites)
                 pass
-
         else:
             err = f'{sentence[0:3]} NMEA sentence type not recognized'
             raise NmeaException(err)
