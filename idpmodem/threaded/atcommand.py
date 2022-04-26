@@ -16,7 +16,7 @@ from serial import Serial, SerialException
 from serial.threaded import LineReader, ReaderThread, Protocol
 
 from idpmodem.aterror import AtCrcError, AtTimeout
-from idpmodem.crcxmodem import get_crc, validate_crc
+from idpmodem.crcxmodem import apply_crc, validate_crc
 
 
 _log = logging.getLogger(__name__)
@@ -237,7 +237,7 @@ class AtProtocol(LineReader):
         """
         with self._lock:  # ensure that just one thread is sending commands at once
             timeout = 1 if timeout < 1 else timeout
-            command = get_crc(command) if self.crc else command
+            command = apply_crc(command) if self.crc else command
             self.pending_command = command
             self.command_time = time()
             self.response_time = None
