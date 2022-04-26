@@ -3,6 +3,7 @@ import logging
 
 import pytest
 from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
+from idpmodem.aterror import AtTimeout, AtCrcError
 
 SERIAL_PORT = os.getenv('SERIAL_PORT', '/dev/ttyUSB0')
 logger = logging.getLogger(__name__)
@@ -27,6 +28,12 @@ def test_basic(modem):
     res = protocol.command('AT')
     assert isinstance(res, list)
     assert res[0] == 'OK'
+
+
+def test_timeout(modem):
+    protocol: AtProtocol = modem.protocol
+    with pytest.raises(AtTimeout) as err:
+        res = protocol.command('AT')
 
 
 def test_filter_ok(modem):
@@ -60,3 +67,9 @@ def test_unsolicited_callback(modem, caplog):
         while 'callback' not in caplog.text.lower():
             pass
         assert 'callback' in caplog.text.lower()
+
+
+def test_gnss_immediate_timeout(modem):
+    protocol: AtProtocol = modem.protocol
+    res = protocol.command('AT%GPS=1,35,"RMC","GSA","GGA","GSV"')
+    assert res is not None
