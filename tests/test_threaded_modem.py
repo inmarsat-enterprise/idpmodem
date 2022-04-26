@@ -4,7 +4,7 @@ import pytest
 import pytest_mock
 
 from idpmodem.threaded.modem import IdpModem
-from idpmodem.location import Location
+from idpmodem.aterror import AtTimeout
 from idpmodem.constants import *
 
 SERIAL_PORT = os.getenv('SERIAL_PORT', '/dev/ttyUSB0')
@@ -32,16 +32,41 @@ def modem_configured(modem_connected) -> IdpModem:
     return modem
 
 
+def test_timeout(modem_connected):
+    modem: IdpModem = modem_connected
+    with pytest.raises(AtTimeout):
+        modem.config_init()
+    assert not modem.commands.full()
+
+
+def test_no_connection(modem_connected):
+    modem: IdpModem = modem_connected
+    assert not modem.connected
+    assert not modem.commands.full()
+
+
 def test_connection(modem_connected):
     modem: IdpModem = modem_connected
     assert modem.connected
 
 
+def test_gnss_fail(modem_configured):
+    modem: IdpModem = modem_configured
+    location = modem.location
+    assert location is None
+
+
+def test_tem(modem_configured):
+    modem: IdpModem = modem_configured
+    tem = modem.trace_event_monitor
+    assert tem is not None
+
+
 def test_properties(modem_connected, mocker):
     modem: IdpModem = modem_connected
     modem.config_init(crc=False)
-    mocker.patch('idpmodem.threaded.modem.IdpModem.location_get',
-                 return_value=Location())
+    mocker.patch('idpmodem.threaded.modem.IdpModem.gnss_nmea_get',
+                 return_value=TEST_NMEA)
     properties = []
     for k, v in IdpModem.__dict__.items():
         if isinstance(v, property):
@@ -58,11 +83,23 @@ def test_properties(modem_connected, mocker):
         'location': modem.location,
         'control_state': modem.control_state,
         'network_status': modem.network_status,
+        'registered': modem.registered,
         'beamsearch_state': modem.beamsearch_state,
         'beamsearch': modem.beamsearch,
         'snr': modem.snr,
+        'signal_quality': modem.signal_quality,
         'satellite': modem.satellite,
         'beam_id': modem.beam_id,
+        'temperature': modem.temperature,
+        'gnss_jamming': modem.gnss_jamming,
+        'gnss_mode': modem.gnss_mode,
+        'transmitter_status': modem.transmitter_status,
+        'trace_event_monitor': modem.trace_event_monitor,
+        'trace_events_cached': modem.trace_events_cached,
+        'event_notification_monitor': modem.event_notification_monitor,
+        'event_notifications': modem.event_notifications,
+        'manufacturer': modem.manufacturer,
+        'model': modem.model,
     }
     properties_missed = [x for x in properties if x not in properties_to_test]
     assert len(properties_missed) == 0
@@ -92,6 +129,7 @@ def test_baudrate():
     assert modem.baudrate == 9600
     modem.disconnect()
 
+
 def test_message_send_bytes(modem_configured, mocker):
     modem: IdpModem = modem_configured
     TEST_MSG = b'Hello World'
@@ -101,6 +139,7 @@ def test_message_send_bytes(modem_configured, mocker):
     res = modem.message_mo_send(TEST_DATA)
     assert isinstance(res, str)
 
+
 def test_message_send_text(modem_configured, mocker):
     modem: IdpModem = modem_configured
     TEST_MSG = 'Hello World'
@@ -109,17 +148,20 @@ def test_message_send_text(modem_configured, mocker):
     res = modem.message_mo_send(TEST_MSG, sin=128, min=0)
     assert isinstance(res, str)
 
+
 def test_s_registers(modem_configured):
     modem: IdpModem = modem_configured
     modem._s_registers_read()
     for name, reg in modem.s_registers.items():
         assert isinstance(reg.value, int)
 
+
 def test_event_notification_monitor(modem_configured):
     modem: IdpModem = modem_configured
     monitored = modem.event_notification_monitor
     for event in monitored:
         assert isinstance(event, EventNotification)
+
 
 def test_event_notification_monitor_set(modem_configured):
     modem: IdpModem = modem_configured
@@ -130,17 +172,20 @@ def test_event_notification_monitor_set(modem_configured):
     monitored = modem.event_notification_monitor
     assert monitored == to_monitor
 
+
 def test_event_notifications(modem_configured):
     modem: IdpModem = modem_configured
     events = modem.event_notifications
     for event in events:
         assert isinstance(event, EventNotification)
 
+
 def test_trace_event_monitor(modem_configured):
     modem: IdpModem = modem_configured
     trace_monitor = modem.trace_event_monitor
     for mon in trace_monitor:
         assert isinstance(mon, tuple)    
+
 
 def test_trace_events_cached(modem_configured):
     modem: IdpModem = modem_configured
@@ -150,10 +195,12 @@ def test_trace_events_cached(modem_configured):
         detail = modem.trace_event_get(trace, meta=True)
         assert isinstance(detail, dict)
 
+
 def test_transmitter_status(modem_configured):
     modem: IdpModem = modem_configured
     tstatus = modem.transmitter_status
     assert isinstance(tstatus, TransmitterStatus)
+
 
 def test_location(modem_configured):
     modem: IdpModem = modem_configured

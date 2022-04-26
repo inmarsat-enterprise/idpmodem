@@ -5,13 +5,13 @@ from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from time import time
 
-from idpmodem.aterror import AtException, AtGnssTimeout
+from idpmodem.aterror import AtException, AtGnssTimeout, AtTimeout, AtCrcError
 from idpmodem.constants import (AT_ERROR_CODES, EVENT_TRACES, GEOBEAMS,
                                 POWER_MODES, WAKEUP_PERIODS, BeamSearchState,
-                                DataFormat, EventNotification, MessagePriority,
-                                MessageState, SatlliteControlState,
-                                SignalLevelRegional, SignalQuality,
-                                TransmitterStatus)
+                                DataFormat, EventNotification, GnssMode,
+                                MessagePriority, MessageState,
+                                SatlliteControlState, SignalLevelRegional,
+                                SignalQuality, TransmitterStatus)
 from idpmodem.location import Location, location_from_nmea
 from idpmodem.s_registers import SRegisters
 from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
@@ -102,7 +102,17 @@ class IdpModem:
     
     @property
     def connected(self) -> bool:
-        return self.transport is not None and self.protocol is not None
+        if self.transport is None or self.protocol is None:
+            return False
+        try:
+            res = self.atcommand('AT')
+            if res is not None:
+                return True
+        except AtCrcError:
+            return True
+        except AtTimeout:
+            pass
+        return False
 
     @property
     def baudrate(self) -> 'int|None':
@@ -146,31 +156,39 @@ class IdpModem:
             AtException if an error occurred that is unrecognized.
 
         """
-        if not self.connected:
+        if not self.transport or not self.protocol:
             raise ConnectionError('No connection to IDP modem')
         while self.commands.full():
             if not await_previous:
                 raise ModemBusy
             pass
         self.commands.put(command)
-        res: list = self.protocol.command(command, filter, timeout, self.debug)
-        if self.error_detail and res and res[0] == 'ERROR':
-            err_res = self.protocol.command('ATS80?')
-            if not err_res or err_res[0] == 'ERROR':
-                raise AtException('Unhandled error getting last error code')
-            last_err_code = err_res[0]
-            detail = 'UNDEFINED'
-            if int(last_err_code) in AT_ERROR_CODES:
-                detail = AT_ERROR_CODES[int(last_err_code)]
-            res.append(f'{detail} ({last_err_code})')
-            _log.warning(f'AT error: {detail} for command {command}')
-        self.commands.get()
-        self.commands.task_done()
-        return res
+        try:
+            res: list = self.protocol.command(command,
+                                                filter,
+                                                timeout,
+                                                self.debug)
+            if self.error_detail and res and res[0] == 'ERROR':
+                err_res = self.protocol.command('ATS80?')
+                if not err_res or err_res[0] == 'ERROR':
+                    raise AtException('Unhandled error getting last error code')
+                last_err_code = err_res[0]
+                detail = 'UNDEFINED'
+                if int(last_err_code) in AT_ERROR_CODES:
+                    detail = AT_ERROR_CODES[int(last_err_code)]
+                res.append(f'{detail} ({last_err_code})')
+                _log.warning(f'AT error: {detail} for command {command}')
+            return res
+        except AtException as err:
+            _log.error(f'{err} on command {command}')
+            raise err
+        finally:
+            self.commands.get()
+            self.commands.task_done()
     
-    def _handle_at_exception(self, response: 'list[str]') -> None:
+    def _handle_at_error(self, response: 'list[str]') -> None:
         err = response[1] if self.error_detail else response[0]
-        _log.error(f'AT Exception: {err}')
+        _log.error(f'AT Error: {err}')
         raise AtException(err)
 
     def config_init(self, crc: bool = False) -> bool:
@@ -220,7 +238,7 @@ class IdpModem:
         _log.debug('Retrieving modem verbose configuration')
         response = self.atcommand('AT&V')
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         at_config = response[1]
         s_regs = response[2]
         echo, quiet, verbose, crc = at_config.split(' ')
@@ -319,7 +337,7 @@ class IdpModem:
         if not self._manufacturer:
             response = self.atcommand('ATI0')
             if response[0] == 'ERROR':
-                self._handle_at_exception(response)
+                self._handle_at_error(response)
             self._manufacturer = response[0]
         return self._manufacturer
 
@@ -328,7 +346,7 @@ class IdpModem:
         if not self._model:
             response = self.atcommand('ATI4')
             if response[0] == 'ERROR':
-                self._handle_at_exception(response)
+                self._handle_at_error(response)
             self._model = response[0]
         return self._model
 
@@ -380,6 +398,13 @@ class IdpModem:
         if response[0] == 'OK':
             self._wakeup_period = value
     
+    @property
+    def temperature(self) -> int:
+        """Temperature in degrees Celsius."""
+        response = self.atcommand('ATS85?')
+        if response[0] != 'ERROR':
+            return int(float(response[0]) / 10)
+
     @property
     def gnss_refresh_interval(self) -> int:
         response = self.atcommand(f'ATS55?')
@@ -453,7 +478,7 @@ class IdpModem:
             if self.error_detail:
                 if 'TIMEOUT' in response[1]:
                     raise AtGnssTimeout(response[1])
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         response.remove('OK')
         time_to_fix = round(time() - request_time, 3)
         if 'gnss_ttf' not in self._statistics:
@@ -472,6 +497,24 @@ class IdpModem:
             return location_from_nmea(nmea_sentences)
         except:
             return None
+
+    @property
+    def gnss_jamming(self) -> bool:
+        response = self.atcommand('ATS56?')
+        if response[0] != 'ERROR':
+            return ((int(response[0]) & 0b100) >> 2 == 1) 
+
+    @property
+    def gnss_mode(self) -> GnssMode:
+        response = self.atcommand('ATS39?')
+        if response[0] != 'ERROR':
+            return GnssMode(int(response[0]))
+
+    @gnss_mode.setter
+    def gnss_mode(self, mode: GnssMode):
+        response = self.atcommand(f'ATS39={mode.value}')
+        if response[0] == 'ERROR':
+            self._handle_at_error(response)
 
     def message_mo_send(self,
                         data: 'bytes|bytearray|str',
@@ -522,7 +565,7 @@ class IdpModem:
         command = f'AT%MGRT="{name}",{priority},{sin}{min},{data_format},{data}'
         response = self.atcommand(command)
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         return name
 
     def message_mo_state(self, name: str = None) -> 'list[dict]':
@@ -655,7 +698,7 @@ class IdpModem:
         response = self.atcommand(f'AT%MGFG={name},{data_format}')
         if response[0] == 'ERROR':
             _log.error(f'Error retrieving message {name}')
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         #: name, number, priority, sin, state, length, data_format, data
         try:
             detail = response[0].split(',')
@@ -707,24 +750,26 @@ class IdpModem:
     def transmitter_status(self):
         response = self.atcommand('ATS54?')
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         return TransmitterStatus(int(response[0]))
 
     def _trace_detail(self) -> dict:
         response = self.atcommand('AT%EVMON', filter=['%EVMON:'])
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
-        events = response[0].split(',')
+            self._handle_at_error(response)
+        response.remove('OK')
         detail = {
             'monitored': [],
             'cached': [],
         }
-        for event in events:
-            trace_class = int(event.split('.')[0])
-            trace_subclass = int(event.split('.')[1].replace('*', ''))
-            detail['monitored'].append((trace_class, trace_subclass))
-            if event.endswith('*'):
-                detail['cached'].append((trace_class, trace_subclass))
+        if len(response) > 0:
+            events: 'list[str]' = response[0].split(',')
+            for event in events:
+                trace_class = int(event.split('.')[0])
+                trace_subclass = int(event.split('.')[1].replace('*', ''))
+                detail['monitored'].append((trace_class, trace_subclass))
+                if event.endswith('*'):
+                    detail['cached'].append((trace_class, trace_subclass))
         return detail
 
     @property
@@ -741,7 +786,7 @@ class IdpModem:
             command += f'{trace_class}.{trace_subclass}'
         response = self.atcommand(command)
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
 
     @property
     def trace_events_cached(self) -> list:
@@ -789,7 +834,7 @@ class IdpModem:
         #: res %EVNT: <dataCount>,<signedBitmask>,<MTID>,<timestamp>,
         # <class>,<subclass>,<priority>,<data0>,<data1>,..,<dataN>
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         if not meta:
             return response[0]
         eventdata = response[0].split(',')
@@ -852,7 +897,7 @@ class IdpModem:
     def event_notification_monitor(self) -> 'list[EventNotification]':
         response = self.atcommand('ATS88?')
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         return self._list_events(int(response[0]))
     
     @event_notification_monitor.setter
@@ -862,13 +907,13 @@ class IdpModem:
             bitmask = bitmask | event
         response = self.atcommand(f'ATS88={bitmask}')
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
 
     @property
     def event_notifications(self) -> 'list[EventNotification]':
         response = self.atcommand('ATS89?')
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         return self._list_events(int(response[0]))
     
     @property
@@ -965,7 +1010,7 @@ class IdpModem:
                    ' S90=3 S91=5 S92=1 S102?')
         response = self.atcommand(command)
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         self._snr = round(int(response[0]) / 100.0, 2)
         self._ctrl_state = int(response[1])
         self._beamsearch_state = int(response[2])
@@ -985,7 +1030,7 @@ class IdpModem:
         _log.warning('Attempting to shut down')
         response = self.atcommand('AT%OFF')
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         return True
 
     def utc_time(self) -> str:
@@ -993,7 +1038,7 @@ class IdpModem:
         _log.debug('Querying system time')
         response = self.atcommand('AT%UTC', filter=['%UTC:'])
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         return response[0].replace(' ', 'T') + 'Z'
 
     def s_register_get(self, register: 'str|int') -> int:
@@ -1013,7 +1058,7 @@ class IdpModem:
         _log.debug(f'Querying S-register {register}')
         response = self.atcommand(f'ATS{register}?')
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         return int(response[0])
 
     def _s_registers_read(self) -> None:
@@ -1043,7 +1088,7 @@ class IdpModem:
         #: Sreg, RSV, CurrentVal, DefaultVal, MinimumVal, MaximumVal
         response = self.atcommand('AT%SREG')
         if response[0] == 'ERROR':
-            self._handle_at_exception(response)
+            self._handle_at_error(response)
         response.remove('OK')
         # header_rows = response[0:1]
         # Sreg RSV CurrentVal NvmValue DefaultValue MinimumValue MaximumVal
