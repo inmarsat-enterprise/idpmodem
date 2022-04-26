@@ -6,7 +6,7 @@ from time import sleep
 import idpmodem
 import pytest
 from asynctest import CoroutineMock
-from idpmodem.asyncio.atcommand_async import LOGGING_VERBOSE_LEVEL as VERBOSE
+# from idpmodem.asyncio.atcommand_async import LOGGING_VERBOSE_LEVEL as VERBOSE
 from idpmodem.asyncio.atcommand_async import (AtException, AtGnssTimeout,
                                               IdpModemAsyncioClient)
 from idpmodem.constants import AT_ERROR_CODES
@@ -15,7 +15,7 @@ from idpmodem.location import Location
 from pytest_mock import MockerFixture
 
 SERIAL_PORT = os.getenv('SERIAL_PORT', '/dev/ttyUSB0')
-LOG_LEVEL = VERBOSE
+LOG_LEVEL = 'DEBUG'
 
 #TODO: mock serial port
 
