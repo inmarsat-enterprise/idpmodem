@@ -695,7 +695,8 @@ class IdpModem:
         """
         if not meta and data_format != DataFormat.BASE64:
             data_format = DataFormat.BASE64
-        response = self.atcommand(f'AT%MGFG="{name}",{data_format}')
+        response = self.atcommand(f'AT%MGFG="{name}",{data_format}',
+                                  filter=['%MGFG:'])
         if response[0] == 'ERROR':
             _log.error(f'Error retrieving message {name}')
             self._handle_at_error(response)
