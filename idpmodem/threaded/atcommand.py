@@ -251,7 +251,7 @@ class AtProtocol(LineReader):
                         self.response_time = time()
                     if content == command:
                         pass   # ignore echo
-                    elif content == 'OK':
+                    elif content in ['OK', 'ERROR']:
                         lines.append(line)
                         if self.crc and '%CRC=0' in self.pending_command:
                             _log.debug('CRC disabled by command')
@@ -274,7 +274,7 @@ class AtProtocol(LineReader):
                         # keep parsing in case CRC follows
                 except queue.Empty:
                     if not self.response_time:
-                        raise AtTimeout(f'TIMEOUT ({command})')
+                        raise AtTimeout(f'TIMEOUT ({timeout}s)')
                     return self._clean_response(lines, filter, debug)
 
 
