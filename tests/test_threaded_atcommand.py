@@ -73,3 +73,14 @@ def test_gnss_immediate_timeout(modem):
     protocol: AtProtocol = modem.protocol
     res = protocol.command('AT%GPS=1,35,"RMC","GSA","GGA","GSV"')
     assert res is not None
+    err_code = protocol.command('ATS80?')
+    assert err_code[0] == '108'
+
+
+def test_gnss_immediate_timeout_crc(modem):
+    protocol: AtProtocol = modem.protocol
+    crc_enabled = protocol.command('AT%CRC=1')
+    res = protocol.command('AT%GPS=1,35,"RMC","GSA","GGA","GSV"')
+    assert res is not None
+    err_code = protocol.command('ATS80?')
+    assert err_code[0] == '108'
