@@ -236,6 +236,11 @@ class AtProtocol(LineReader):
 
         """
         with self._lock:  # ensure that just one thread is sending commands at once
+            try:
+                oldbuffer: str = self.responses.get(timeout=0.05)
+                _log.warning(f'Cleared old buffer: {oldbuffer}')
+            except queue.Empty:
+                pass
             timeout = 1 if timeout < 1 else timeout
             command = apply_crc(command) if self.crc else command
             self.pending_command = command
