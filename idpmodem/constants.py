@@ -122,15 +122,19 @@ POWER_MODES = {
     5: 'MOBILE_PARKED'
 }
 
-# Certain GNSS modes are SkyWave hardware-specific
-GNSS_MODES = {
-    0: 'GPS',   # HW v4
-    1: 'GLONASS',   # HW v5
-    2: 'BEIDOU',   # HW v5.2
-    10: 'GPS+GLONASS',   # UBX-M80xx
-    11: 'GPS+BEIDOU',   # UBX-M80xx
-    12: 'GLONASS+BEIDOU',   # UBX-M80xx
-}
+
+class GnssMode(IntEnum):
+    GPS = 0
+    GLONASS = 1
+    BEIDOU = 2
+    GALILEO = 3
+    GPS_GLONASS = 10
+    GPS_BEIDOU = 11
+    GLONASS_BEIDOU = 12
+    GPS_GALILEO = 13
+    GLONASS_GALILEO = 14
+    BEIDOU_GALILEO = 15
+
 
 # Dynamic Platform Model - use with caution
 GNSS_DPM_MODES = {
