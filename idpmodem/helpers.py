@@ -45,6 +45,7 @@ def validate_serial_port(target: str, verbose: bool = False) -> 'bool|tuple':
         detail = 'Available ports:' + detail
     return (found, detail) if verbose else found
 
+
 def is_hex_string(s: str) -> bool:
     """Returns True if the string consists exclusively of hexadecimal chars."""
     hex_chars = '0123456789abcdefABCDEF'

@@ -3,7 +3,10 @@
 | Calculates CRC-16-CCITT checksum for xmodem, intended for use with SkyWave/ORBCOMM IDP modem.
 | Borrowed from https://stackoverflow.com/questions/25239423/crc-ccitt-16-bit-python-manual-calculation.
 """
+import logging
 
+
+_log = logging.getLogger(__name__)
 __version__ = "1.1.0"
 
 POLYNOMIAL = 0x1021
@@ -71,6 +74,7 @@ def crc_bytes(*i) -> int:
 def get_crc(command: str) -> str:
     """Returns the command with CRC in format `command*<crc>`.
     
+    Deprecate - replace with `apply_crc`.
     Calculates and applies a CCITT-16 checksum for an AT command.
 
     Args:
@@ -80,13 +84,40 @@ def get_crc(command: str) -> str:
         The command with CRC appended after *
 
     """
-    return '{}*{:04X}'.format(command, crc(command))
+    return f'{command}*{crc(command):04X}'
+
+
+def apply_crc(command: str) -> str:
+    """Returns the command with CRC in format `command*<crc>`.
+    
+    Calculates and applies a CCITT-16 checksum for an AT command.
+
+    Args:
+        command: The AT command or response to calculate CRC on
+    
+    Returns:
+        The command with CRC appended after *
+
+    """
+    return f'{command}*{crc(command):04X}'
 
 
 def validate_crc(response: str, candidate: str) -> bool:
-    """Calculates and validates the response CRC against expected"""
-    expected_crc = '{:04X}'.format(crc(response))
-    return expected_crc == candidate.replace('*', '')
+    """Calculates and validates the response CRC against expected.
+    
+    Args:
+        response: The response received without CRC (before *)
+        candidate: The CRC received (after *)
+    
+    Returns:
+        True if the candidate matches the expected CRC of the response.
+
+    """
+    expected = f'{crc(response):04X}'
+    if expected == candidate.replace('*', ''):
+        return True
+    _log.debug(f'{response} CRC expected *{expected} got *{candidate}')
+    return False
 
 
 def main():
@@ -95,7 +126,7 @@ def main():
     except ImportError:
         pass
     s = input('Enter string: ')
-    print('0x{:04X}'.format(crc(s, 0xffff)))
+    print(f'0x{crc(s, 0xffff):04X}')
 
 
 if __name__ == "__main__":
