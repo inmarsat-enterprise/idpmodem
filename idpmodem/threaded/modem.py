@@ -608,7 +608,7 @@ class IdpModem:
     
     def message_mo_cancel(self, name: str) -> bool:
         """Cancels a mobile-originated message in the Tx ready state."""
-        response = self.atcommand(f'AT%MGRC={name}')
+        response = self.atcommand(f'AT%MGRC="{name}"')
         if response[0] == 'ERROR':
             return False
         return True
@@ -695,7 +695,7 @@ class IdpModem:
         """
         if not meta and data_format != DataFormat.BASE64:
             data_format = DataFormat.BASE64
-        response = self.atcommand(f'AT%MGFG={name},{data_format}')
+        response = self.atcommand(f'AT%MGFG="{name}",{data_format}')
         if response[0] == 'ERROR':
             _log.error(f'Error retrieving message {name}')
             self._handle_at_error(response)
