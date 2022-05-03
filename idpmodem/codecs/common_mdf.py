@@ -10,6 +10,7 @@ from math import ceil, log2
 from struct import pack, unpack
 from warnings import warn
 from xml.dom.minidom import parseString
+from copy import deepcopy
 
 from idpmodem.constants import DataFormat
 
@@ -114,18 +115,40 @@ def _indent_xml(elem, level=0):
     return xmlstr
 
 
+class BaseCodec:
+    def __init__(self, name: str, description: str = None) -> None:
+        if not name or name.strip() == '':
+            raise ValueError('Invalid name must be non-empty')
+        self._name = name
+        self._description = description
+    
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @property
+    def description(self) -> str:
+        return self._description
+    
+    @description.setter
+    def description(self, value: str):
+        if value is not None and not isinstance(value, str) and not value:
+            raise ValueError('Description must be non-empty string or None')
+        self._description = value
+
+
 class CodecList(list):
     """Base class for a specific object type list.
     
     Used for Fields, Messages, Services.
 
     Attributes:
-        list_type: The object type the list is comprised of.
+        codec_cls: The object type the list is comprised of.
 
     """
-    def __init__(self, list_type: object):
+    def __init__(self, codec_cls: object):
         super().__init__()
-        self.list_type = list_type
+        self.list_type = codec_cls
 
     def add(self, obj: object) -> bool:
         """Add an object to the end of the list.
@@ -188,7 +211,7 @@ class CodecList(list):
         return False
 
 
-class FieldCodec:
+class FieldCodec(BaseCodec):
     """The base class for a Field.
     
     Attributes:
@@ -212,18 +235,40 @@ class FieldCodec:
             optional: (Optional) Indicates if the field is mandatory.
             
         """
+        super().__init__(name, description)
         if data_type not in DATA_TYPES:
             raise ValueError(f'Invalid data type {data_type}')
-        if name is None or name.strip() == '':
-            raise ValueError('Invalid name must be non-empty')
-        self.data_type = data_type
-        self.name = name
-        self.description = description
-        self.optional = optional
+        self._data_type = data_type
+        self._optional = optional
     
+    @property
+    def data_type(self) -> str:
+        return self._data_type
+
+    @property
+    def optional(self) -> bool:
+        return self._optional
+    
+    @optional.setter
+    def optional(self, value: bool):
+        if not value or not isinstance(value, bool):
+            value = False
+        self._optional = value
+
+    @property
+    def bits(self) -> int:
+        """Must be subclassed."""
+        raise NotImplementedError('Subclass must define bits')
+
     def __repr__(self) -> str:
-        from pprint import pformat
-        return pformat(vars(self), indent=4)
+        rep = {}
+        for name in dir(self):
+            if name.startswith(('__', '_')):
+                continue
+            attr = getattr(self, name)
+            if not callable(attr):
+                rep[name] = attr
+        return repr(rep)
     
     def _base_xml(self) -> ET.Element:
         xsi_type = DATA_TYPES[self.data_type]
@@ -240,31 +285,39 @@ class FieldCodec:
             optional.text = 'true'
         return xmlfield
     
-    def decode(*args, **kwargs):
-        """Subclass"""
-        raise NotImplementedError('You must subclass and define decode')
+    def decode(self, *args, **kwargs):
+        """Must be subclassed."""
+        raise NotImplementedError('Subclass must define decode')
+    
+    def encode(self, *args, **kwargs):
+        """Must be subclassed."""
+        raise NotImplementedError('Subclass must define decode')
+    
+    def __eq__(self, other: object) -> bool:
+        """Must be subclassed."""
+        raise NotImplementedError('Subclass must define equivalence')
 
 
 class Fields(CodecList):
     """The list of Fields defining a Message or ArrayElement."""
     def __init__(self, fields: 'list[FieldCodec]' = None):
-        super().__init__(list_type=FieldCodec)
+        super().__init__(codec_cls=FieldCodec)
         if fields is not None:
             for field in fields:
                 self.add(field)
     
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: 'list[FieldCodec]') -> bool:
         if not isinstance(other, Fields):
             return NotImplemented
         if len(self) != len(other):
             return False
-        for field in self:
-            if field != other[field.name]:
+        for i, field in enumerate(self):
+            if field != other[i]:
                 return False
         return True
 
 
-class MessageCodec:
+class MessageCodec(BaseCodec):
     """The Payload structure for Message Definition Files uploaded to a Mailbox.
     
     Attributes:
@@ -300,19 +353,30 @@ class MessageCodec:
             raise ValueError(f'Invalid SIN {sin} must be in range 16..255')
         if not isinstance(min, int) or min not in range (0, 256):
             raise ValueError(f'Invalid MIN {min} must be in range 0..255')
-        self.name = name
-        self.description = description
-        self.is_forward = is_forward
-        self.sin = sin
-        self.min = min
-        self.fields: Fields = fields or Fields()
+        super().__init__(name, description)
+        self._is_forward = is_forward
+        self._sin = sin
+        self._min = min
+        self._fields: Fields = fields or Fields()
 
     @property
-    def fields(self) -> list:
+    def is_forward(self) -> bool:
+        return self._is_forward
+    
+    @property
+    def sin(self) -> int:
+        return self._sin
+
+    @property
+    def min(self) -> int:
+        return self._min
+
+    @property
+    def fields(self) -> Fields:
         return self._fields
     
     @fields.setter
-    def fields(self, fields: "list[FieldCodec]"):
+    def fields(self, fields: Fields):
         if not all(isinstance(field, FieldCodec) for field in fields):
             raise ValueError('Invalid field found in list')
         self._fields = fields
@@ -321,6 +385,7 @@ class MessageCodec:
     def ota_size(self) -> int:
         ota_bits = 2 * 8
         for field in self.fields:
+            assert isinstance(field, FieldCodec)
             ota_bits += field.bits + (1 if field.optional else 0)
         return ceil(ota_bits / 8)
 
@@ -338,23 +403,13 @@ class MessageCodec:
         binary_str = ''.join(format(int(b), '08b') for b in databytes)
         bit_offset = 16   #: Begin after SIN/MIN bytes
         for field in self.fields:
+            assert isinstance(field, FieldCodec)
             if field.optional:
                 present = binary_str[bit_offset] == '1'
                 bit_offset += 1
                 if not present:
                     continue
             bit_offset += field.decode(binary_str[bit_offset:])
-
-    def derive(self, databytes: bytes) -> None:
-        """Derives field values from raw data bytes (received over-the-air).
-        
-        Deprecated/replaced by `decode`.
-
-        Args:
-            databytes: A bytes array (typically from the forward message)
-
-        """
-        self.decode(databytes)
 
     def encode(self,
                data_format: int = DataFormat.BASE64,
@@ -373,6 +428,7 @@ class MessageCodec:
             raise ValueError(f'data_format {data_format} unsupported')
         bin_str = ''
         for field in self.fields:
+            assert isinstance(field, FieldCodec)
             if field.optional:
                 if exclude is not None and field.name in exclude:
                     present = False
@@ -421,7 +477,7 @@ class MessageCodec:
 class Messages(CodecList):
     """The list of Messages (Forward or Return) within a Service."""
     def __init__(self, sin: int, is_forward: bool):
-        super().__init__(list_type=MessageCodec)
+        super().__init__(codec_cls=MessageCodec)
         self.sin = sin
         self.is_forward = is_forward
     
@@ -444,6 +500,7 @@ class Messages(CodecList):
             raise ValueError(f'Message SIN {message.sin} does not match'
                              f' service {self.sin}')
         for m in self:
+            assert isinstance(m, MessageCodec)
             if m.name == message.name:
                 raise ValueError(f'Duplicate message name {message.name} found')
             if m.min == message.min:
@@ -452,7 +509,7 @@ class Messages(CodecList):
         return True
 
 
-class ServiceCodec:
+class ServiceCodec(BaseCodec):
     """A data structure holding a set of related Forward and Return Messages.
     
     Attributes:
@@ -467,8 +524,8 @@ class ServiceCodec:
                  name: str,
                  sin: int,
                  description: str = None,
-                 messages_forward: "list[MessageCodec]" = None,
-                 messages_return: "list[MessageCodec]" = None) -> None:
+                 messages_forward: Messages = None,
+                 messages_return: Messages = None) -> None:
         """Instantiates a Service made up of Messages.
         
         Args:
@@ -480,16 +537,47 @@ class ServiceCodec:
             raise ValueError(f'Invalid service name {name}')
         if sin not in range(16, 256):
             raise ValueError('Invalid SIN must be 16..255')
-        self.name = name
-        self.sin = sin
         if description is not None:
             warn('Service Description not currently supported')
-        self.description = None
-        self.messages_forward = messages_forward or Messages(self.sin,
-                                                             is_forward=True)
-        self.messages_return = messages_return or Messages(self.sin,
-                                                           is_forward=False)
+        super().__init__(name, description)
+        self._sin = sin
+        self._messages_forward = (messages_forward or
+                                  Messages(self.sin, is_forward=True))
+        self._messages_return = (messages_return or
+                                 Messages(self.sin, is_forward=False))
     
+    @property
+    def sin(self) -> int:
+        return self._sin
+    
+    @property
+    def messages_forward(self) -> Messages:
+        return self._messages_forward
+    
+    @messages_forward.setter
+    def messages_forward(self, messages: Messages):
+        if not isinstance(messages, Messages):
+            raise ValueError('Invalid messages list')
+        for message in messages:
+            assert isinstance(message, MessageCodec)
+            if not message.is_forward:
+                raise ValueError(f'Message {message.name} is_forward is False')
+        self._messages_forward = messages
+
+    @property
+    def messages_return(self) -> Messages:
+        return self._messages_return
+    
+    @messages_return.setter
+    def messages_return(self, messages: Messages):
+        if not isinstance(messages, Messages):
+            raise ValueError('Invalid messages list')
+        for message in messages:
+            assert isinstance(message, MessageCodec)
+            if message.is_forward:
+                raise ValueError(f'Message {message.name} is_forward is True')
+        self._messages_return = messages
+        
     def xml(self, indent: bool = False) -> ET.Element:
         """Returns the XML structure of the Service for a MDF."""
         if len(self.messages_forward) == 0 and len(self.messages_return) == 0:
@@ -515,8 +603,8 @@ class ServiceCodec:
 
 class Services(CodecList):
     """The list of Service(s) within a MessageDefinitions."""
-    def __init__(self, services: "list[ServiceCodec]" = None):
-        super().__init__(list_type=ServiceCodec)
+    def __init__(self, services: 'list[ServiceCodec]' = None):
+        super().__init__(codec_cls=ServiceCodec)
         if services is not None:
             for service in services:
                 if not isinstance(service, ServiceCodec):
@@ -557,8 +645,8 @@ class BooleanField(FieldCodec):
             value: Optional value to set during initialization.
 
         """
-        self.default = default
-        self.value = value if value is not None else default
+        self._default = default if isinstance(default, bool) else False
+        self._value = value if value is not None else self._default
     
     @property
     def default(self):
@@ -619,7 +707,7 @@ class EnumField(FieldCodec):
     """An enumerated field sends an index over-the-air representing a string."""
     def __init__(self,
                  name: str,
-                 items: "list[str]",
+                 items: 'list[str]',
                  size: int,
                  description: str = None,
                  optional: bool = False,
@@ -641,14 +729,16 @@ class EnumField(FieldCodec):
                          data_type='enum',
                          description=description,
                          optional=optional)
-        if items is None or not all(isinstance(item, str) for item in items):
-            raise ValueError('Items must all be strings')
+        if (not isinstance(items, list) or
+            not all(isinstance(item, str) for item in items)):
+            raise ValueError('Items must a list of strings')
         if not isinstance(size, int) or size < 1:
             raise ValueError('Size must be integer greater than 0 bits')
-        self.items = items
-        self.size = size
-        self.default = default
-        self.value = value if value is not None else self.default
+        self._items = items
+        self._size = size
+        self._default = (default if default in range(0, len(self._items))
+                         else None)
+        self._value = value if value is not None else self._default
     
     def _validate_enum(self, v: 'int|str') -> 'int|None':
         if v is not None:
@@ -781,9 +871,9 @@ class UnsignedIntField(FieldCodec):
                          data_type=data_type,
                          description=description,
                          optional=optional)
-        self.size = size
-        self.default = default
-        self.value = value if value is not None else default
+        self._size = size
+        self._default = default
+        self._value = value if value is not None else self._default
     
     @property
     def size(self):
@@ -893,9 +983,9 @@ class SignedIntField(FieldCodec):
                          data_type=data_type,
                          description=description,
                          optional=optional)
-        self.size = size
-        self.default = default
-        self.value = value if value is not None else default
+        self._size = size
+        self._default = default
+        self._value = value if value is not None else self._default
     
     @property
     def size(self):
@@ -1018,10 +1108,10 @@ class StringField(FieldCodec):
                          data_type='string',
                          description=description,
                          optional=optional)
-        self.size = size
-        self.fixed = fixed
-        self.default = default
-        self.value = value if value is not None else default
+        self._size = size
+        self._fixed = fixed
+        self._default = default
+        self._value = value if value is not None else self._default
     
     def _validate_string(self, s: str):
         if s is not None:
@@ -1057,6 +1147,10 @@ class StringField(FieldCodec):
     @value.setter
     def value(self, v: str):
         self._value = self._validate_string(v)
+
+    @property
+    def fixed(self) -> bool:
+        return self._fixed
 
     @property
     def bits(self):
@@ -1124,11 +1218,12 @@ class DataField(FieldCodec):
     Can also be used to hold floating point, double-precision or large integers.
 
     """
-    supported_data_types = ['data', 'float', 'double']
+    SUPPORTED_DATA_TYPES = ['data', 'float', 'double']
     def __init__(self,
                  name: str,
                  size: int,
                  data_type: str = 'data',
+                 precision: int = None,
                  description: str = None,
                  optional: bool = False,
                  fixed: bool = False,
@@ -1147,16 +1242,19 @@ class DataField(FieldCodec):
             value: Optional value to set during initialization.
 
         """
-        if data_type is None or data_type not in self.supported_data_types:
+        if data_type is None or data_type not in self.SUPPORTED_DATA_TYPES:
             raise ValueError(f'Invalid data type {data_type}')
         super().__init__(name=name,
                          data_type=data_type,
                          description=description,
                          optional=optional)
-        self.fixed = fixed
-        self.size = size
-        self.default = default
-        self.value = value if value is not None else default
+        self._fixed = fixed
+        self._size = size
+        self._default = default
+        self._precision = precision
+        self._value = self._default
+        if value:
+            self.value = value
     
     @property
     def size(self):
@@ -1180,32 +1278,48 @@ class DataField(FieldCodec):
             self._size = value
     
     @property
+    def precision(self) -> 'int|None':
+        return self._precision
+
+    @property
+    def converted_value(self) -> 'float|None':
+        if not self.data_type in ('float', 'double'):
+            return None
+        convertor = '!f' if self.data_type == 'float' else '!d'
+        converted = unpack(convertor, self._value)[0]
+        if self.precision:
+            converted = round(converted, self.precision)
+        return converted
+    
+    @property
     def value(self):
-        if self.data_type == 'float':
-            return unpack('!f', self._value)
-        if self.data_type == 'double':
-            return unpack('!d', self._value)
         return self._value
 
     @value.setter
     def value(self, v: 'bytes|float'):
-        if v is not None:
-            if self.data_type in ['float', 'double']:
-                if not isinstance(v, float):
-                    raise ValueError(f'Invalid {self.data_type} value {v}')
-                _format = '!f' if self.data_type == 'float' else '!d'
-                v = pack(_format, v)
-            elif not isinstance(v, bytes):
-                raise ValueError(f'Invalid bytes {v}')
-        self._value = v
+        data_type = self.data_type
+        if not ((isinstance(v, bytes) and data_type == 'data') or
+                (isinstance(v, float) and data_type in ['float', 'double'])):
+            raise ValueError(f'Data {type(v)} does not match {data_type}')
+        if isinstance(v, bytes):
+            self._value = v
+        elif data_type in ['float', 'double']:
+            _format = '!f' if data_type == 'float' else '!d'
+            self._value = pack(_format, v)
+        else:
+            raise ValueError(f'Unhandled data type {data_type}')
+
+    @property
+    def fixed(self) -> bool:
+        return self._fixed
 
     @property
     def bits(self):
         if self.fixed:
             return self.size * 8
-        elif self.value is None:
+        elif self._value is None:
             return 0
-        return len(self.value) * 8
+        return len(self._value) * 8
     
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, DataField):
@@ -1273,7 +1387,7 @@ class ArrayField(FieldCodec):
                  description: str = None,
                  optional: bool = False,
                  fixed: bool = False,
-                 elements: "list[Fields]" = None) -> None:
+                 elements: 'list[Fields]' = []) -> None:
         """Initializes an ArrayField instance.
         
         Args:
@@ -1290,13 +1404,13 @@ class ArrayField(FieldCodec):
                          data_type='array',
                          description=description,
                          optional=optional)
-        self.size = size
-        self.fixed = fixed
-        self.fields = fields
-        self.elements = elements or []
+        self._size = size
+        self._fixed = fixed
+        self._fields = fields
+        self._elements = elements or []
     
     @property
-    def size(self):
+    def size(self) -> int:
         return self._size
     
     @size.setter
@@ -1306,7 +1420,11 @@ class ArrayField(FieldCodec):
         self._size = value
     
     @property
-    def fields(self):
+    def fixed(self) -> bool:
+        return self._fixed
+
+    @property
+    def fields(self) -> Fields:
         return self._fields
 
     @fields.setter
@@ -1316,17 +1434,18 @@ class ArrayField(FieldCodec):
         self._fields = fields
 
     @property
-    def elements(self):
+    def elements(self) -> 'list[Fields]':
         return self._elements
     
     @elements.setter
-    def elements(self, elements: list):
-        if elements is None or not hasattr(self, '_elements'):
-            self._elements = []
-        if not isinstance(elements, list):
+    def elements(self, elements: 'list[Fields]'):
+        if (not isinstance(elements, list) or 
+            not all(isinstance(item, Fields) for item in elements)):
             raise ValueError('Elements must be a list of grouped Fields')
         for fields in elements:
+            # assert isinstance(fields, Fields)
             for index, field in enumerate(fields):
+                assert isinstance(field, FieldCodec)
                 if (field.name != self.fields[index].name):
                     raise ValueError(f'fields[{index}].name'
                                      f' expected {self.fields[index].name}'
@@ -1336,7 +1455,9 @@ class ArrayField(FieldCodec):
                                      f' expected {self.fields[index].data_type}'
                                      f' got {field.data_type}')
                 #TODO: validate non-optional fields have value/elements
-                if field.value is None and not field.optional:
+                if (not field.optional and
+                    not isinstance(field, ArrayField) and
+                    field.value is None):
                     raise ValueError(f'fields[{index}].value missing')
                 try:
                     self._elements[index] = fields
@@ -1375,23 +1496,25 @@ class ArrayField(FieldCodec):
                                  f' does not match {field.size}')
         return True
 
-    def append(self, element: Fields):
+    def _append(self, element: Fields):
         """Adds the array element to the list of elements."""
         if not isinstance(element, Fields):
             raise ValueError('Invalid element definition must be Fields')
         if self._valid_element(element):
             for i, field in enumerate(element):
+                assert isinstance(field, FieldCodec)
                 if (hasattr(field, 'description') and
                     field.description != self.fields[i].description):
-                    field.description = self.fields[i].description
+                    element[i].description = self.fields[i].description
                 if hasattr(field, 'value') and field.value is None:
-                    field.value = self.fields[i].default
+                    element[i].value = self.fields[i].default
             self._elements.append(element)
 
     def new_element(self) -> Fields:
         """Returns an empty element at the end of the elements list."""
         new_index = len(self._elements)
-        self._elements.append(Fields(self.fields))
+        new_fields = deepcopy(self.fields)
+        self._append(Fields(new_fields))
         return self.elements[new_index]
 
     def encode(self) -> str:

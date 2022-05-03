@@ -1,9 +1,13 @@
-import pytest
-from copy import deepcopy
+import logging
 import xml.etree.ElementTree as ET
+from copy import deepcopy
 
-from idpmodem.codecs import common_mdf
+import pytest
+from idpmodem.codecs.common_mdf import *
 from idpmodem.constants import DataFormat
+
+logging.basicConfig()
+logger = logging.getLogger()
 
 
 @pytest.fixture
@@ -13,12 +17,13 @@ def bool_field():
                     optional: bool = False,
                     default: bool = False,
                     value: bool = None):
-        return common_mdf.BooleanField(name=name,
-                                   optional=optional,
-                                   default=default,
-                                   value=value,
-                                   description='A boolean test field.')
+        return BooleanField(name=name,
+                            optional=optional,
+                            default=default,
+                            value=value,
+                            description='A boolean test field.')
     return _bool_field
+
 
 @pytest.fixture
 def data_field():
@@ -29,15 +34,16 @@ def data_field():
                     fixed: bool = False,
                     default: bytes = None,
                     value: bytes = None):
-        return common_mdf.DataField(name='dataFixture',
-                                size=size,
-                                data_type=data_type,
-                                optional=optional,
-                                fixed=fixed,
-                                default=default,
-                                value=value,
-                                description='A data test field.')
+        return DataField(name='dataFixture',
+                        size=size,
+                        data_type=data_type,
+                        optional=optional,
+                        fixed=fixed,
+                        default=default,
+                        value=value,
+                        description='A data test field.')
     return _data_field
+
 
 @pytest.fixture
 def enum_field():
@@ -47,10 +53,10 @@ def enum_field():
                     items: list = fixture_items,
                     size: int = 2,
                     description: str = 'An enum test field'):
-        return common_mdf.EnumField(name=name,
-                                items=items,
-                                size=size,
-                                description=description)
+        return EnumField(name=name,
+                        items=items,
+                        size=size,
+                        description=description)
     return _enum_field
 
 @pytest.fixture
@@ -59,11 +65,12 @@ def int_field():
                    size: int = 16,
                    data_type: str = 'int_16',
                    description: str = 'A signedint field'):
-        return common_mdf.SignedIntField(name=name,
-                                     size=size,
-                                     data_type=data_type,
-                                     description=description)
+        return SignedIntField(name=name,
+                            size=size,
+                            data_type=data_type,
+                            description=description)
     return _int_field
+
 
 @pytest.fixture
 def uint_field():
@@ -71,11 +78,12 @@ def uint_field():
                    size: int = 16,
                    data_type: str = 'int_16',
                    description: str = 'A signedint field'):
-        return common_mdf.UnsignedIntField(name=name,
-                                     size=size,
-                                     data_type=data_type,
-                                     description=description)
+        return UnsignedIntField(name=name,
+                                size=size,
+                                data_type=data_type,
+                                description=description)
     return _uint_field
+
 
 @pytest.fixture
 def string_field():
@@ -86,99 +94,113 @@ def string_field():
                       optional: bool = False,
                       default: str = None,
                       value: str = None):
-        return common_mdf.StringField(name=name,
-                                  description='A fixed string test field.',
-                                  fixed=fixed,
-                                  size=size,
-                                  optional=optional,
-                                  default=default,
-                                  value=value)
+        return StringField(name=name,
+                        description='A fixed string test field.',
+                        fixed=fixed,
+                        size=size,
+                        optional=optional,
+                        default=default,
+                        value=value)
     return _string_field
+
 
 @pytest.fixture
 def array_fields_property_example():
-    fields = common_mdf.Fields()
-    fields.add(common_mdf.StringField(name='propertyName', size=50))
-    fields.add(common_mdf.UnsignedIntField(name='propertyValue',
-                                       size=32,
-                                       data_type='uint_32'))
+    fields = Fields()
+    fields.add(StringField(name='propertyName', size=50))
+    fields.add(UnsignedIntField(name='propertyValue',
+                                size=32,
+                                data_type='uint_32'))
     return fields
+
 
 @pytest.fixture
 def array_field(array_fields_property_example):
     """Returns a ArrayField defaulting to array_fields_property_example."""
     def _array_field(name: str = 'arrayFixture',
                      size: int = 1,
-                     fields: common_mdf.Fields = None,
-                     description: str = 'An example array of 2 fields',
+                     fields: Fields = None,
+                     description: str = 'An example array',
                      optional: bool = False,
                      fixed: bool = False,
-                     elements: "list[common_mdf.Fields]" = None):
-        return common_mdf.ArrayField(name=name,
-                                 description=description,
-                                 size=size,
-                                 fields=fields or array_fields_property_example,
-                                 optional=optional,
-                                 fixed=fixed,
-                                 elements=elements)
+                     elements: 'list[Fields]' = []):
+        return ArrayField(name=name,
+                        description=description,
+                        size=size,
+                        fields=fields or array_fields_property_example,
+                        optional=optional,
+                        fixed=fixed,
+                        elements=elements)
     return _array_field
 
-@pytest.fixture
-def return_message(array_field):
-    """Returns a ArrayField with no values."""
-    fields = common_mdf.Fields()
-    fields.add(common_mdf.BooleanField(name='testBool', value=True))
-    fields.add(common_mdf.UnsignedIntField(name='testUint',
-                                       size=16,
-                                       data_type='uint_16',
-                                       value=42))
-    fields.add(common_mdf.SignedIntField(name='latitude',
-                                     size=24,
-                                     data_type='int_32',
-                                     value=int(-45.123 * 60000)))
-    fields.add(common_mdf.StringField(name='optionalString',
-                                  size=100,
-                                  optional=True))
-    fields.add(common_mdf.StringField(name='nonOptionalString',
-                                  size=100,
-                                  value='A quick brown fox'))
-    fields.add(array_field(name='arrayFixture'))
-    elementOne = fields['arrayFixture'].new_element()
-    elementOne['propertyName'].value = 'aPropertyName'
-    elementOne['propertyValue'].value = 1
-    fields.add(common_mdf.DataField(name='testData',
-                                size=4,
-                                data_type='float',
-                                value=4.2))
-    message = common_mdf.Message(name='returnMessageFixture',
-                             sin=255,
-                             min=1,
-                             fields=fields)
-    return message
 
 @pytest.fixture
-def return_messages(return_message):
-    return_messages = common_mdf.Messages(sin=255, is_forward=False)
+def return_message(array_fields_property_example) -> MessageCodec:
+    """Returns a ArrayField with no values."""
+    fields = Fields()
+    fields.add(BooleanField(name='testBool', value=True))
+    fields.add(UnsignedIntField(name='testUint',
+                                size=16,
+                                data_type='uint_16',
+                                value=42))
+    fields.add(SignedIntField(name='latitude',
+                            size=24,
+                            data_type='int_32',
+                            value=int(-45.123 * 60000)))
+    fields.add(StringField(name='optionalString',
+                        size=100,
+                        optional=True))
+    fields.add(StringField(name='nonOptionalString',
+                        size=100,
+                        value='A quick brown fox'))
+    fields.add(ArrayField(name='arrayExample',
+                          size=50,
+                          fields=array_fields_property_example))
+    elementOne = fields['arrayExample'].new_element()
+    elementOne['propertyName'].value = 'aPropertyName'
+    elementOne['propertyValue'].value = 1
+    elementTwo = fields['arrayExample'].new_element()
+    elementTwo['propertyName'].value = 'anotherPropertyName'
+    elementTwo['propertyValue'].value = 42
+    fields.add(DataField(name='testData',
+                        size=4,
+                        data_type='float',
+                        value=4.2,
+                        precision=2))
+    message = MessageCodec(name='returnMessageFixture',
+                        sin=255,
+                        min=1,
+                        fields=fields)
+    return message
+
+
+@pytest.fixture
+def return_messages(return_message) -> Messages:
+    return_messages = Messages(sin=255, is_forward=False)
     return_messages.add(return_message)
     return return_messages
 
+
 @pytest.fixture
-def service(return_messages):
-    service = common_mdf.Service(name='testService', sin=255)
+def service(return_messages) -> ServiceCodec:
+    service = ServiceCodec(name='testService', sin=255)
     service.messages_return = return_messages
     return service
 
+
 @pytest.fixture
-def services(service):
-    services = common_mdf.Services()
+def services(service) -> Services:
+    services = Services()
     services.add(service)
     return services
 
+
 @pytest.fixture
-def message_definitions(services):
-    message_definitions = common_mdf.MessageDefinitions()
+def message_definitions(services) -> MessageDefinitions:
+    message_definitions = MessageDefinitions()
     message_definitions.services = services
     return message_definitions
+
 
 def test_boolean_field(bool_field):
     test_field = bool_field()
@@ -194,6 +216,7 @@ def test_boolean_field(bool_field):
     assert(bool_dflt_true.encode() == '1')
     bool_dflt_false_valset = bool_field(value=True)
     assert(bool_dflt_false_valset.encode() == '1')
+
 
 def test_data_field(data_field):
     MAX_BYTES = 128
@@ -220,6 +243,7 @@ def test_data_field(data_field):
         test_field.decode(enc)
         assert(test_field.value == bytes(b))
     #TODO: test cases for padding, truncation
+
 
 def test_string_field(string_field):
     from string import ascii_lowercase as char_iterator
@@ -262,6 +286,7 @@ def test_string_field(string_field):
     test_field.decode(enc)
     assert(test_field.value == v)
 
+
 def test_array_field(array_field, array_fields_property_example):
     MAX_SIZE = 2
     test_field = array_field(size=1, fields=array_fields_property_example)
@@ -281,12 +306,13 @@ def test_array_field(array_field, array_fields_property_example):
         test_field.decode(enc)
         assert(test_field == ref)
 
+
 def test_enum_field():
     test_items = ['item1', 'item2', 'item3']
     size = 2
     defaults = [None, 'item1', 1]
     for default in defaults:
-        test_field = common_mdf.EnumField(name='validEnum',
+        test_field = EnumField(name='validEnum',
                                 items=test_items,
                                 size=size,
                                 default=default)
@@ -299,18 +325,19 @@ def test_enum_field():
             assert(test_field.value == test_items[default])
     assert(test_field.encode() == '01')  #:assumes last default is 1
     with pytest.raises(ValueError):
-        test_field = common_mdf.EnumField(name='testEnum', items=None, size=None)
+        test_field = EnumField(name='testEnum', items=None, size=None)
     with pytest.raises(ValueError):
-        test_field = common_mdf.EnumField(name='testEnum', items=[1, 3], size=2)
+        test_field = EnumField(name='testEnum', items=[1, 3], size=2)
     with pytest.raises(ValueError):
-        test_field = common_mdf.EnumField(name='testEnum', items=test_items, size=1)
+        test_field = EnumField(name='testEnum', items=test_items, size=1)
+
 
 @pytest.mark.filterwarnings('ignore:Clipping')
 def test_unsignedint_field():
     BIT_SIZE = 16
     with pytest.raises(ValueError):
-        test_field = common_mdf.UnsignedIntField(name='failedBitSize', size=0)
-    test_field = common_mdf.UnsignedIntField(name='testUint', size=BIT_SIZE)
+        test_field = UnsignedIntField(name='failedBitSize', size=0)
+    test_field = UnsignedIntField(name='testUint', size=BIT_SIZE)
     assert(test_field.default is None)
     assert(test_field.value is None)
     with pytest.raises(ValueError):
@@ -327,12 +354,13 @@ def test_unsignedint_field():
     test_field.decode(enc)
     assert(test_field.value == v)
 
+
 @pytest.mark.filterwarnings('ignore:Clipping')
 def test_signedint_field():
     BIT_SIZE = 16
     with pytest.raises(ValueError):
-        test_field = common_mdf.SignedIntField(name='failedBitSize', size=0)
-    test_field = common_mdf.SignedIntField(name='testInt', size=BIT_SIZE)
+        test_field = SignedIntField(name='failedBitSize', size=0)
+    test_field = SignedIntField(name='testInt', size=BIT_SIZE)
     assert(test_field.default is None)
     assert(test_field.value is None)
     with pytest.raises(ValueError):
@@ -354,12 +382,14 @@ def test_signedint_field():
     test_field.decode(enc)
     assert(test_field.value == v)
 
+
 def test_bool_xml(bool_field):
     test_field = bool_field()
     xml = test_field.xml()
     assert(xml.attrib['{http://www.w3.org/2001/XMLSchema-instance}type'] == 'BooleanField')
     assert(xml.find('Name').text == test_field.name)
     assert(xml.find('Description').text == test_field.description)
+
 
 def test_enum_xml(enum_field):
     test_field = enum_field()
@@ -389,13 +419,16 @@ def test_array_xml(array_field):
         assert(field.find('Name').text == test_field.fields[i].name)
         i += 1
 
+
 def test_return_message_xml(return_message):
     rm = return_message
     ET.dump(rm.xml())
 
+
 def test_mdf_xml(message_definitions):
     xml = message_definitions.xml(indent=True)
     print(xml)
+
 
 def test_rm_codec(return_message):
     msg = return_message
@@ -409,3 +442,16 @@ def test_rm_codec(return_message):
     # print('Pre-decode:\n{}'.format(vars(msg_copy)))
     # print('Post-decode:\n{}'.format(vars(msg)))
     assert(msg_copy == msg)
+
+
+def test_mixed_message(return_message):
+    msg: MessageCodec = return_message
+    for field in msg.fields:
+        assert isinstance(field, FieldCodec)
+        if 'array' in field.name and hasattr(field, 'elements'):
+            for ei, element in enumerate(field.elements):
+                for fi, field in enumerate(element):
+                    assert isinstance(field, FieldCodec)
+                    logger.info(f'Element {ei}:{fi} {field.name} = {field.value}')
+        else:
+            logger.info(f'{field.name}: {msg.fields[field.name]}')
