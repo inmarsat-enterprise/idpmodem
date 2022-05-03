@@ -93,6 +93,8 @@ class IdpModem:
         self.transport, self.protocol = self.main_thread.connect()
 
     def disconnect(self):
+        with self.commands.mutex:
+            self.commands.queue.clear()
         if self.main_thread:
             self.main_thread.close()
         if self.serial_port:
@@ -165,9 +167,9 @@ class IdpModem:
         self.commands.put(command)
         try:
             res: list = self.protocol.command(command,
-                                                filter,
-                                                timeout,
-                                                self.debug)
+                                              filter=filter,
+                                              timeout=timeout,
+                                              debug=self.debug)
             if self.error_detail and res and res[0] == 'ERROR':
                 err_res = self.protocol.command('ATS80?')
                 if not err_res or err_res[0] == 'ERROR':
