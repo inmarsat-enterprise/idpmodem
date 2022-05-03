@@ -198,19 +198,74 @@ class TransmitterStatus(IntEnum):
     BLOCKED = 8
 
 
+class EventTraceClass(IntEnum):
+    HARDWARE_FAULT = 1
+    SYSTEM = 2
+    SATELLITE = 3
+    GNSS = 4
+    MESSAGE = 5
+
+
+class EventTraceSubclass(IntEnum):
+    """Base class for trace subclasses"""
+
+
+class EventTraceSystem(EventTraceSubclass):
+    RESET = 1
+    LOW_POWER = 2
+    SYSTEM_STATS = 3
+    SATCOM_STATS = 4
+
+
+class EventTraceSatellite(EventTraceSubclass):
+    RX_STATUS = 1
+    TX_STATUS = 2
+    BEAM_CONNECT = 3
+    BEAM_SEARCH_RESULT = 4
+    GEO_ADJUST = 5
+    EVENT_LOG = 6
+    RX_METRICS_SUBFRAME = 16
+    RX_METRICS_MINUTE = 17
+    RX_METRICS_HOUR = 18
+    RX_METRICS_DAY = 19
+    TX_METRICS_SUBFRAME = 20
+    TX_METRICS_MINUTE = 21
+    TX_METRICS_HOUR = 22
+    TX_METRICS_DAY = 23
+
+
+class EventTraceGnss(EventTraceSubclass):
+    FIX_STATS = 1
+    DOPPLER = 4
+
+
+class EventTraceMessage(EventTraceSubclass):
+    RECEIVE_STATS = 1
+    TRANSMIT_STATS = 2
+    TRANSMIT_UTILITY = 3
+
+
 class EventTrace:
     def __init__(self,
-                 trace_class: int,
-                 trace_subclass: int,
-                 data: tuple) -> None:
-        self.trace_class = trace_class
-        self.trace_subclass = trace_subclass
-        self.data = data
+                 trace_class: EventTraceClass,
+                 trace_subclass: EventTraceSubclass,
+                 data: 'tuple[str, str|dict|IntEnum]') -> None:
+        """Defines an event trace.
+        
+        Args:
+            trace_class: The enumerated class
+            trace_subclass: The enumerated subclass dependent on the class
+            data: The set of (name, meta) where meta defines either a
+                data type (e.g. `uint`) or a mapping (`dict` or `IntEnum`)
+        """
+        self.trace_class: EventTraceClass = trace_class
+        self.trace_subclass: EventTraceSubclass = trace_subclass
+        self.data: 'tuple[str, str|dict|IntEnum]' = data
 
 
 EVENT_TRACE_SATELLITE_GENERAL = EventTrace(
-    trace_class=3,
-    trace_subclass=1,
+    trace_class=EventTraceClass.SATELLITE,
+    trace_subclass=EventTraceSatellite.RX_STATUS,
     data=(
         ('subframe_number', 'uint'),
         ('traffic_vcid', 'uint'),
