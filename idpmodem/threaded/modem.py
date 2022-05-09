@@ -205,18 +205,25 @@ class IdpModem:
     def config_init(self, crc: bool = False) -> bool:
         """Initializes modem communications with Echo, Verbose. CRC optional."""
         _log.debug(f'Initializing modem Echo|Verbose{"|CRC" if crc else ""}')
-        def attempt(command: str) -> bool:
-            response = self.atcommand(command)
-            return response[0] == 'OK'
-        # try at most twice
         command = f'ATZ;E1;V1;Q0;%CRC={1 if crc else 0}'
-        success = attempt(command)
-        if not success:
-            success = attempt(command)
-        if success:
-            self.protocol.crc = crc
-            self._at_config.crc = crc
-        return success
+        res_attempt_1 = self.atcommand(command)
+        if res_attempt_1[0] != 'OK':
+            # case 1: crc True but previously set; should now be T in factory
+            # case 2: crc False but previously set; should now be F in factory
+            if len(res_attempt_1) > 1:
+                at_error = res_attempt_1[1]
+                if 'INVALID_CRC' not in at_error:
+                    _log.warning(f'Unexpected AT error {at_error}')
+            _log.debug(f'Re-attempting with protocol CRC={self.protocol.crc}')
+            res_attempt_2 = self.atcommand(command)
+            if res_attempt_2[0] != 'OK':
+                _log.error('Unable to initialize modem after second attempt')
+                if len(res_attempt_2) > 1:
+                    _log.error(f'AT error: {res_attempt_2[1]}')
+                return False
+        # self.protocol.crc = crc   #: redundant should be set by attempt
+        self._at_config.crc = crc
+        return True
 
     def config_restore_nvm(self) -> bool:
         """Sends ATZ to restore config from non-volatile memory."""
