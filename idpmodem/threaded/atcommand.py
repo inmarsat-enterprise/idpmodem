@@ -238,6 +238,7 @@ class AtProtocol(LineReader):
         with self._lock:  # ensure that just one thread is sending commands at once
             try:
                 oldbuffer: str = self.responses.get(timeout=0.05)
+                oldbuffer = oldbuffer.replace('\r', '\\r').replace('\n', '\\n')
                 _log.warning(f'Cleared old buffer: {oldbuffer}')
             except queue.Empty:
                 pass
@@ -258,13 +259,17 @@ class AtProtocol(LineReader):
                         pass   # ignore echo
                     elif content in ['OK', 'ERROR']:
                         lines.append(line)
-                        if self.crc and '%CRC=0' in self.pending_command:
-                            _log.debug('CRC disabled by command')
-                            self.crc = False
-                        if (not self.crc and
-                            '%CRC=1' not in self.pending_command):
-                            # No need to wait for CRC
-                            return self._clean_response(lines, filter, debug)
+                        if content == 'OK':
+                            if self.crc and '%CRC=0' in self.pending_command:
+                                _log.debug('CRC disabled by command')
+                                self.crc = False
+                            elif (not self.crc and
+                                  '%CRC=1' in self.pending_command):
+                                _log.debug('CRC enabled for next command')
+                                self.crc = True
+                            if not self.crc:
+                                return self._clean_response(lines, filter, debug)
+                        # else wait for CRC or timeout
                     elif content.startswith('*'):
                         if not self.crc:
                             if not '%CRC=1' in self.pending_command:
