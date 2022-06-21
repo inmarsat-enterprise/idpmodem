@@ -56,12 +56,6 @@ def test_gnss_fail(modem_configured):
     assert location is None
 
 
-def test_tem(modem_configured):
-    modem: IdpModem = modem_configured
-    tem = modem.trace_event_monitor
-    assert tem is not None
-
-
 def test_properties(modem_connected, mocker):
     modem: IdpModem = modem_connected
     modem.config_init(crc=False)
@@ -210,3 +204,17 @@ def test_location(modem_configured):
     except:
         j = 'UNKNOWN'
     assert isinstance(j, str)
+
+
+def test_initialization():
+    modem = IdpModem(SERIAL_PORT)
+    modem.connect()
+    initialized = modem.config_init(crc=True)
+    assert initialized
+    modem.disconnect()
+    modem.connect()
+    reinit = modem.config_init(crc=False)
+    assert reinit
+    modem.protocol.crc = True
+    rereinit = modem.config_init(crc=True)
+    assert rereinit
