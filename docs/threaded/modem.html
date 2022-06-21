@@ -1,0 +1,4102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>idpmodem.threaded.modem API documentation</title>
+<meta name="description" content="A threaded IDP modem client with abstracted properties." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>idpmodem.threaded.modem</code></h1>
+</header>
+<section id="section-intro">
+<p>A threaded IDP modem client with abstracted properties.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;A threaded IDP modem client with abstracted properties.&#34;&#34;&#34;
+import logging
+import os
+import queue
+from base64 import b64decode, b64encode
+from datetime import datetime, timezone
+from time import time
+
+from idpmodem.aterror import AtCrcError, AtException, AtGnssTimeout, AtTimeout
+from idpmodem.constants import (EVENT_TRACES, AtErrorCode, BeamSearchState,
+                                DataFormat, EventNotification, GeoBeam,
+                                GnssMode, MessagePriority, MessageState,
+                                PowerMode, SatlliteControlState,
+                                SignalLevelRegional, SignalQuality,
+                                TransmitterStatus, WakeupPeriod)
+from idpmodem.location import Location, location_from_nmea
+from idpmodem.s_registers import SRegisters
+from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
+
+GNSS_STALE_SECS = int(os.getenv(&#39;GNSS_STALE_SECS&#39;, 1))
+GNSS_WAIT_SECS = int(os.getenv(&#39;GNSS_WAIT_SECS&#39;, 35))
+SAT_STATUS_HOLDOFF = 5
+
+_log = logging.getLogger(__name__)
+
+
+class ModemBusy(Exception):
+    &#34;&#34;&#34;Indicates the modem is busy processing a prior command.&#34;&#34;&#34;
+
+
+class AtConfiguration:
+    &#34;&#34;&#34;Configuration settings of the modem.
+    
+    Attributes:
+        crc (bool): Using cyclic redundancy check for all transactions.
+        echo (bool): Echoing back commands
+        quiet (bool): Limiting responses
+        verbose (bool): Using text-based responses
+        
+    &#34;&#34;&#34;
+    def __init__(self) -&gt; None:
+        self.crc: bool = False
+        self.echo: bool = True
+        self.quiet: bool = False
+        self.verbose: bool = True
+
+
+class IdpModem:
+    &#34;&#34;&#34;A protocol factory abstracting AT commands for an IDP modem.&#34;&#34;&#34;
+    
+    SERIAL_KWARGS = [&#39;baudrate&#39;, &#39;timeout&#39;, &#39;write_timeout&#39;]
+    BAUD_RATES = [1200, 2400, 4800, 9600, 19200]
+    PROTOCOL_KWARGS = [&#39;event_callback&#39;, &#39;at_timeout&#39;]
+    OTHER_KWARGS = [&#39;error_detail&#39;, &#39;debug&#39;, &#39;stale_secs&#39;, &#39;wait_secs&#39;]
+    
+    def __init__(self, serial_port: str, **kwargs):
+        self.serial_kwargs = {
+            &#39;port&#39;: serial_port,
+            &#39;baudrate&#39;: int(kwargs.pop(&#39;baudrate&#39;, 9600)),
+        }
+        self.protocol_kwargs = {}
+        self.error_detail = bool(kwargs.pop(&#39;error_detail&#39;, True))
+        self.debug = bool(kwargs.pop(&#39;debug&#39;, False))
+        for kwarg in kwargs:
+            if kwarg in self.SERIAL_KWARGS:
+                self.serial_kwargs[kwarg] = kwargs[kwarg]
+            elif kwarg in self.PROTOCOL_KWARGS:
+                self.protocol_kwargs[kwarg] = kwargs[kwarg]
+        self.serial_port = None
+        self.main_thread = None
+        self.transport = None
+        self.protocol: AtProtocol = None
+        self.commands = queue.Queue(1)
+        self._at_config = AtConfiguration()
+        self._mobile_id: str = None
+        self._versions: dict = None
+        self._manufacturer: str = None
+        self._model: str = None
+        self._power_mode: int = None
+        self._wakeup_period: int = None
+        self._ctrl_state: int = None
+        self._snr: float = None
+        self._geo_beam_id: int = None
+        self._beamsearch_state: int = None
+        self._loc_query: dict = {
+            &#39;stale_secs&#39;: int(kwargs.pop(&#39;stale_secs&#39;, GNSS_STALE_SECS)),
+            &#39;wait_secs&#39;: int(kwargs.pop(&#39;wait_secs&#39;, GNSS_WAIT_SECS)),
+        }
+        self._holdoffs: dict = {}   # used to ignore frequent repeat commands
+        self._statistics: dict = {}
+        self.s_registers = SRegisters()
+        # self.tx_queue = queue.Queue()
+        # self.tx_complete_callback: callable = None
+        # self.rx_queue = queue.Queue()
+        # self.rx_received_callback: callable = None
+    
+    def connect(self):
+        &#34;&#34;&#34;Connects to a modem using a serial and protocol instance.&#34;&#34;&#34;
+        self.serial_port = Serial(**self.serial_kwargs)
+        self.main_thread = ByteReaderThread(self.serial_port,
+                                            AtProtocol,
+                                            **self.protocol_kwargs)
+        self.main_thread.start()
+        self.transport, self.protocol = self.main_thread.connect()
+
+    def disconnect(self):
+        &#34;&#34;&#34;Disconnects from the modem.&#34;&#34;&#34;
+        with self.commands.mutex:
+            self.commands.queue.clear()
+        if self.main_thread:
+            self.main_thread.close()
+        if self.serial_port:
+            self.serial_port.close()
+        self.transport = None
+        self.protocol = None
+    
+    @property
+    def connected(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates if the modem is connected.
+        
+        Attempts to send a basic `AT` command and check for any response.
+
+        &#34;&#34;&#34;
+        if self.transport is None or self.protocol is None:
+            return False
+        try:
+            res = self.atcommand(&#39;AT&#39;)
+            if res is not None:
+                return True
+        except AtCrcError:
+            return True
+        except AtTimeout:
+            pass
+        return False
+
+    @property
+    def baudrate(self) -&gt; &#39;int|None&#39;:
+        &#34;&#34;&#34;The baud rate of the serial connecton.&#34;&#34;&#34;
+        return self.serial_port.baudrate if self.serial_port else None
+    
+    @baudrate.setter
+    def baudrate(self, value: int):
+        if not self.connected:
+            raise ConnectionError(&#39;Modem is not connected&#39;)
+        if value not in self.BAUD_RATES:
+            raise ValueError(f&#39;Baud rate must be one of {self.BAUD_RATES}&#39;)
+        response = self.atcommand(f&#39;AT+IPR={value}&#39;)
+        if response and response[0] != &#39;ERROR&#39;:
+            self.serial_port.baudrate = value
+
+    @property
+    def crc(self) -&gt; &#39;bool|None&#39;:
+        &#34;&#34;&#34;Indicates if CRC error checking is enabled on the modem.&#34;&#34;&#34;
+        return self.protocol.crc if self.protocol is not None else None
+
+    def atcommand(self,
+                  command: str,
+                  filter: &#39;list[str]&#39; = [],
+                  timeout: int = 5,
+                  await_previous: bool = True,
+                  ) -&gt; &#39;list[str]&#39;:
+        &#34;&#34;&#34;Sends an AT command to the modem and returns the response.
+        
+        Args:
+            command: The AT command
+            filter: (optional) list of sub/strings to remove from response.
+            timeout: Number of seconds to wait for a reply
+                (not including messages queued by other threads)
+            await_previous: If True, this will block if a prior command was
+                submitted by another thread
+        
+        Returns:
+            list of filtered and stripped response(s) to the command(s)
+        
+        Raises:
+            ModemBusy if await_previous is False and a prior command is queued.
+            AtException if an error occurred that is unrecognized.
+
+        &#34;&#34;&#34;
+        if not self.transport or not self.protocol:
+            raise ConnectionError(&#39;No serial or protocol instance.&#39;)
+        while self.commands.full():
+            if not await_previous:
+                raise ModemBusy
+            pass
+        self.commands.put(command)
+        try:
+            res: list = self.protocol.command(command,
+                                              filter=filter,
+                                              timeout=timeout,
+                                              debug=self.debug)
+            if self.error_detail and res and res[0] == &#39;ERROR&#39;:
+                err_res = self.protocol.command(&#39;ATS80?&#39;)
+                if not err_res or err_res[0] == &#39;ERROR&#39;:
+                    raise AtException(&#39;Unhandled error getting last error code&#39;)
+                last_err_code = err_res[0]
+                detail = &#39;UNDEFINED&#39;
+                if AtErrorCode.is_valid(int(last_err_code)):
+                    detail = AtErrorCode(int(last_err_code)).name
+                res.append(f&#39;{detail} ({last_err_code})&#39;)
+                _log.warning(f&#39;AT error: {detail} for command {command}&#39;)
+            return res
+        except AtException as err:
+            _log.error(f&#39;{err} on command {command}&#39;)
+            raise err
+        finally:
+            self.commands.get()
+            self.commands.task_done()
+    
+    def _handle_at_error(self, response: &#39;list[str]&#39;) -&gt; None:
+        err = response[1] if self.error_detail else response[0]
+        _log.error(f&#39;AT Error: {err}&#39;)
+        raise AtException(err)
+
+    def config_init(self, crc: bool = False) -&gt; bool:
+        &#34;&#34;&#34;Initializes modem communications with Echo, Verbose. CRC optional.&#34;&#34;&#34;
+        _log.debug(f&#39;Initializing modem Echo|Verbose{&#34;|CRC&#34; if crc else &#34;&#34;}&#39;
+                   f&#39; (CRC={self.protocol.crc})&#39;)
+        command = f&#39;ATZ;E1;V1;Q0;%CRC={1 if crc else 0}&#39;
+        res_attempt_1 = self.atcommand(command)
+        if res_attempt_1[0] != &#39;OK&#39;:
+            # case 1: crc True but previously set; should now be T in factory
+            # case 2: crc False but previously set; should now be F in factory
+            if len(res_attempt_1) &gt; 1:
+                at_error = res_attempt_1[1]
+                if (&#39;INVALID_CRC&#39; not in at_error and
+                    &#39;UNKNOWN_COMMAND&#39; not in at_error):
+                    _log.warning(f&#39;Unexpected AT error {at_error}&#39;)
+            _log.debug(f&#39;Re-attempting (CRC={self.protocol.crc})&#39;)
+            res_attempt_2 = self.atcommand(command)
+            if res_attempt_2[0] != &#39;OK&#39;:
+                _log.error(&#39;Unable to initialize modem after second attempt&#39;)
+                if len(res_attempt_2) &gt; 1:
+                    _log.error(f&#39;AT error: {res_attempt_2[1]}&#39;)
+                return False
+        # self.protocol.crc = crc   #: redundant should be set by attempt
+        self._at_config.crc = crc
+        _log.debug(&#39;Initialization success&#39;)
+        return True
+
+    def config_restore_nvm(self) -&gt; bool:
+        &#34;&#34;&#34;Sends ATZ to restore config from non-volatile memory.&#34;&#34;&#34;
+        _log.debug(&#39;Restoring modem stored configuration&#39;)
+        response = self.atcommand(&#39;ATZ&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        return True
+
+    def config_restore_factory(self) -&gt; bool:
+        &#34;&#34;&#34;Sends AT&amp;F to restore factory default and returns True on success.&#34;&#34;&#34;
+        _log.debug(&#39;Restoring modem factory defaults&#39;)
+        response = self.atcommand(&#39;AT&amp;F&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        return True
+    
+    def config_report(self) -&gt; &#39;tuple[dict, dict]&#39;:
+        &#34;&#34;&#34;Sends the AT&amp;V command to retrieve S-register settings.
+        
+        Returns:
+            A tuple with two dictionaries (empty if failed) with:
+            at_config with booleans crc, echo, quiet and verbose
+            reg_config with S-register tags and integer values
+        
+        Raises:
+            AtException if an error was returned.
+
+        &#34;&#34;&#34;
+        _log.debug(&#39;Retrieving modem verbose configuration&#39;)
+        response = self.atcommand(&#39;AT&amp;V&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        at_config = response[1]
+        s_regs = response[2]
+        echo, quiet, verbose, crc = at_config.split(&#39; &#39;)
+        self._at_config.crc = bool(int(crc[4]))
+        self._at_config.echo = bool(int(echo[1]))
+        self._at_config.quiet = bool(int(quiet[1]))
+        self._at_config.verbose = bool(int(verbose[1]))
+        reg_config = {}
+        for reg in s_regs.split(&#39; &#39;):
+            name, value = reg.split(&#39;:&#39;)
+            reg_config[name] = int(value)
+        return (at_config, reg_config)
+
+    def config_volatile_report(self) -&gt; &#39;dict|None&#39;:
+        &#34;&#34;&#34;Gets key S-register settings.
+        
+        GNSS Mode (S39), GNSS fix timeout (S41), GNSS Continuous (S55),
+        GNSS Jamming Status (S56), GNSS Jamming Indicator (S57), 
+        Low power Wakeup Period (S51)
+
+        Returns:
+            Dictionary of S-register values, or None if failed
+            
+        &#34;&#34;&#34;
+        register_list = [
+            &#39;S39&#39;,   #: GNSS Mode
+            &#39;S41&#39;,   #: GNSS Fix Timeout
+            &#39;S51&#39;,   #: Wakeup Interval
+            &#39;S55&#39;,   #: GNSS Continuous
+            &#39;S56&#39;,   #: GNSS Jamming Status
+            &#39;S57&#39;,   #: GNSS Jamming Indicator
+        ]
+        command = &#39;AT&#39;
+        for reg in register_list:
+            command += f&#39;{reg if command == &#34;AT&#34; else &#34; &#34; + reg}?&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            return None
+        #: else
+        response.remove(&#39;OK&#39;)
+        volatile_regs = {}
+        for r in range(len(response)):
+            volatile_regs[register_list[r]] = int(response[r])
+        return volatile_regs
+
+    def config_nvm_save(self) -&gt; bool:
+        &#34;&#34;&#34;Sends the AT&amp;W command and returns True if successful.&#34;&#34;&#34;
+        _log.debug(&#39;Saving modem configuration to non-volatile memory&#39;)
+        response = self.atcommand(&#39;AT&amp;W&#39;)
+        return response[0] == &#39;OK&#39;
+
+    def crc_enable(self, enable: bool = True) -&gt; bool:
+        &#34;&#34;&#34;Sends the AT%CRC command and returns success flag.
+        
+        Args:
+            enable: turn on CRC if True else turn off
+
+        Returns:
+            True if the operation succeeded else False
+
+        &#34;&#34;&#34;
+        _log.debug(f&#39;{&#34;en&#34; if enable else &#34;dis&#34;}abling modem CRC&#39;)
+        command = f&#39;AT%CRC={1 if enable else 0}&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        self.protocol.crc = enable
+        self._at_config.crc = enable
+        return True
+
+    @property
+    def mobile_id(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The unique Mobile ID (Inmarsat serial number).&#34;&#34;&#34;
+        if self._mobile_id is None:
+            response = self.atcommand(&#39;AT+GSN&#39;, filter=[&#39;+GSN:&#39;])
+            if response[0] != &#39;ERROR&#39;:
+                self._mobile_id = response[0]
+        return self._mobile_id
+
+    @property
+    def versions(self) -&gt; &#39;dict|None&#39;:
+        &#34;&#34;&#34;The hardware, firmware and AT versions.&#34;&#34;&#34;
+        if not self._versions:
+            response = self.atcommand(&#39;AT+GMR&#39;, filter=[&#39;+GMR:&#39;])
+            if response[0] != &#39;ERROR&#39;:
+                self._versions = {}
+                versions = response[0].split(&#39;,&#39;)
+                if len(versions) == 3:
+                    self._versions[&#39;firmware&#39;] = versions[0]
+                    self._versions[&#39;hardware&#39;] = versions[1]
+                    self._versions[&#39;at&#39;] = versions[2]
+                else:
+                    for i, v in enumerate(versions):
+                        self._versions[i] = v
+        return self._versions
+
+    @property
+    def manufacturer(self) -&gt; str:
+        &#34;&#34;&#34;The modem manufacturer reported by `ATI0`.&#34;&#34;&#34;
+        if not self._manufacturer:
+            response = self.atcommand(&#39;ATI0&#39;)
+            if response[0] == &#39;ERROR&#39;:
+                self._handle_at_error(response)
+            self._manufacturer = response[0]
+        return self._manufacturer
+
+    @property
+    def model(self) -&gt; str:
+        &#34;&#34;&#34;The modem model reported by `ATI4`.&#34;&#34;&#34;
+        if not self._model:
+            response = self.atcommand(&#39;ATI4&#39;)
+            if response[0] == &#39;ERROR&#39;:
+                self._handle_at_error(response)
+            self._model = response[0]
+        return self._model
+
+    @property
+    def power_mode(self) -&gt; &#39;PowerMode|None&#39;:
+        &#34;&#34;&#34;The modem power mode setting (enumerated) in `S50`.&#34;&#34;&#34;
+        if self._power_mode is None:
+            response = self.atcommand(&#39;ATS50?&#39;)
+            if response[0] != &#39;ERROR&#39;:
+                self._power_mode = PowerMode(int(response[0]))
+        return self._power_mode
+    
+    @power_mode.setter
+    def power_mode(self, value: &#39;str|int|PowerMode&#39;):
+        if isinstance(value, str):
+            if value not in PowerMode.__members__:
+                raise ValueError(f&#39;Invalid PowerMode {value}&#39;)
+            value = PowerMode[value].value
+        if not PowerMode.is_valid(value):
+            raise ValueError(f&#39;Invalid PowerMode {value}&#39;)
+        response = self.atcommand(f&#39;ATS50={value}&#39;)
+        if response[0] == &#39;OK&#39;:
+            self._power_mode = PowerMode(value)
+    
+    @property
+    def wakeup_period(self) -&gt; &#39;WakeupPeriod|None&#39;:
+        &#34;&#34;&#34;The modem wakeup period setting (enumerated) in `S51`.&#34;&#34;&#34;
+        if self._wakeup_period is None:
+            response = self.atcommand(&#39;ATS51?&#39;)
+            if response[0] != &#39;ERROR&#39;:
+                self._wakeup_period = WakeupPeriod(int(response[0]))
+        return self._wakeup_period
+
+    @wakeup_period.setter
+    def wakeup_period(self, value: &#39;str|int|WakeupPeriod&#39;):
+        if isinstance(value, str):
+            if value not in WakeupPeriod.__members__:
+                raise ValueError(f&#39;Invalid WakeupPeriod {value}&#39;)
+            value = WakeupPeriod[value].value
+        if not WakeupPeriod.is_valid(value):
+            raise ValueError(f&#39;Invalid WakeupPeriod {value}&#39;)
+        response = self.atcommand(f&#39;ATS51={value}&#39;)
+        if response[0] == &#39;OK&#39;:
+            self._wakeup_period = WakeupPeriod(value)
+    
+    @property
+    def temperature(self) -&gt; int:
+        &#34;&#34;&#34;Temperature in degrees Celsius (`S85`).&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS85?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            return int(float(response[0]) / 10)
+
+    @property
+    def gnss_refresh_interval(self) -&gt; int:
+        &#34;&#34;&#34;GNSS refresh interval in seconds (`S55`).&#34;&#34;&#34;
+        response = self.atcommand(f&#39;ATS55?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            return int(response[0])
+
+    @gnss_refresh_interval.setter
+    def gnss_refresh_interval(self, value: int):
+        self.gnss_continuous_set(value)
+
+    def gnss_continuous_set(self,
+                            interval: int = 0,
+                            doppler: bool = True,
+                            ) -&gt; bool:
+        &#34;&#34;&#34;Sets the GNSS continous mode (0 = on-demand).
+        
+        Args:
+            interval: Seconds between GNSS refresh.
+            doppler: Often required for moving assets.
+        
+        Returns:
+            True if successful setting.
+        &#34;&#34;&#34;
+        if interval &lt; 0 or interval &gt; 30:
+            raise ValueError(&#39;GNSS continuous interval must be in range 0..30&#39;)
+        response = self.atcommand(f&#39;AT%TRK={interval}{&#34;,1&#34; if doppler else &#34;&#34;}&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        return True
+
+    def gnss_nmea_get(self,
+                      stale_secs: int = GNSS_STALE_SECS,
+                      wait_secs: int = GNSS_WAIT_SECS,
+                      nmea: &#39;list[str]&#39; = [&#39;RMC&#39;, &#39;GSA&#39;, &#39;GGA&#39;, &#39;GSV&#39;],
+                      ) -&gt; list:
+        &#34;&#34;&#34;Gets a list of NMEA-formatted sentences from GNSS.
+
+        Args:
+            stale_secs: Maximum age of fix in seconds (1..600)
+            wait_secs: Maximum time to wait for fix (1..600)
+
+        Returns:
+            List of NMEA sentences
+
+        Raises:
+            ValueError if parameter out of range
+            AtGnssTimeout if the fix timed out
+            AtException if any other error code was returned
+
+        &#34;&#34;&#34;
+        NMEA_SUPPORTED = [&#39;RMC&#39;, &#39;GGA&#39;, &#39;GSA&#39;, &#39;GSV&#39;]
+        BUFFER_SECONDS = 5
+        if (stale_secs not in range(1, 600+1) or
+            wait_secs not in range(1, 600+1)):
+            raise ValueError(&#39;stale_secs and wait_secs must be 1..600&#39;)
+        sentences = &#39;&#39;
+        for sentence in nmea:
+            sentence = sentence.upper()
+            if sentence not in NMEA_SUPPORTED:
+                raise ValueError(f&#39;Unsupported NMEA sentence: {sentence}&#39;)
+            if len(sentences) &gt; 0:
+                sentences += &#39;,&#39;
+            sentences += f&#39;&#34;{sentence}&#34;&#39;
+        timeout = wait_secs + BUFFER_SECONDS
+        request_time = time()
+        response = self.atcommand(f&#39;AT%GPS={stale_secs}&#39;
+                                        f&#39;,{wait_secs},{sentences}&#39;,
+                                        timeout=timeout,
+                                        filter=[&#39;%GPS:&#39;])
+        if response[0] == &#39;ERROR&#39;:
+            if self.error_detail:
+                if &#39;TIMEOUT&#39; in response[1]:
+                    raise AtGnssTimeout(response[1])
+            self._handle_at_error(response)
+        response.remove(&#39;OK&#39;)
+        time_to_fix = round(time() - request_time, 3)
+        if &#39;gnss_ttf&#39; not in self._statistics:
+            self._statistics[&#39;gnss_ttf&#39;] = time_to_fix
+        else:
+            old_ttf = self._statistics[&#39;gnss_ttf&#39;]
+            avg_ttf = round((time_to_fix + old_ttf) / 2, 3)
+            self._statistics[&#39;gnss_ttf&#39;] = avg_ttf
+        return response
+
+    @property
+    def location(self) -&gt; &#39;Location|None&#39;:
+        &#34;&#34;&#34;The modem location derived from NMEA data.&#34;&#34;&#34;
+        try:
+            nmea_sentences = self.gnss_nmea_get(self._loc_query[&#39;stale_secs&#39;],
+                                                self._loc_query[&#39;wait_secs&#39;])
+            return location_from_nmea(nmea_sentences)
+        except:
+            return None
+
+    @property
+    def gnss_jamming(self) -&gt; bool:
+        &#34;&#34;&#34;The GNSS jamming detection status (`S56`).&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS56?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            return ((int(response[0]) &amp; 0b100) &gt;&gt; 2 == 1) 
+
+    @property
+    def gnss_mode(self) -&gt; GnssMode:
+        &#34;&#34;&#34;The GNSS operating mode setting (`S39`).&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS39?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            return GnssMode(int(response[0]))
+
+    @gnss_mode.setter
+    def gnss_mode(self, mode: GnssMode):
+        response = self.atcommand(f&#39;ATS39={mode.value}&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+
+    def message_mo_send(self,
+                        data: &#39;bytes|bytearray|str&#39;,
+                        data_format: int = DataFormat.BASE64,
+                        name: str = None,
+                        priority: int = MessagePriority.LOW,
+                        sin: int = None,
+                        min: int = None,
+                        ) -&gt; str:
+        &#34;&#34;&#34;Submits a mobile-originated message to send.
+
+        When submitting raw bytes, the first byte will be used as SIN. The
+        first byte must not be in the reserved range (0..15).
+        When submitting a string, the `sin` field is expected to be set and
+        the data field will be appended to the `sin` byte and optionally the
+        `min` byte if specified.
+        
+        Args:
+            data: The data raw bytes or UTF-8 Text, Hexadecimal or Base64 string
+            data_format: 1=text, 2=hexadecimal, 3=base64 (default)
+            name: Optional unique name up to 8 characters long. If none is
+                specified, use the 8 least-significant digits of unix timestamp.
+            priority: 1=high, 4=low (default)
+            sin: Optional first byte of payload used for codec, required if data
+                is string type.
+            min: Optional second byte of payload used for codec
+
+        Returns:
+            Name of the message if successful, or the error string.
+        
+        Raises:
+            AtException if an error was returned by the modem.
+
+        &#34;&#34;&#34;
+        name = str(int(time()))[-8:] if not name else name[0:8]
+        if isinstance(data, bytes) or isinstance(data, bytearray):
+            sin = data[0]
+            data = b64encode(data[1:]).decode(&#39;utf-8&#39;)
+            data_format = DataFormat.BASE64
+        elif not isinstance(data, str):
+            raise ValueError(&#39;Invalid data must be bytes, bytearray or string&#39;)
+        elif not isinstance(sin, int) or sin not in range(16, 256):
+            raise ValueError(&#39;Invalid SIN must be 16..255&#39;)
+        if isinstance(min, int) and min not in range(0, 256):
+            raise ValueError(&#39;Invalid MIN must be 0..255&#39;)
+        min = f&#39;.{min}&#39; if min is not None else &#39;&#39;
+        data = f&#39;&#34;{data}&#34;&#39; if data_format == DataFormat.TEXT else data
+        command = f&#39;AT%MGRT=&#34;{name}&#34;,{priority},{sin}{min},{data_format},{data}&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return name
+
+    def message_mo_state(self, name: str = None) -&gt; &#39;list[dict]&#39;:
+        &#34;&#34;&#34;Gets the message state(s) requested.
+        
+        If no name filter is passed in, all available messages states
+        are returned.  Returns False is the request failed.
+
+        Args:
+            name: The unique message name in the modem queue. If none is
+                provided, all available message states in transmit queue will be
+                returned.
+
+        Returns:
+            List of metadata for each message in transmit queue including:
+            - `name` (str) The ID in the modem transmit queue
+            - `state` (int) The state of the message
+            - `state_name` (str) The `MessageState.name`
+            - `size` (int) in bytes
+            - `sent` (int) in bytes for large message progress
+
+        &#34;&#34;&#34;
+        states = []
+        name = f&#39;=&#34;{name}&#34;&#39; if name is not None else &#39;&#39;
+        response = self.atcommand(f&#39;AT%MGRS{name}&#39;, filter=[&#39;%MGRS:&#39;])
+        # %MGRS: &#34;&lt;name&gt;&#34;,&lt;msg_no&gt;,&lt;priority&gt;,&lt;sin&gt;,&lt;state&gt;,&lt;size&gt;,&lt;sent_bytes&gt;
+        if response[0] != &#39;ERROR&#39;:
+            response.remove(&#39;OK&#39;)
+            for msg in response:
+                if &#39;,&#39; in msg:
+                    detail = msg.split(&#39;,&#39;)
+                    states.append({
+                        &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+                        &#39;state&#39;: int(detail[4]),
+                        &#39;state_name&#39;: MessageState(int(detail[4])).name,
+                        &#39;size&#39;: int(detail[5]),
+                        &#39;sent&#39;: int(detail[6]),
+                    })
+        return states
+    
+    def message_mo_cancel(self, name: str) -&gt; bool:
+        &#34;&#34;&#34;Cancels a mobile-originated message in the Tx ready state.&#34;&#34;&#34;
+        response = self.atcommand(f&#39;AT%MGRC=&#34;{name}&#34;&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        return True
+
+    def message_mo_clear(self) -&gt; int:
+        &#34;&#34;&#34;Clears the modem transmit queue and returns the count cancelled.
+        
+        Returns:
+            Count of messages deleted, or -1 in case of error
+
+        &#34;&#34;&#34;
+        list_response = self.atcommand(&#39;AT%MGRL&#39;, filter=[&#39;%MGRL:&#39;])
+        if list_response[0] == &#39;ERROR&#39;:
+            return -1
+        message_count = len(list_response)
+        for msg in list_response:
+            del_response = self.atcommand(f&#39;AT%MGRD={msg}C&#39;)
+            if del_response[0] == &#39;ERROR&#39;:
+                _log.error(f&#39;Error clearing messages from transmit queue&#39;)
+                return -1
+        return message_count
+
+    def message_mt_waiting(self) -&gt; &#39;list[dict]&#39;:
+        &#34;&#34;&#34;Gets a list of received mobile-terminated message information.
+        
+        Returns:
+            List of message metadata in the receive queue including:
+            - `name` (str)
+            - `sin` (int) first byte of payload
+            - `priority` (int)
+            - `state` (int) The state number
+            - `state_name` (str) The `MessageState.name`
+            - `size` (int) in bytes
+            - `received` (int) in bytes for large message progress
+
+        &#34;&#34;&#34;
+        waiting = []
+        response = self.atcommand(&#39;AT%MGFN&#39;, filter=[&#39;%MGFN:&#39;])
+        #: %MGFN: &#34;name&#34;,number,priority,sin,state,length,bytes_received
+        if response[0] != &#39;ERROR&#39;:
+            response.remove(&#39;OK&#39;)
+            for msg in response:
+                if (&#39;,&#39; in msg):
+                    detail = msg.split(&#39;,&#39;)
+                    waiting.append({
+                        &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+                        &#39;sin&#39;: int(detail[3]),
+                        &#39;priority&#39;: int(detail[2]),
+                        &#39;state&#39;: int(detail[4]),
+                        &#39;state_name&#39;: MessageState(int(detail[4])).name,
+                        &#39;size&#39;: int(detail[5]),
+                        &#39;received&#39;: int(detail[6])
+                        })
+        return waiting
+
+    def message_mt_get(self,
+                       name: str,
+                       data_format: int = DataFormat.BASE64,
+                       meta: bool = False,
+                       ) -&gt; &#39;bytes|dict&#39;:
+        &#34;&#34;&#34;Gets the payload of a specified mobile-terminated message.
+        
+        Payload is presented as a string with encoding based on data_format. 
+
+        Args:
+            name: The unique name in the modem queue e.g. FM01.01
+            data_format: text=1, hex=2, base64=3 (default)
+            meta: If False returns raw bytes, else returns formatted data
+                with metadata.
+
+        Returns:
+            The raw data bytes if meta is False, or a dictionary with:
+            - `name` (str) The name assigned by the modem
+            - `system_message_number` (int) System-assigned number
+            - `system_message_sequence` (int) System-assigned number
+            - `sin` (int) First byte of payload
+            - `priority` (int)
+            - `state` (int) The message state number
+            - `state_name` (str) The `MessageState.name`
+            - `size` (int) in bytes
+            - `data_format` (int) 1=text, 2=hex, 3=base64
+            - `data` (str) presented based on data_format
+
+        &#34;&#34;&#34;
+        if not meta and data_format != DataFormat.BASE64:
+            data_format = DataFormat.BASE64
+        response = self.atcommand(f&#39;AT%MGFG=&#34;{name}&#34;,{data_format}&#39;,
+                                  filter=[&#39;%MGFG:&#39;])
+        if response[0] == &#39;ERROR&#39;:
+            _log.error(f&#39;Error retrieving message {name}&#39;)
+            self._handle_at_error(response)
+        #: name, number, priority, sin, state, length, data_format, data
+        try:
+            detail = response[0].split(&#39;,&#39;)
+            sys_msg_num, sys_msg_seq = detail[1].split(&#39;.&#39;)
+            msg_sin = int(detail[3])
+            data_str_no_sin = detail[7]
+            if data_format == DataFormat.HEX:
+                data = hex(msg_sin) + data_str_no_sin.lower()
+            elif data_format == DataFormat.BASE64:
+                # add SIN byte to base64 blob
+                databytes = bytes([msg_sin]) + b64decode(data_str_no_sin)
+                if not meta:
+                    return databytes
+                data = b64encode(databytes).decode(&#39;ascii&#39;)
+            elif data_format == DataFormat.TEXT:
+                data = f&#39;\\{msg_sin:02x}&#39; + data_str_no_sin
+            return {
+                &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+                &#39;system_message_number&#39;: int(sys_msg_num),
+                &#39;system_message_sequence&#39;: int(sys_msg_seq),
+                &#39;priority&#39;: int(detail[2]),
+                &#39;sin&#39;: msg_sin,
+                &#39;state&#39;: int(detail[4]),
+                &#39;state_name&#39;: MessageState(int(detail[4])).name,
+                &#39;size&#39;: int(detail[5]),
+                &#39;data_format&#39;: data_format,
+                &#39;data&#39;: data
+            }
+        except Exception as err:
+            _log.exception(err)
+
+    def message_mt_delete(self, name: str) -&gt; bool:
+        &#34;&#34;&#34;Marks a Return message for deletion by the modem.
+        
+        Args:
+            name: The unique mobile-terminated name in the queue
+
+        Returns:
+            True if the operation succeeded
+
+        &#34;&#34;&#34;
+        response = self.atcommand(f&#39;AT%MGFM=&#34;{name}&#34;&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            err = f&#39; ({response[1]})&#39; if self.error_detail else &#39;&#39;
+            _log.error(f&#39;Error deleting message {name}{err}&#39;)
+        return response[0] == &#39;OK&#39;
+
+    @property
+    def transmitter_status(self) -&gt; TransmitterStatus:
+        &#34;&#34;&#34;The transmitter status reported by `S54`&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS54?&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return TransmitterStatus(int(response[0]))
+
+    def _trace_detail(self) -&gt; dict:
+        &#34;&#34;&#34;Gets a dictionary of monitored and cached class/subclass pairs.
+        
+        Returns:
+            `{ &#39;monitored&#39;: [(&lt;class,subclass&gt;)], &#39;cached&#39;: [&lt;class,subclass)] }` 
+        &#34;&#34;&#34;
+        response = self.atcommand(&#39;AT%EVMON&#39;, filter=[&#39;%EVMON:&#39;])
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        response.remove(&#39;OK&#39;)
+        detail = {
+            &#39;monitored&#39;: [],
+            &#39;cached&#39;: [],
+        }
+        if len(response) &gt; 0:
+            events: &#39;list[str]&#39; = response[0].split(&#39;,&#39;)
+            for event in events:
+                trace_class = int(event.split(&#39;.&#39;)[0])
+                trace_subclass = int(event.split(&#39;.&#39;)[1].replace(&#39;*&#39;, &#39;&#39;))
+                detail[&#39;monitored&#39;].append((trace_class, trace_subclass))
+                if event.endswith(&#39;*&#39;):
+                    detail[&#39;cached&#39;].append((trace_class, trace_subclass))
+        return detail
+
+    @property
+    def trace_event_monitor(self) -&gt; &#39;list[tuple[int, int]]&#39;:
+        &#34;&#34;&#34;The list of class/subclass pairs being monitored to cache.&#34;&#34;&#34;
+        return self._trace_detail()[&#39;monitored&#39;]
+        
+    @trace_event_monitor.setter
+    def trace_event_monitor(self, events: &#39;list[tuple[int, int]]&#39;):
+        &#34;&#34;&#34;Set a list of trace class/subclass pairs to monitor and cache.&#34;&#34;&#34;
+        command = &#39;AT%EVMON=&#39;
+        for event in events:
+            trace_class, trace_subclass = event
+            if command != &#39;AT%EVMON=&#39;:
+                command += &#39;,&#39;
+            command += f&#39;{trace_class}.{trace_subclass}&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+
+    @property
+    def trace_events_cached(self) -&gt; &#39;list[tuple[int, int]]&#39;:
+        &#34;&#34;&#34;The list of trace events cached for retrieval.&#34;&#34;&#34;
+        return self._trace_detail()[&#39;cached&#39;]
+
+    def trace_event_get(self,
+                        event: &#39;tuple[int, int]&#39;,
+                        meta: bool = False,
+                        ) -&gt; &#39;str|dict&#39;:
+        &#34;&#34;&#34;Gets the cached event by class/subclass.
+
+        Args:
+            event: tuple of (class, subclass)
+            meta: Returns the raw text string if False (default)
+        
+        Returns:
+            String if meta is True, else metadata dictionary including:
+            - `data_count` (int)
+            - `signed_bitmask` (str)
+            - `mobile_id` (str)
+            - `timestamp` (str)
+            - `class` (str)
+            - `subclass` (str)
+            - `priority` (str)
+            - `data` (str)
+        
+        Raises:
+            AtException
+
+        &#34;&#34;&#34;
+        def signed32(n: int) -&gt; int:
+            &#34;&#34;&#34;Converts an integer to signed 32-bit format.&#34;&#34;&#34;
+            n = n &amp; 0xffffffff
+            return (n ^ 0x80000000) - 0x80000000
+        def event_timestamp(log_timestamp: int) -&gt; int:
+            offset = int(datetime(2001, 1, 1, tzinfo=timezone.utc).timestamp())
+            return log_timestamp + offset
+        if not (isinstance(event, tuple) and len(event) == 2):
+            raise ValueError(&#39;event_get expects (class, subclass)&#39;)
+        trace_class, trace_subclass = event
+        response = self.atcommand(f&#39;AT%EVNT={trace_class},{trace_subclass}&#39;,
+                                  filter=[&#39;%EVNT:&#39;])
+        #: res %EVNT: &lt;dataCount&gt;,&lt;signedBitmask&gt;,&lt;MTID&gt;,&lt;timestamp&gt;,
+        # &lt;class&gt;,&lt;subclass&gt;,&lt;priority&gt;,&lt;data0&gt;,&lt;data1&gt;,..,&lt;dataN&gt;
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        if not meta:
+            return response[0]
+        eventdata = response[0].split(&#39;,&#39;)
+        event = {
+            &#39;data_count&#39;: int(eventdata[0]),
+            &#39;signed_bitmask&#39;: bin(int(eventdata[1])),
+            &#39;timestamp&#39;: event_timestamp(int(eventdata[3])),
+            &#39;class&#39;: int(eventdata[4]),
+            &#39;subclass&#39;: int(eventdata[5]),
+            &#39;priority&#39;: int(eventdata[6]),
+            &#39;raw_data&#39;: eventdata[7:],
+            &#39;data&#39;: {},
+        }
+        iso_time = datetime.utcfromtimestamp(event[&#39;timestamp&#39;]).isoformat()
+        event[&#39;isotime&#39;] = iso_time[:19] + &#39;Z&#39;
+        bitmask = event[&#39;signed_bitmask&#39;][2:]
+        while len(bitmask) &lt; event[&#39;data_count&#39;]:
+            bitmask = &#39;0&#39; + bitmask
+        for i, bit in enumerate(reversed(bitmask)):
+            if bit == &#39;1&#39;:
+                event[&#39;raw_data&#39;][i] = signed32(int(event[&#39;raw_data&#39;][i]))
+            else:
+                event[&#39;raw_data&#39;][i] = int(event[&#39;raw_data&#39;][i])
+        # TODO lookup class/subclass definitions
+        for trace_def in EVENT_TRACES:
+            if trace_def.trace_class != trace_class:
+                continue
+            if trace_def.trace_subclass != trace_subclass:
+                continue
+            try:
+                for i, value in enumerate(event[&#39;raw_data&#39;]):
+                    tag, data_type = trace_def.data[i]
+                    new_value = value
+                    if &#39;flags&#39; in tag and isinstance(data_type, dict):
+                        new_value = []
+                        for flag in data_type:
+                            if flag &amp; value:
+                                new_value.append(data_type[flag])
+                    elif str(tag).endswith(&#39;_state&#39;):
+                        if isinstance(data_type, dict):
+                            new_value = data_type[value]
+                        else:
+                            try:   #: IntEnum
+                                new_value = data_type(value)
+                            except:
+                                pass   # new_value stays as value
+                    event[&#39;data&#39;][tag] = new_value
+            except Exception as err:
+                _log.exception(err)
+        return event
+
+    @staticmethod
+    def _list_events(bitmask: int) -&gt; &#39;list[EventNotification]&#39;:
+        events = []
+        for notification in EventNotification:
+            if bitmask &amp; notification == notification:
+                events.append(notification)
+        return events
+
+    @property
+    def event_notification_monitor(self) -&gt; &#39;list[EventNotification]&#39;:
+        &#34;&#34;&#34;The list of events monitored to assert the notification pin (`S88`).&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS88?&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return self._list_events(int(response[0]))
+    
+    @event_notification_monitor.setter
+    def event_notification_monitor(self, event_list: &#39;list[EventNotification]&#39;):
+        bitmask = 0
+        for event in event_list:
+            bitmask = bitmask | event
+        response = self.atcommand(f&#39;ATS88={bitmask}&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+
+    @property
+    def event_notifications(self) -&gt; &#39;list[EventNotification]&#39;:
+        &#34;&#34;&#34;The list of active events reported in `S89`.&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS89?&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return self._list_events(int(response[0]))
+    
+    @property
+    def control_state(self) -&gt; &#39;SatlliteControlState|None&#39;:
+        &#34;&#34;&#34;The control state enumerated value.
+        
+        Trace Class 3, Subclass 1, Data 22
+        &#34;&#34;&#34;
+        self.satellite_status_get()
+        return SatlliteControlState(self._ctrl_state)
+    
+    @property
+    def network_status(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The network status derived from control state.&#34;&#34;&#34;
+        if self._ctrl_state is None:
+            self.satellite_status_get()
+        return SatlliteControlState(self._ctrl_state).name
+
+    @property
+    def registered(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates the modem is registered on the network.&#34;&#34;&#34;
+        return self.control_state == 10
+
+    @property
+    def beamsearch_state(self) -&gt; &#39;int|None&#39;:
+        &#34;&#34;&#34;The beam search state (Trace Class 3, Subclass 1, Data 23)&#34;&#34;&#34;
+        self.satellite_status_get()
+        return BeamSearchState(self._beamsearch_state)
+    
+    @property
+    def beamsearch(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The beam search state description.&#34;&#34;&#34;
+        if self._beamsearch_state is None:
+            self.satellite_status_get()
+        return BeamSearchState(self._beamsearch_state).name
+
+    @property
+    def snr(self) -&gt; &#39;float|None&#39;:
+        &#34;&#34;&#34;The average main beam Carrier-to-Noise (C/N0).&#34;&#34;&#34;
+        self.satellite_status_get()
+        return self._snr
+            
+    @property
+    def signal_quality(self) -&gt; SignalQuality:
+        &#34;&#34;&#34;Qualitative interpretation of the SNR.&#34;&#34;&#34;
+        signal_quality = SignalQuality.NONE
+        if self.snr:
+            if self.snr &gt; SignalLevelRegional.INVALID.value:
+                signal_quality = SignalQuality.WARNING
+            elif self.snr &gt; SignalLevelRegional.BARS_5.value:
+                signal_quality = SignalQuality.STRONG
+            elif self.snr &gt; SignalLevelRegional.BARS_4.value:
+                signal_quality = SignalQuality.GOOD
+            elif self.snr &gt; SignalLevelRegional.BARS_3.value:
+                signal_quality = SignalQuality.MID
+            elif self.snr &gt; SignalLevelRegional.BARS_2.value:
+                signal_quality = SignalQuality.LOW
+            elif self.snr &gt; SignalLevelRegional.BARS_1.value:
+                signal_quality = SignalQuality.WEAK
+        return signal_quality
+    
+    @property
+    def satellite(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The current active satellite name.&#34;&#34;&#34;
+        if self._geo_beam_id is None:
+            self.satellite_status_get()
+        if self._geo_beam_id is not None:
+            if GeoBeam.is_valid(self._geo_beam_id):
+                return GeoBeam(self._geo_beam_id).satellite()
+            return f&#39;UNDEFINED {self._geo_beam_id}&#39;
+    
+    @property
+    def beam_id(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The current active regional beam ID of the active satellite.&#34;&#34;&#34;
+        if self._geo_beam_id is None:
+            self.satellite_status_get()
+        if self._geo_beam_id is not None:
+            if GeoBeam.is_valid(self._geo_beam_id):
+                return GeoBeam(self._geo_beam_id).id()
+            return f&#39;GEO{self._geo_beam_id}&#39;
+        
+    def satellite_status_get(self) -&gt; dict:
+        &#34;&#34;&#34;Gets various satellite acquisition metrics.
+        
+        Returns:
+            Dictionary including:
+            - `satellite` (str)
+            - `beam_id` (str)
+            - `network_status` (str)
+            - `control_state` (int)
+            - `beamsearch` (str)
+            - `beamsearch_state` (int)
+            - `snr` (float)
+        
+        &#34;&#34;&#34;
+        if (&#39;sat_status&#39; in self._holdoffs and
+            int(time()) - self._holdoffs[&#39;sat_status&#39;] &lt; SAT_STATUS_HOLDOFF):
+            _log.debug(&#39;Ignoring repeat satellite status query&#39;)
+            return
+        _log.debug(&#39;Querying satellite status&#39;)
+        self._holdoffs[&#39;sat_status&#39;] = int(time())
+        # Trace events:
+        #   Class 3 Subclass 1 C/N, Satellite Control State, Beam Search State
+        #   Class 3 Subclass 5 Geo Beam ID
+        command = (&#39;ATS90=3 S91=1 S92=1 S116? S122? S123?&#39;
+                   &#39; S90=3 S91=5 S92=1 S102?&#39;)
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        self._snr = round(int(response[0]) / 100.0, 2)
+        self._ctrl_state = int(response[1])
+        self._beamsearch_state = int(response[2])
+        self._geo_beam_id = int(response[3])
+        return {
+            &#39;satellite&#39;: self.satellite,
+            &#39;beam_id&#39;: self.beam_id,
+            &#39;network_status&#39;: self.network_status,
+            &#39;control_state&#39;: self._ctrl_state,
+            &#39;beamsearch&#39;: self.beamsearch,
+            &#39;beamsearch_state&#39;: self._beamsearch_state,
+            &#39;snr&#39;: self._snr,
+        }
+
+    def shutdown(self) -&gt; bool:
+        &#34;&#34;&#34;Tell the modem to prepare for power-down.&#34;&#34;&#34;
+        _log.warning(&#39;Attempting to shut down&#39;)
+        response = self.atcommand(&#39;AT%OFF&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return True
+
+    def utc_time(self) -&gt; str:
+        &#34;&#34;&#34;Gets current UTC time of the modem in ISO8601 format.&#34;&#34;&#34;
+        _log.debug(&#39;Querying system time&#39;)
+        response = self.atcommand(&#39;AT%UTC&#39;, filter=[&#39;%UTC:&#39;])
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return response[0].replace(&#39; &#39;, &#39;T&#39;) + &#39;Z&#39;
+
+    def s_register_get(self, register: &#39;str|int&#39;) -&gt; int:
+        &#34;&#34;&#34;Gets the value of the S-register requested.
+
+        Args:
+            register: The register name/number (e.g. S80)
+
+        Returns:
+            integer value or None
+        &#34;&#34;&#34;
+        if isinstance(register, str):
+            try:
+                register = int(register.replace(&#39;S&#39;, &#39;&#39;))
+            except ValueError:
+                raise ValueError(f&#39;Invalid S-register {register}&#39;)
+        _log.debug(f&#39;Querying S-register {register}&#39;)
+        response = self.atcommand(f&#39;ATS{register}?&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return int(response[0])
+
+    def _s_registers_read(self) -&gt; None:
+        &#34;&#34;&#34;Reads all defined S-registers.&#34;&#34;&#34;
+        command = &#39;AT&#39;
+        for reg in self.s_registers:
+            if command != &#39;AT&#39;:
+                command += &#39; &#39;
+            command += f&#39;{reg}?&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            _log.error(&#39;Could not read S-registers&#39;)
+            raise
+        index = 0
+        for name, register in self.s_registers.items():
+            register.value = response[index]
+            index += 1
+
+    def s_register_get_definitions(self) -&gt; list:
+        &#34;&#34;&#34;(Future) Gets a list of S-register definitions.
+        
+        R=read-only, S=signed, V=volatile
+        
+        Returns:
+            tuple(register, RSV, current, default, minimum, maximum) or None
+        &#34;&#34;&#34;
+        raise NotImplementedError
+        #: AT%SREG
+        #: Sreg, RSV, CurrentVal, DefaultVal, MinimumVal, MaximumVal
+        response = self.atcommand(&#39;AT%SREG&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        response.remove(&#39;OK&#39;)
+        # header_rows = response[0:1]
+        # Sreg RSV CurrentVal NvmValue DefaultValue MinimumValue MaximumVal
+        reg_defs = response[2:]
+        registers = []
+        for row in reg_defs:
+            reg_def = row.split(&#39; &#39;)
+            reg_def = tuple(filter(None, reg_def))
+            registers.append(reg_def)
+        return registers</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="idpmodem.threaded.modem.AtConfiguration"><code class="flex name class">
+<span>class <span class="ident">AtConfiguration</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Configuration settings of the modem.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>crc</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Using cyclic redundancy check for all transactions.</dd>
+<dt><strong><code>echo</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Echoing back commands</dd>
+<dt><strong><code>quiet</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Limiting responses</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Using text-based responses</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AtConfiguration:
+    &#34;&#34;&#34;Configuration settings of the modem.
+    
+    Attributes:
+        crc (bool): Using cyclic redundancy check for all transactions.
+        echo (bool): Echoing back commands
+        quiet (bool): Limiting responses
+        verbose (bool): Using text-based responses
+        
+    &#34;&#34;&#34;
+    def __init__(self) -&gt; None:
+        self.crc: bool = False
+        self.echo: bool = True
+        self.quiet: bool = False
+        self.verbose: bool = True</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem"><code class="flex name class">
+<span>class <span class="ident">IdpModem</span></span>
+<span>(</span><span>serial_port: str, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A protocol factory abstracting AT commands for an IDP modem.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IdpModem:
+    &#34;&#34;&#34;A protocol factory abstracting AT commands for an IDP modem.&#34;&#34;&#34;
+    
+    SERIAL_KWARGS = [&#39;baudrate&#39;, &#39;timeout&#39;, &#39;write_timeout&#39;]
+    BAUD_RATES = [1200, 2400, 4800, 9600, 19200]
+    PROTOCOL_KWARGS = [&#39;event_callback&#39;, &#39;at_timeout&#39;]
+    OTHER_KWARGS = [&#39;error_detail&#39;, &#39;debug&#39;, &#39;stale_secs&#39;, &#39;wait_secs&#39;]
+    
+    def __init__(self, serial_port: str, **kwargs):
+        self.serial_kwargs = {
+            &#39;port&#39;: serial_port,
+            &#39;baudrate&#39;: int(kwargs.pop(&#39;baudrate&#39;, 9600)),
+        }
+        self.protocol_kwargs = {}
+        self.error_detail = bool(kwargs.pop(&#39;error_detail&#39;, True))
+        self.debug = bool(kwargs.pop(&#39;debug&#39;, False))
+        for kwarg in kwargs:
+            if kwarg in self.SERIAL_KWARGS:
+                self.serial_kwargs[kwarg] = kwargs[kwarg]
+            elif kwarg in self.PROTOCOL_KWARGS:
+                self.protocol_kwargs[kwarg] = kwargs[kwarg]
+        self.serial_port = None
+        self.main_thread = None
+        self.transport = None
+        self.protocol: AtProtocol = None
+        self.commands = queue.Queue(1)
+        self._at_config = AtConfiguration()
+        self._mobile_id: str = None
+        self._versions: dict = None
+        self._manufacturer: str = None
+        self._model: str = None
+        self._power_mode: int = None
+        self._wakeup_period: int = None
+        self._ctrl_state: int = None
+        self._snr: float = None
+        self._geo_beam_id: int = None
+        self._beamsearch_state: int = None
+        self._loc_query: dict = {
+            &#39;stale_secs&#39;: int(kwargs.pop(&#39;stale_secs&#39;, GNSS_STALE_SECS)),
+            &#39;wait_secs&#39;: int(kwargs.pop(&#39;wait_secs&#39;, GNSS_WAIT_SECS)),
+        }
+        self._holdoffs: dict = {}   # used to ignore frequent repeat commands
+        self._statistics: dict = {}
+        self.s_registers = SRegisters()
+        # self.tx_queue = queue.Queue()
+        # self.tx_complete_callback: callable = None
+        # self.rx_queue = queue.Queue()
+        # self.rx_received_callback: callable = None
+    
+    def connect(self):
+        &#34;&#34;&#34;Connects to a modem using a serial and protocol instance.&#34;&#34;&#34;
+        self.serial_port = Serial(**self.serial_kwargs)
+        self.main_thread = ByteReaderThread(self.serial_port,
+                                            AtProtocol,
+                                            **self.protocol_kwargs)
+        self.main_thread.start()
+        self.transport, self.protocol = self.main_thread.connect()
+
+    def disconnect(self):
+        &#34;&#34;&#34;Disconnects from the modem.&#34;&#34;&#34;
+        with self.commands.mutex:
+            self.commands.queue.clear()
+        if self.main_thread:
+            self.main_thread.close()
+        if self.serial_port:
+            self.serial_port.close()
+        self.transport = None
+        self.protocol = None
+    
+    @property
+    def connected(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates if the modem is connected.
+        
+        Attempts to send a basic `AT` command and check for any response.
+
+        &#34;&#34;&#34;
+        if self.transport is None or self.protocol is None:
+            return False
+        try:
+            res = self.atcommand(&#39;AT&#39;)
+            if res is not None:
+                return True
+        except AtCrcError:
+            return True
+        except AtTimeout:
+            pass
+        return False
+
+    @property
+    def baudrate(self) -&gt; &#39;int|None&#39;:
+        &#34;&#34;&#34;The baud rate of the serial connecton.&#34;&#34;&#34;
+        return self.serial_port.baudrate if self.serial_port else None
+    
+    @baudrate.setter
+    def baudrate(self, value: int):
+        if not self.connected:
+            raise ConnectionError(&#39;Modem is not connected&#39;)
+        if value not in self.BAUD_RATES:
+            raise ValueError(f&#39;Baud rate must be one of {self.BAUD_RATES}&#39;)
+        response = self.atcommand(f&#39;AT+IPR={value}&#39;)
+        if response and response[0] != &#39;ERROR&#39;:
+            self.serial_port.baudrate = value
+
+    @property
+    def crc(self) -&gt; &#39;bool|None&#39;:
+        &#34;&#34;&#34;Indicates if CRC error checking is enabled on the modem.&#34;&#34;&#34;
+        return self.protocol.crc if self.protocol is not None else None
+
+    def atcommand(self,
+                  command: str,
+                  filter: &#39;list[str]&#39; = [],
+                  timeout: int = 5,
+                  await_previous: bool = True,
+                  ) -&gt; &#39;list[str]&#39;:
+        &#34;&#34;&#34;Sends an AT command to the modem and returns the response.
+        
+        Args:
+            command: The AT command
+            filter: (optional) list of sub/strings to remove from response.
+            timeout: Number of seconds to wait for a reply
+                (not including messages queued by other threads)
+            await_previous: If True, this will block if a prior command was
+                submitted by another thread
+        
+        Returns:
+            list of filtered and stripped response(s) to the command(s)
+        
+        Raises:
+            ModemBusy if await_previous is False and a prior command is queued.
+            AtException if an error occurred that is unrecognized.
+
+        &#34;&#34;&#34;
+        if not self.transport or not self.protocol:
+            raise ConnectionError(&#39;No serial or protocol instance.&#39;)
+        while self.commands.full():
+            if not await_previous:
+                raise ModemBusy
+            pass
+        self.commands.put(command)
+        try:
+            res: list = self.protocol.command(command,
+                                              filter=filter,
+                                              timeout=timeout,
+                                              debug=self.debug)
+            if self.error_detail and res and res[0] == &#39;ERROR&#39;:
+                err_res = self.protocol.command(&#39;ATS80?&#39;)
+                if not err_res or err_res[0] == &#39;ERROR&#39;:
+                    raise AtException(&#39;Unhandled error getting last error code&#39;)
+                last_err_code = err_res[0]
+                detail = &#39;UNDEFINED&#39;
+                if AtErrorCode.is_valid(int(last_err_code)):
+                    detail = AtErrorCode(int(last_err_code)).name
+                res.append(f&#39;{detail} ({last_err_code})&#39;)
+                _log.warning(f&#39;AT error: {detail} for command {command}&#39;)
+            return res
+        except AtException as err:
+            _log.error(f&#39;{err} on command {command}&#39;)
+            raise err
+        finally:
+            self.commands.get()
+            self.commands.task_done()
+    
+    def _handle_at_error(self, response: &#39;list[str]&#39;) -&gt; None:
+        err = response[1] if self.error_detail else response[0]
+        _log.error(f&#39;AT Error: {err}&#39;)
+        raise AtException(err)
+
+    def config_init(self, crc: bool = False) -&gt; bool:
+        &#34;&#34;&#34;Initializes modem communications with Echo, Verbose. CRC optional.&#34;&#34;&#34;
+        _log.debug(f&#39;Initializing modem Echo|Verbose{&#34;|CRC&#34; if crc else &#34;&#34;}&#39;
+                   f&#39; (CRC={self.protocol.crc})&#39;)
+        command = f&#39;ATZ;E1;V1;Q0;%CRC={1 if crc else 0}&#39;
+        res_attempt_1 = self.atcommand(command)
+        if res_attempt_1[0] != &#39;OK&#39;:
+            # case 1: crc True but previously set; should now be T in factory
+            # case 2: crc False but previously set; should now be F in factory
+            if len(res_attempt_1) &gt; 1:
+                at_error = res_attempt_1[1]
+                if (&#39;INVALID_CRC&#39; not in at_error and
+                    &#39;UNKNOWN_COMMAND&#39; not in at_error):
+                    _log.warning(f&#39;Unexpected AT error {at_error}&#39;)
+            _log.debug(f&#39;Re-attempting (CRC={self.protocol.crc})&#39;)
+            res_attempt_2 = self.atcommand(command)
+            if res_attempt_2[0] != &#39;OK&#39;:
+                _log.error(&#39;Unable to initialize modem after second attempt&#39;)
+                if len(res_attempt_2) &gt; 1:
+                    _log.error(f&#39;AT error: {res_attempt_2[1]}&#39;)
+                return False
+        # self.protocol.crc = crc   #: redundant should be set by attempt
+        self._at_config.crc = crc
+        _log.debug(&#39;Initialization success&#39;)
+        return True
+
+    def config_restore_nvm(self) -&gt; bool:
+        &#34;&#34;&#34;Sends ATZ to restore config from non-volatile memory.&#34;&#34;&#34;
+        _log.debug(&#39;Restoring modem stored configuration&#39;)
+        response = self.atcommand(&#39;ATZ&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        return True
+
+    def config_restore_factory(self) -&gt; bool:
+        &#34;&#34;&#34;Sends AT&amp;F to restore factory default and returns True on success.&#34;&#34;&#34;
+        _log.debug(&#39;Restoring modem factory defaults&#39;)
+        response = self.atcommand(&#39;AT&amp;F&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        return True
+    
+    def config_report(self) -&gt; &#39;tuple[dict, dict]&#39;:
+        &#34;&#34;&#34;Sends the AT&amp;V command to retrieve S-register settings.
+        
+        Returns:
+            A tuple with two dictionaries (empty if failed) with:
+            at_config with booleans crc, echo, quiet and verbose
+            reg_config with S-register tags and integer values
+        
+        Raises:
+            AtException if an error was returned.
+
+        &#34;&#34;&#34;
+        _log.debug(&#39;Retrieving modem verbose configuration&#39;)
+        response = self.atcommand(&#39;AT&amp;V&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        at_config = response[1]
+        s_regs = response[2]
+        echo, quiet, verbose, crc = at_config.split(&#39; &#39;)
+        self._at_config.crc = bool(int(crc[4]))
+        self._at_config.echo = bool(int(echo[1]))
+        self._at_config.quiet = bool(int(quiet[1]))
+        self._at_config.verbose = bool(int(verbose[1]))
+        reg_config = {}
+        for reg in s_regs.split(&#39; &#39;):
+            name, value = reg.split(&#39;:&#39;)
+            reg_config[name] = int(value)
+        return (at_config, reg_config)
+
+    def config_volatile_report(self) -&gt; &#39;dict|None&#39;:
+        &#34;&#34;&#34;Gets key S-register settings.
+        
+        GNSS Mode (S39), GNSS fix timeout (S41), GNSS Continuous (S55),
+        GNSS Jamming Status (S56), GNSS Jamming Indicator (S57), 
+        Low power Wakeup Period (S51)
+
+        Returns:
+            Dictionary of S-register values, or None if failed
+            
+        &#34;&#34;&#34;
+        register_list = [
+            &#39;S39&#39;,   #: GNSS Mode
+            &#39;S41&#39;,   #: GNSS Fix Timeout
+            &#39;S51&#39;,   #: Wakeup Interval
+            &#39;S55&#39;,   #: GNSS Continuous
+            &#39;S56&#39;,   #: GNSS Jamming Status
+            &#39;S57&#39;,   #: GNSS Jamming Indicator
+        ]
+        command = &#39;AT&#39;
+        for reg in register_list:
+            command += f&#39;{reg if command == &#34;AT&#34; else &#34; &#34; + reg}?&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            return None
+        #: else
+        response.remove(&#39;OK&#39;)
+        volatile_regs = {}
+        for r in range(len(response)):
+            volatile_regs[register_list[r]] = int(response[r])
+        return volatile_regs
+
+    def config_nvm_save(self) -&gt; bool:
+        &#34;&#34;&#34;Sends the AT&amp;W command and returns True if successful.&#34;&#34;&#34;
+        _log.debug(&#39;Saving modem configuration to non-volatile memory&#39;)
+        response = self.atcommand(&#39;AT&amp;W&#39;)
+        return response[0] == &#39;OK&#39;
+
+    def crc_enable(self, enable: bool = True) -&gt; bool:
+        &#34;&#34;&#34;Sends the AT%CRC command and returns success flag.
+        
+        Args:
+            enable: turn on CRC if True else turn off
+
+        Returns:
+            True if the operation succeeded else False
+
+        &#34;&#34;&#34;
+        _log.debug(f&#39;{&#34;en&#34; if enable else &#34;dis&#34;}abling modem CRC&#39;)
+        command = f&#39;AT%CRC={1 if enable else 0}&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        self.protocol.crc = enable
+        self._at_config.crc = enable
+        return True
+
+    @property
+    def mobile_id(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The unique Mobile ID (Inmarsat serial number).&#34;&#34;&#34;
+        if self._mobile_id is None:
+            response = self.atcommand(&#39;AT+GSN&#39;, filter=[&#39;+GSN:&#39;])
+            if response[0] != &#39;ERROR&#39;:
+                self._mobile_id = response[0]
+        return self._mobile_id
+
+    @property
+    def versions(self) -&gt; &#39;dict|None&#39;:
+        &#34;&#34;&#34;The hardware, firmware and AT versions.&#34;&#34;&#34;
+        if not self._versions:
+            response = self.atcommand(&#39;AT+GMR&#39;, filter=[&#39;+GMR:&#39;])
+            if response[0] != &#39;ERROR&#39;:
+                self._versions = {}
+                versions = response[0].split(&#39;,&#39;)
+                if len(versions) == 3:
+                    self._versions[&#39;firmware&#39;] = versions[0]
+                    self._versions[&#39;hardware&#39;] = versions[1]
+                    self._versions[&#39;at&#39;] = versions[2]
+                else:
+                    for i, v in enumerate(versions):
+                        self._versions[i] = v
+        return self._versions
+
+    @property
+    def manufacturer(self) -&gt; str:
+        &#34;&#34;&#34;The modem manufacturer reported by `ATI0`.&#34;&#34;&#34;
+        if not self._manufacturer:
+            response = self.atcommand(&#39;ATI0&#39;)
+            if response[0] == &#39;ERROR&#39;:
+                self._handle_at_error(response)
+            self._manufacturer = response[0]
+        return self._manufacturer
+
+    @property
+    def model(self) -&gt; str:
+        &#34;&#34;&#34;The modem model reported by `ATI4`.&#34;&#34;&#34;
+        if not self._model:
+            response = self.atcommand(&#39;ATI4&#39;)
+            if response[0] == &#39;ERROR&#39;:
+                self._handle_at_error(response)
+            self._model = response[0]
+        return self._model
+
+    @property
+    def power_mode(self) -&gt; &#39;PowerMode|None&#39;:
+        &#34;&#34;&#34;The modem power mode setting (enumerated) in `S50`.&#34;&#34;&#34;
+        if self._power_mode is None:
+            response = self.atcommand(&#39;ATS50?&#39;)
+            if response[0] != &#39;ERROR&#39;:
+                self._power_mode = PowerMode(int(response[0]))
+        return self._power_mode
+    
+    @power_mode.setter
+    def power_mode(self, value: &#39;str|int|PowerMode&#39;):
+        if isinstance(value, str):
+            if value not in PowerMode.__members__:
+                raise ValueError(f&#39;Invalid PowerMode {value}&#39;)
+            value = PowerMode[value].value
+        if not PowerMode.is_valid(value):
+            raise ValueError(f&#39;Invalid PowerMode {value}&#39;)
+        response = self.atcommand(f&#39;ATS50={value}&#39;)
+        if response[0] == &#39;OK&#39;:
+            self._power_mode = PowerMode(value)
+    
+    @property
+    def wakeup_period(self) -&gt; &#39;WakeupPeriod|None&#39;:
+        &#34;&#34;&#34;The modem wakeup period setting (enumerated) in `S51`.&#34;&#34;&#34;
+        if self._wakeup_period is None:
+            response = self.atcommand(&#39;ATS51?&#39;)
+            if response[0] != &#39;ERROR&#39;:
+                self._wakeup_period = WakeupPeriod(int(response[0]))
+        return self._wakeup_period
+
+    @wakeup_period.setter
+    def wakeup_period(self, value: &#39;str|int|WakeupPeriod&#39;):
+        if isinstance(value, str):
+            if value not in WakeupPeriod.__members__:
+                raise ValueError(f&#39;Invalid WakeupPeriod {value}&#39;)
+            value = WakeupPeriod[value].value
+        if not WakeupPeriod.is_valid(value):
+            raise ValueError(f&#39;Invalid WakeupPeriod {value}&#39;)
+        response = self.atcommand(f&#39;ATS51={value}&#39;)
+        if response[0] == &#39;OK&#39;:
+            self._wakeup_period = WakeupPeriod(value)
+    
+    @property
+    def temperature(self) -&gt; int:
+        &#34;&#34;&#34;Temperature in degrees Celsius (`S85`).&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS85?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            return int(float(response[0]) / 10)
+
+    @property
+    def gnss_refresh_interval(self) -&gt; int:
+        &#34;&#34;&#34;GNSS refresh interval in seconds (`S55`).&#34;&#34;&#34;
+        response = self.atcommand(f&#39;ATS55?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            return int(response[0])
+
+    @gnss_refresh_interval.setter
+    def gnss_refresh_interval(self, value: int):
+        self.gnss_continuous_set(value)
+
+    def gnss_continuous_set(self,
+                            interval: int = 0,
+                            doppler: bool = True,
+                            ) -&gt; bool:
+        &#34;&#34;&#34;Sets the GNSS continous mode (0 = on-demand).
+        
+        Args:
+            interval: Seconds between GNSS refresh.
+            doppler: Often required for moving assets.
+        
+        Returns:
+            True if successful setting.
+        &#34;&#34;&#34;
+        if interval &lt; 0 or interval &gt; 30:
+            raise ValueError(&#39;GNSS continuous interval must be in range 0..30&#39;)
+        response = self.atcommand(f&#39;AT%TRK={interval}{&#34;,1&#34; if doppler else &#34;&#34;}&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        return True
+
+    def gnss_nmea_get(self,
+                      stale_secs: int = GNSS_STALE_SECS,
+                      wait_secs: int = GNSS_WAIT_SECS,
+                      nmea: &#39;list[str]&#39; = [&#39;RMC&#39;, &#39;GSA&#39;, &#39;GGA&#39;, &#39;GSV&#39;],
+                      ) -&gt; list:
+        &#34;&#34;&#34;Gets a list of NMEA-formatted sentences from GNSS.
+
+        Args:
+            stale_secs: Maximum age of fix in seconds (1..600)
+            wait_secs: Maximum time to wait for fix (1..600)
+
+        Returns:
+            List of NMEA sentences
+
+        Raises:
+            ValueError if parameter out of range
+            AtGnssTimeout if the fix timed out
+            AtException if any other error code was returned
+
+        &#34;&#34;&#34;
+        NMEA_SUPPORTED = [&#39;RMC&#39;, &#39;GGA&#39;, &#39;GSA&#39;, &#39;GSV&#39;]
+        BUFFER_SECONDS = 5
+        if (stale_secs not in range(1, 600+1) or
+            wait_secs not in range(1, 600+1)):
+            raise ValueError(&#39;stale_secs and wait_secs must be 1..600&#39;)
+        sentences = &#39;&#39;
+        for sentence in nmea:
+            sentence = sentence.upper()
+            if sentence not in NMEA_SUPPORTED:
+                raise ValueError(f&#39;Unsupported NMEA sentence: {sentence}&#39;)
+            if len(sentences) &gt; 0:
+                sentences += &#39;,&#39;
+            sentences += f&#39;&#34;{sentence}&#34;&#39;
+        timeout = wait_secs + BUFFER_SECONDS
+        request_time = time()
+        response = self.atcommand(f&#39;AT%GPS={stale_secs}&#39;
+                                        f&#39;,{wait_secs},{sentences}&#39;,
+                                        timeout=timeout,
+                                        filter=[&#39;%GPS:&#39;])
+        if response[0] == &#39;ERROR&#39;:
+            if self.error_detail:
+                if &#39;TIMEOUT&#39; in response[1]:
+                    raise AtGnssTimeout(response[1])
+            self._handle_at_error(response)
+        response.remove(&#39;OK&#39;)
+        time_to_fix = round(time() - request_time, 3)
+        if &#39;gnss_ttf&#39; not in self._statistics:
+            self._statistics[&#39;gnss_ttf&#39;] = time_to_fix
+        else:
+            old_ttf = self._statistics[&#39;gnss_ttf&#39;]
+            avg_ttf = round((time_to_fix + old_ttf) / 2, 3)
+            self._statistics[&#39;gnss_ttf&#39;] = avg_ttf
+        return response
+
+    @property
+    def location(self) -&gt; &#39;Location|None&#39;:
+        &#34;&#34;&#34;The modem location derived from NMEA data.&#34;&#34;&#34;
+        try:
+            nmea_sentences = self.gnss_nmea_get(self._loc_query[&#39;stale_secs&#39;],
+                                                self._loc_query[&#39;wait_secs&#39;])
+            return location_from_nmea(nmea_sentences)
+        except:
+            return None
+
+    @property
+    def gnss_jamming(self) -&gt; bool:
+        &#34;&#34;&#34;The GNSS jamming detection status (`S56`).&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS56?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            return ((int(response[0]) &amp; 0b100) &gt;&gt; 2 == 1) 
+
+    @property
+    def gnss_mode(self) -&gt; GnssMode:
+        &#34;&#34;&#34;The GNSS operating mode setting (`S39`).&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS39?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            return GnssMode(int(response[0]))
+
+    @gnss_mode.setter
+    def gnss_mode(self, mode: GnssMode):
+        response = self.atcommand(f&#39;ATS39={mode.value}&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+
+    def message_mo_send(self,
+                        data: &#39;bytes|bytearray|str&#39;,
+                        data_format: int = DataFormat.BASE64,
+                        name: str = None,
+                        priority: int = MessagePriority.LOW,
+                        sin: int = None,
+                        min: int = None,
+                        ) -&gt; str:
+        &#34;&#34;&#34;Submits a mobile-originated message to send.
+
+        When submitting raw bytes, the first byte will be used as SIN. The
+        first byte must not be in the reserved range (0..15).
+        When submitting a string, the `sin` field is expected to be set and
+        the data field will be appended to the `sin` byte and optionally the
+        `min` byte if specified.
+        
+        Args:
+            data: The data raw bytes or UTF-8 Text, Hexadecimal or Base64 string
+            data_format: 1=text, 2=hexadecimal, 3=base64 (default)
+            name: Optional unique name up to 8 characters long. If none is
+                specified, use the 8 least-significant digits of unix timestamp.
+            priority: 1=high, 4=low (default)
+            sin: Optional first byte of payload used for codec, required if data
+                is string type.
+            min: Optional second byte of payload used for codec
+
+        Returns:
+            Name of the message if successful, or the error string.
+        
+        Raises:
+            AtException if an error was returned by the modem.
+
+        &#34;&#34;&#34;
+        name = str(int(time()))[-8:] if not name else name[0:8]
+        if isinstance(data, bytes) or isinstance(data, bytearray):
+            sin = data[0]
+            data = b64encode(data[1:]).decode(&#39;utf-8&#39;)
+            data_format = DataFormat.BASE64
+        elif not isinstance(data, str):
+            raise ValueError(&#39;Invalid data must be bytes, bytearray or string&#39;)
+        elif not isinstance(sin, int) or sin not in range(16, 256):
+            raise ValueError(&#39;Invalid SIN must be 16..255&#39;)
+        if isinstance(min, int) and min not in range(0, 256):
+            raise ValueError(&#39;Invalid MIN must be 0..255&#39;)
+        min = f&#39;.{min}&#39; if min is not None else &#39;&#39;
+        data = f&#39;&#34;{data}&#34;&#39; if data_format == DataFormat.TEXT else data
+        command = f&#39;AT%MGRT=&#34;{name}&#34;,{priority},{sin}{min},{data_format},{data}&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return name
+
+    def message_mo_state(self, name: str = None) -&gt; &#39;list[dict]&#39;:
+        &#34;&#34;&#34;Gets the message state(s) requested.
+        
+        If no name filter is passed in, all available messages states
+        are returned.  Returns False is the request failed.
+
+        Args:
+            name: The unique message name in the modem queue. If none is
+                provided, all available message states in transmit queue will be
+                returned.
+
+        Returns:
+            List of metadata for each message in transmit queue including:
+            - `name` (str) The ID in the modem transmit queue
+            - `state` (int) The state of the message
+            - `state_name` (str) The `MessageState.name`
+            - `size` (int) in bytes
+            - `sent` (int) in bytes for large message progress
+
+        &#34;&#34;&#34;
+        states = []
+        name = f&#39;=&#34;{name}&#34;&#39; if name is not None else &#39;&#39;
+        response = self.atcommand(f&#39;AT%MGRS{name}&#39;, filter=[&#39;%MGRS:&#39;])
+        # %MGRS: &#34;&lt;name&gt;&#34;,&lt;msg_no&gt;,&lt;priority&gt;,&lt;sin&gt;,&lt;state&gt;,&lt;size&gt;,&lt;sent_bytes&gt;
+        if response[0] != &#39;ERROR&#39;:
+            response.remove(&#39;OK&#39;)
+            for msg in response:
+                if &#39;,&#39; in msg:
+                    detail = msg.split(&#39;,&#39;)
+                    states.append({
+                        &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+                        &#39;state&#39;: int(detail[4]),
+                        &#39;state_name&#39;: MessageState(int(detail[4])).name,
+                        &#39;size&#39;: int(detail[5]),
+                        &#39;sent&#39;: int(detail[6]),
+                    })
+        return states
+    
+    def message_mo_cancel(self, name: str) -&gt; bool:
+        &#34;&#34;&#34;Cancels a mobile-originated message in the Tx ready state.&#34;&#34;&#34;
+        response = self.atcommand(f&#39;AT%MGRC=&#34;{name}&#34;&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            return False
+        return True
+
+    def message_mo_clear(self) -&gt; int:
+        &#34;&#34;&#34;Clears the modem transmit queue and returns the count cancelled.
+        
+        Returns:
+            Count of messages deleted, or -1 in case of error
+
+        &#34;&#34;&#34;
+        list_response = self.atcommand(&#39;AT%MGRL&#39;, filter=[&#39;%MGRL:&#39;])
+        if list_response[0] == &#39;ERROR&#39;:
+            return -1
+        message_count = len(list_response)
+        for msg in list_response:
+            del_response = self.atcommand(f&#39;AT%MGRD={msg}C&#39;)
+            if del_response[0] == &#39;ERROR&#39;:
+                _log.error(f&#39;Error clearing messages from transmit queue&#39;)
+                return -1
+        return message_count
+
+    def message_mt_waiting(self) -&gt; &#39;list[dict]&#39;:
+        &#34;&#34;&#34;Gets a list of received mobile-terminated message information.
+        
+        Returns:
+            List of message metadata in the receive queue including:
+            - `name` (str)
+            - `sin` (int) first byte of payload
+            - `priority` (int)
+            - `state` (int) The state number
+            - `state_name` (str) The `MessageState.name`
+            - `size` (int) in bytes
+            - `received` (int) in bytes for large message progress
+
+        &#34;&#34;&#34;
+        waiting = []
+        response = self.atcommand(&#39;AT%MGFN&#39;, filter=[&#39;%MGFN:&#39;])
+        #: %MGFN: &#34;name&#34;,number,priority,sin,state,length,bytes_received
+        if response[0] != &#39;ERROR&#39;:
+            response.remove(&#39;OK&#39;)
+            for msg in response:
+                if (&#39;,&#39; in msg):
+                    detail = msg.split(&#39;,&#39;)
+                    waiting.append({
+                        &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+                        &#39;sin&#39;: int(detail[3]),
+                        &#39;priority&#39;: int(detail[2]),
+                        &#39;state&#39;: int(detail[4]),
+                        &#39;state_name&#39;: MessageState(int(detail[4])).name,
+                        &#39;size&#39;: int(detail[5]),
+                        &#39;received&#39;: int(detail[6])
+                        })
+        return waiting
+
+    def message_mt_get(self,
+                       name: str,
+                       data_format: int = DataFormat.BASE64,
+                       meta: bool = False,
+                       ) -&gt; &#39;bytes|dict&#39;:
+        &#34;&#34;&#34;Gets the payload of a specified mobile-terminated message.
+        
+        Payload is presented as a string with encoding based on data_format. 
+
+        Args:
+            name: The unique name in the modem queue e.g. FM01.01
+            data_format: text=1, hex=2, base64=3 (default)
+            meta: If False returns raw bytes, else returns formatted data
+                with metadata.
+
+        Returns:
+            The raw data bytes if meta is False, or a dictionary with:
+            - `name` (str) The name assigned by the modem
+            - `system_message_number` (int) System-assigned number
+            - `system_message_sequence` (int) System-assigned number
+            - `sin` (int) First byte of payload
+            - `priority` (int)
+            - `state` (int) The message state number
+            - `state_name` (str) The `MessageState.name`
+            - `size` (int) in bytes
+            - `data_format` (int) 1=text, 2=hex, 3=base64
+            - `data` (str) presented based on data_format
+
+        &#34;&#34;&#34;
+        if not meta and data_format != DataFormat.BASE64:
+            data_format = DataFormat.BASE64
+        response = self.atcommand(f&#39;AT%MGFG=&#34;{name}&#34;,{data_format}&#39;,
+                                  filter=[&#39;%MGFG:&#39;])
+        if response[0] == &#39;ERROR&#39;:
+            _log.error(f&#39;Error retrieving message {name}&#39;)
+            self._handle_at_error(response)
+        #: name, number, priority, sin, state, length, data_format, data
+        try:
+            detail = response[0].split(&#39;,&#39;)
+            sys_msg_num, sys_msg_seq = detail[1].split(&#39;.&#39;)
+            msg_sin = int(detail[3])
+            data_str_no_sin = detail[7]
+            if data_format == DataFormat.HEX:
+                data = hex(msg_sin) + data_str_no_sin.lower()
+            elif data_format == DataFormat.BASE64:
+                # add SIN byte to base64 blob
+                databytes = bytes([msg_sin]) + b64decode(data_str_no_sin)
+                if not meta:
+                    return databytes
+                data = b64encode(databytes).decode(&#39;ascii&#39;)
+            elif data_format == DataFormat.TEXT:
+                data = f&#39;\\{msg_sin:02x}&#39; + data_str_no_sin
+            return {
+                &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+                &#39;system_message_number&#39;: int(sys_msg_num),
+                &#39;system_message_sequence&#39;: int(sys_msg_seq),
+                &#39;priority&#39;: int(detail[2]),
+                &#39;sin&#39;: msg_sin,
+                &#39;state&#39;: int(detail[4]),
+                &#39;state_name&#39;: MessageState(int(detail[4])).name,
+                &#39;size&#39;: int(detail[5]),
+                &#39;data_format&#39;: data_format,
+                &#39;data&#39;: data
+            }
+        except Exception as err:
+            _log.exception(err)
+
+    def message_mt_delete(self, name: str) -&gt; bool:
+        &#34;&#34;&#34;Marks a Return message for deletion by the modem.
+        
+        Args:
+            name: The unique mobile-terminated name in the queue
+
+        Returns:
+            True if the operation succeeded
+
+        &#34;&#34;&#34;
+        response = self.atcommand(f&#39;AT%MGFM=&#34;{name}&#34;&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            err = f&#39; ({response[1]})&#39; if self.error_detail else &#39;&#39;
+            _log.error(f&#39;Error deleting message {name}{err}&#39;)
+        return response[0] == &#39;OK&#39;
+
+    @property
+    def transmitter_status(self) -&gt; TransmitterStatus:
+        &#34;&#34;&#34;The transmitter status reported by `S54`&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS54?&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return TransmitterStatus(int(response[0]))
+
+    def _trace_detail(self) -&gt; dict:
+        &#34;&#34;&#34;Gets a dictionary of monitored and cached class/subclass pairs.
+        
+        Returns:
+            `{ &#39;monitored&#39;: [(&lt;class,subclass&gt;)], &#39;cached&#39;: [&lt;class,subclass)] }` 
+        &#34;&#34;&#34;
+        response = self.atcommand(&#39;AT%EVMON&#39;, filter=[&#39;%EVMON:&#39;])
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        response.remove(&#39;OK&#39;)
+        detail = {
+            &#39;monitored&#39;: [],
+            &#39;cached&#39;: [],
+        }
+        if len(response) &gt; 0:
+            events: &#39;list[str]&#39; = response[0].split(&#39;,&#39;)
+            for event in events:
+                trace_class = int(event.split(&#39;.&#39;)[0])
+                trace_subclass = int(event.split(&#39;.&#39;)[1].replace(&#39;*&#39;, &#39;&#39;))
+                detail[&#39;monitored&#39;].append((trace_class, trace_subclass))
+                if event.endswith(&#39;*&#39;):
+                    detail[&#39;cached&#39;].append((trace_class, trace_subclass))
+        return detail
+
+    @property
+    def trace_event_monitor(self) -&gt; &#39;list[tuple[int, int]]&#39;:
+        &#34;&#34;&#34;The list of class/subclass pairs being monitored to cache.&#34;&#34;&#34;
+        return self._trace_detail()[&#39;monitored&#39;]
+        
+    @trace_event_monitor.setter
+    def trace_event_monitor(self, events: &#39;list[tuple[int, int]]&#39;):
+        &#34;&#34;&#34;Set a list of trace class/subclass pairs to monitor and cache.&#34;&#34;&#34;
+        command = &#39;AT%EVMON=&#39;
+        for event in events:
+            trace_class, trace_subclass = event
+            if command != &#39;AT%EVMON=&#39;:
+                command += &#39;,&#39;
+            command += f&#39;{trace_class}.{trace_subclass}&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+
+    @property
+    def trace_events_cached(self) -&gt; &#39;list[tuple[int, int]]&#39;:
+        &#34;&#34;&#34;The list of trace events cached for retrieval.&#34;&#34;&#34;
+        return self._trace_detail()[&#39;cached&#39;]
+
+    def trace_event_get(self,
+                        event: &#39;tuple[int, int]&#39;,
+                        meta: bool = False,
+                        ) -&gt; &#39;str|dict&#39;:
+        &#34;&#34;&#34;Gets the cached event by class/subclass.
+
+        Args:
+            event: tuple of (class, subclass)
+            meta: Returns the raw text string if False (default)
+        
+        Returns:
+            String if meta is True, else metadata dictionary including:
+            - `data_count` (int)
+            - `signed_bitmask` (str)
+            - `mobile_id` (str)
+            - `timestamp` (str)
+            - `class` (str)
+            - `subclass` (str)
+            - `priority` (str)
+            - `data` (str)
+        
+        Raises:
+            AtException
+
+        &#34;&#34;&#34;
+        def signed32(n: int) -&gt; int:
+            &#34;&#34;&#34;Converts an integer to signed 32-bit format.&#34;&#34;&#34;
+            n = n &amp; 0xffffffff
+            return (n ^ 0x80000000) - 0x80000000
+        def event_timestamp(log_timestamp: int) -&gt; int:
+            offset = int(datetime(2001, 1, 1, tzinfo=timezone.utc).timestamp())
+            return log_timestamp + offset
+        if not (isinstance(event, tuple) and len(event) == 2):
+            raise ValueError(&#39;event_get expects (class, subclass)&#39;)
+        trace_class, trace_subclass = event
+        response = self.atcommand(f&#39;AT%EVNT={trace_class},{trace_subclass}&#39;,
+                                  filter=[&#39;%EVNT:&#39;])
+        #: res %EVNT: &lt;dataCount&gt;,&lt;signedBitmask&gt;,&lt;MTID&gt;,&lt;timestamp&gt;,
+        # &lt;class&gt;,&lt;subclass&gt;,&lt;priority&gt;,&lt;data0&gt;,&lt;data1&gt;,..,&lt;dataN&gt;
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        if not meta:
+            return response[0]
+        eventdata = response[0].split(&#39;,&#39;)
+        event = {
+            &#39;data_count&#39;: int(eventdata[0]),
+            &#39;signed_bitmask&#39;: bin(int(eventdata[1])),
+            &#39;timestamp&#39;: event_timestamp(int(eventdata[3])),
+            &#39;class&#39;: int(eventdata[4]),
+            &#39;subclass&#39;: int(eventdata[5]),
+            &#39;priority&#39;: int(eventdata[6]),
+            &#39;raw_data&#39;: eventdata[7:],
+            &#39;data&#39;: {},
+        }
+        iso_time = datetime.utcfromtimestamp(event[&#39;timestamp&#39;]).isoformat()
+        event[&#39;isotime&#39;] = iso_time[:19] + &#39;Z&#39;
+        bitmask = event[&#39;signed_bitmask&#39;][2:]
+        while len(bitmask) &lt; event[&#39;data_count&#39;]:
+            bitmask = &#39;0&#39; + bitmask
+        for i, bit in enumerate(reversed(bitmask)):
+            if bit == &#39;1&#39;:
+                event[&#39;raw_data&#39;][i] = signed32(int(event[&#39;raw_data&#39;][i]))
+            else:
+                event[&#39;raw_data&#39;][i] = int(event[&#39;raw_data&#39;][i])
+        # TODO lookup class/subclass definitions
+        for trace_def in EVENT_TRACES:
+            if trace_def.trace_class != trace_class:
+                continue
+            if trace_def.trace_subclass != trace_subclass:
+                continue
+            try:
+                for i, value in enumerate(event[&#39;raw_data&#39;]):
+                    tag, data_type = trace_def.data[i]
+                    new_value = value
+                    if &#39;flags&#39; in tag and isinstance(data_type, dict):
+                        new_value = []
+                        for flag in data_type:
+                            if flag &amp; value:
+                                new_value.append(data_type[flag])
+                    elif str(tag).endswith(&#39;_state&#39;):
+                        if isinstance(data_type, dict):
+                            new_value = data_type[value]
+                        else:
+                            try:   #: IntEnum
+                                new_value = data_type(value)
+                            except:
+                                pass   # new_value stays as value
+                    event[&#39;data&#39;][tag] = new_value
+            except Exception as err:
+                _log.exception(err)
+        return event
+
+    @staticmethod
+    def _list_events(bitmask: int) -&gt; &#39;list[EventNotification]&#39;:
+        events = []
+        for notification in EventNotification:
+            if bitmask &amp; notification == notification:
+                events.append(notification)
+        return events
+
+    @property
+    def event_notification_monitor(self) -&gt; &#39;list[EventNotification]&#39;:
+        &#34;&#34;&#34;The list of events monitored to assert the notification pin (`S88`).&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS88?&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return self._list_events(int(response[0]))
+    
+    @event_notification_monitor.setter
+    def event_notification_monitor(self, event_list: &#39;list[EventNotification]&#39;):
+        bitmask = 0
+        for event in event_list:
+            bitmask = bitmask | event
+        response = self.atcommand(f&#39;ATS88={bitmask}&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+
+    @property
+    def event_notifications(self) -&gt; &#39;list[EventNotification]&#39;:
+        &#34;&#34;&#34;The list of active events reported in `S89`.&#34;&#34;&#34;
+        response = self.atcommand(&#39;ATS89?&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return self._list_events(int(response[0]))
+    
+    @property
+    def control_state(self) -&gt; &#39;SatlliteControlState|None&#39;:
+        &#34;&#34;&#34;The control state enumerated value.
+        
+        Trace Class 3, Subclass 1, Data 22
+        &#34;&#34;&#34;
+        self.satellite_status_get()
+        return SatlliteControlState(self._ctrl_state)
+    
+    @property
+    def network_status(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The network status derived from control state.&#34;&#34;&#34;
+        if self._ctrl_state is None:
+            self.satellite_status_get()
+        return SatlliteControlState(self._ctrl_state).name
+
+    @property
+    def registered(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates the modem is registered on the network.&#34;&#34;&#34;
+        return self.control_state == 10
+
+    @property
+    def beamsearch_state(self) -&gt; &#39;int|None&#39;:
+        &#34;&#34;&#34;The beam search state (Trace Class 3, Subclass 1, Data 23)&#34;&#34;&#34;
+        self.satellite_status_get()
+        return BeamSearchState(self._beamsearch_state)
+    
+    @property
+    def beamsearch(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The beam search state description.&#34;&#34;&#34;
+        if self._beamsearch_state is None:
+            self.satellite_status_get()
+        return BeamSearchState(self._beamsearch_state).name
+
+    @property
+    def snr(self) -&gt; &#39;float|None&#39;:
+        &#34;&#34;&#34;The average main beam Carrier-to-Noise (C/N0).&#34;&#34;&#34;
+        self.satellite_status_get()
+        return self._snr
+            
+    @property
+    def signal_quality(self) -&gt; SignalQuality:
+        &#34;&#34;&#34;Qualitative interpretation of the SNR.&#34;&#34;&#34;
+        signal_quality = SignalQuality.NONE
+        if self.snr:
+            if self.snr &gt; SignalLevelRegional.INVALID.value:
+                signal_quality = SignalQuality.WARNING
+            elif self.snr &gt; SignalLevelRegional.BARS_5.value:
+                signal_quality = SignalQuality.STRONG
+            elif self.snr &gt; SignalLevelRegional.BARS_4.value:
+                signal_quality = SignalQuality.GOOD
+            elif self.snr &gt; SignalLevelRegional.BARS_3.value:
+                signal_quality = SignalQuality.MID
+            elif self.snr &gt; SignalLevelRegional.BARS_2.value:
+                signal_quality = SignalQuality.LOW
+            elif self.snr &gt; SignalLevelRegional.BARS_1.value:
+                signal_quality = SignalQuality.WEAK
+        return signal_quality
+    
+    @property
+    def satellite(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The current active satellite name.&#34;&#34;&#34;
+        if self._geo_beam_id is None:
+            self.satellite_status_get()
+        if self._geo_beam_id is not None:
+            if GeoBeam.is_valid(self._geo_beam_id):
+                return GeoBeam(self._geo_beam_id).satellite()
+            return f&#39;UNDEFINED {self._geo_beam_id}&#39;
+    
+    @property
+    def beam_id(self) -&gt; &#39;str|None&#39;:
+        &#34;&#34;&#34;The current active regional beam ID of the active satellite.&#34;&#34;&#34;
+        if self._geo_beam_id is None:
+            self.satellite_status_get()
+        if self._geo_beam_id is not None:
+            if GeoBeam.is_valid(self._geo_beam_id):
+                return GeoBeam(self._geo_beam_id).id()
+            return f&#39;GEO{self._geo_beam_id}&#39;
+        
+    def satellite_status_get(self) -&gt; dict:
+        &#34;&#34;&#34;Gets various satellite acquisition metrics.
+        
+        Returns:
+            Dictionary including:
+            - `satellite` (str)
+            - `beam_id` (str)
+            - `network_status` (str)
+            - `control_state` (int)
+            - `beamsearch` (str)
+            - `beamsearch_state` (int)
+            - `snr` (float)
+        
+        &#34;&#34;&#34;
+        if (&#39;sat_status&#39; in self._holdoffs and
+            int(time()) - self._holdoffs[&#39;sat_status&#39;] &lt; SAT_STATUS_HOLDOFF):
+            _log.debug(&#39;Ignoring repeat satellite status query&#39;)
+            return
+        _log.debug(&#39;Querying satellite status&#39;)
+        self._holdoffs[&#39;sat_status&#39;] = int(time())
+        # Trace events:
+        #   Class 3 Subclass 1 C/N, Satellite Control State, Beam Search State
+        #   Class 3 Subclass 5 Geo Beam ID
+        command = (&#39;ATS90=3 S91=1 S92=1 S116? S122? S123?&#39;
+                   &#39; S90=3 S91=5 S92=1 S102?&#39;)
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        self._snr = round(int(response[0]) / 100.0, 2)
+        self._ctrl_state = int(response[1])
+        self._beamsearch_state = int(response[2])
+        self._geo_beam_id = int(response[3])
+        return {
+            &#39;satellite&#39;: self.satellite,
+            &#39;beam_id&#39;: self.beam_id,
+            &#39;network_status&#39;: self.network_status,
+            &#39;control_state&#39;: self._ctrl_state,
+            &#39;beamsearch&#39;: self.beamsearch,
+            &#39;beamsearch_state&#39;: self._beamsearch_state,
+            &#39;snr&#39;: self._snr,
+        }
+
+    def shutdown(self) -&gt; bool:
+        &#34;&#34;&#34;Tell the modem to prepare for power-down.&#34;&#34;&#34;
+        _log.warning(&#39;Attempting to shut down&#39;)
+        response = self.atcommand(&#39;AT%OFF&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return True
+
+    def utc_time(self) -&gt; str:
+        &#34;&#34;&#34;Gets current UTC time of the modem in ISO8601 format.&#34;&#34;&#34;
+        _log.debug(&#39;Querying system time&#39;)
+        response = self.atcommand(&#39;AT%UTC&#39;, filter=[&#39;%UTC:&#39;])
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return response[0].replace(&#39; &#39;, &#39;T&#39;) + &#39;Z&#39;
+
+    def s_register_get(self, register: &#39;str|int&#39;) -&gt; int:
+        &#34;&#34;&#34;Gets the value of the S-register requested.
+
+        Args:
+            register: The register name/number (e.g. S80)
+
+        Returns:
+            integer value or None
+        &#34;&#34;&#34;
+        if isinstance(register, str):
+            try:
+                register = int(register.replace(&#39;S&#39;, &#39;&#39;))
+            except ValueError:
+                raise ValueError(f&#39;Invalid S-register {register}&#39;)
+        _log.debug(f&#39;Querying S-register {register}&#39;)
+        response = self.atcommand(f&#39;ATS{register}?&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        return int(response[0])
+
+    def _s_registers_read(self) -&gt; None:
+        &#34;&#34;&#34;Reads all defined S-registers.&#34;&#34;&#34;
+        command = &#39;AT&#39;
+        for reg in self.s_registers:
+            if command != &#39;AT&#39;:
+                command += &#39; &#39;
+            command += f&#39;{reg}?&#39;
+        response = self.atcommand(command)
+        if response[0] == &#39;ERROR&#39;:
+            _log.error(&#39;Could not read S-registers&#39;)
+            raise
+        index = 0
+        for name, register in self.s_registers.items():
+            register.value = response[index]
+            index += 1
+
+    def s_register_get_definitions(self) -&gt; list:
+        &#34;&#34;&#34;(Future) Gets a list of S-register definitions.
+        
+        R=read-only, S=signed, V=volatile
+        
+        Returns:
+            tuple(register, RSV, current, default, minimum, maximum) or None
+        &#34;&#34;&#34;
+        raise NotImplementedError
+        #: AT%SREG
+        #: Sreg, RSV, CurrentVal, DefaultVal, MinimumVal, MaximumVal
+        response = self.atcommand(&#39;AT%SREG&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        response.remove(&#39;OK&#39;)
+        # header_rows = response[0:1]
+        # Sreg RSV CurrentVal NvmValue DefaultValue MinimumValue MaximumVal
+        reg_defs = response[2:]
+        registers = []
+        for row in reg_defs:
+            reg_def = row.split(&#39; &#39;)
+            reg_def = tuple(filter(None, reg_def))
+            registers.append(reg_def)
+        return registers</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.threaded.modem.IdpModem.BAUD_RATES"><code class="name">var <span class="ident">BAUD_RATES</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.OTHER_KWARGS"><code class="name">var <span class="ident">OTHER_KWARGS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.PROTOCOL_KWARGS"><code class="name">var <span class="ident">PROTOCOL_KWARGS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.SERIAL_KWARGS"><code class="name">var <span class="ident">SERIAL_KWARGS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="idpmodem.threaded.modem.IdpModem.baudrate"><code class="name">var <span class="ident">baudrate</span> : int|None</code></dt>
+<dd>
+<div class="desc"><p>The baud rate of the serial connecton.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def baudrate(self) -&gt; &#39;int|None&#39;:
+    &#34;&#34;&#34;The baud rate of the serial connecton.&#34;&#34;&#34;
+    return self.serial_port.baudrate if self.serial_port else None</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.beam_id"><code class="name">var <span class="ident">beam_id</span> : str|None</code></dt>
+<dd>
+<div class="desc"><p>The current active regional beam ID of the active satellite.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def beam_id(self) -&gt; &#39;str|None&#39;:
+    &#34;&#34;&#34;The current active regional beam ID of the active satellite.&#34;&#34;&#34;
+    if self._geo_beam_id is None:
+        self.satellite_status_get()
+    if self._geo_beam_id is not None:
+        if GeoBeam.is_valid(self._geo_beam_id):
+            return GeoBeam(self._geo_beam_id).id()
+        return f&#39;GEO{self._geo_beam_id}&#39;</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.beamsearch"><code class="name">var <span class="ident">beamsearch</span> : str|None</code></dt>
+<dd>
+<div class="desc"><p>The beam search state description.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def beamsearch(self) -&gt; &#39;str|None&#39;:
+    &#34;&#34;&#34;The beam search state description.&#34;&#34;&#34;
+    if self._beamsearch_state is None:
+        self.satellite_status_get()
+    return BeamSearchState(self._beamsearch_state).name</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.beamsearch_state"><code class="name">var <span class="ident">beamsearch_state</span> : int|None</code></dt>
+<dd>
+<div class="desc"><p>The beam search state (Trace Class 3, Subclass 1, Data 23)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def beamsearch_state(self) -&gt; &#39;int|None&#39;:
+    &#34;&#34;&#34;The beam search state (Trace Class 3, Subclass 1, Data 23)&#34;&#34;&#34;
+    self.satellite_status_get()
+    return BeamSearchState(self._beamsearch_state)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.connected"><code class="name">var <span class="ident">connected</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indicates if the modem is connected.</p>
+<p>Attempts to send a basic <code>AT</code> command and check for any response.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def connected(self) -&gt; bool:
+    &#34;&#34;&#34;Indicates if the modem is connected.
+    
+    Attempts to send a basic `AT` command and check for any response.
+
+    &#34;&#34;&#34;
+    if self.transport is None or self.protocol is None:
+        return False
+    try:
+        res = self.atcommand(&#39;AT&#39;)
+        if res is not None:
+            return True
+    except AtCrcError:
+        return True
+    except AtTimeout:
+        pass
+    return False</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.control_state"><code class="name">var <span class="ident">control_state</span> : SatlliteControlState|None</code></dt>
+<dd>
+<div class="desc"><p>The control state enumerated value.</p>
+<p>Trace Class 3, Subclass 1, Data 22</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def control_state(self) -&gt; &#39;SatlliteControlState|None&#39;:
+    &#34;&#34;&#34;The control state enumerated value.
+    
+    Trace Class 3, Subclass 1, Data 22
+    &#34;&#34;&#34;
+    self.satellite_status_get()
+    return SatlliteControlState(self._ctrl_state)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.crc"><code class="name">var <span class="ident">crc</span> : bool|None</code></dt>
+<dd>
+<div class="desc"><p>Indicates if CRC error checking is enabled on the modem.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def crc(self) -&gt; &#39;bool|None&#39;:
+    &#34;&#34;&#34;Indicates if CRC error checking is enabled on the modem.&#34;&#34;&#34;
+    return self.protocol.crc if self.protocol is not None else None</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.event_notification_monitor"><code class="name">var <span class="ident">event_notification_monitor</span> : list[EventNotification]</code></dt>
+<dd>
+<div class="desc"><p>The list of events monitored to assert the notification pin (<code>S88</code>).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def event_notification_monitor(self) -&gt; &#39;list[EventNotification]&#39;:
+    &#34;&#34;&#34;The list of events monitored to assert the notification pin (`S88`).&#34;&#34;&#34;
+    response = self.atcommand(&#39;ATS88?&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    return self._list_events(int(response[0]))</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.event_notifications"><code class="name">var <span class="ident">event_notifications</span> : list[EventNotification]</code></dt>
+<dd>
+<div class="desc"><p>The list of active events reported in <code>S89</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def event_notifications(self) -&gt; &#39;list[EventNotification]&#39;:
+    &#34;&#34;&#34;The list of active events reported in `S89`.&#34;&#34;&#34;
+    response = self.atcommand(&#39;ATS89?&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    return self._list_events(int(response[0]))</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.gnss_jamming"><code class="name">var <span class="ident">gnss_jamming</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>The GNSS jamming detection status (<code>S56</code>).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def gnss_jamming(self) -&gt; bool:
+    &#34;&#34;&#34;The GNSS jamming detection status (`S56`).&#34;&#34;&#34;
+    response = self.atcommand(&#39;ATS56?&#39;)
+    if response[0] != &#39;ERROR&#39;:
+        return ((int(response[0]) &amp; 0b100) &gt;&gt; 2 == 1) </code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.gnss_mode"><code class="name">var <span class="ident">gnss_mode</span> : <a title="idpmodem.constants.GnssMode" href="../constants.html#idpmodem.constants.GnssMode">GnssMode</a></code></dt>
+<dd>
+<div class="desc"><p>The GNSS operating mode setting (<code>S39</code>).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def gnss_mode(self) -&gt; GnssMode:
+    &#34;&#34;&#34;The GNSS operating mode setting (`S39`).&#34;&#34;&#34;
+    response = self.atcommand(&#39;ATS39?&#39;)
+    if response[0] != &#39;ERROR&#39;:
+        return GnssMode(int(response[0]))</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.gnss_refresh_interval"><code class="name">var <span class="ident">gnss_refresh_interval</span> : int</code></dt>
+<dd>
+<div class="desc"><p>GNSS refresh interval in seconds (<code>S55</code>).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def gnss_refresh_interval(self) -&gt; int:
+    &#34;&#34;&#34;GNSS refresh interval in seconds (`S55`).&#34;&#34;&#34;
+    response = self.atcommand(f&#39;ATS55?&#39;)
+    if response[0] != &#39;ERROR&#39;:
+        return int(response[0])</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.location"><code class="name">var <span class="ident">location</span> : Location|None</code></dt>
+<dd>
+<div class="desc"><p>The modem location derived from NMEA data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def location(self) -&gt; &#39;Location|None&#39;:
+    &#34;&#34;&#34;The modem location derived from NMEA data.&#34;&#34;&#34;
+    try:
+        nmea_sentences = self.gnss_nmea_get(self._loc_query[&#39;stale_secs&#39;],
+                                            self._loc_query[&#39;wait_secs&#39;])
+        return location_from_nmea(nmea_sentences)
+    except:
+        return None</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.manufacturer"><code class="name">var <span class="ident">manufacturer</span> : str</code></dt>
+<dd>
+<div class="desc"><p>The modem manufacturer reported by <code>ATI0</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def manufacturer(self) -&gt; str:
+    &#34;&#34;&#34;The modem manufacturer reported by `ATI0`.&#34;&#34;&#34;
+    if not self._manufacturer:
+        response = self.atcommand(&#39;ATI0&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        self._manufacturer = response[0]
+    return self._manufacturer</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.mobile_id"><code class="name">var <span class="ident">mobile_id</span> : str|None</code></dt>
+<dd>
+<div class="desc"><p>The unique Mobile ID (Inmarsat serial number).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mobile_id(self) -&gt; &#39;str|None&#39;:
+    &#34;&#34;&#34;The unique Mobile ID (Inmarsat serial number).&#34;&#34;&#34;
+    if self._mobile_id is None:
+        response = self.atcommand(&#39;AT+GSN&#39;, filter=[&#39;+GSN:&#39;])
+        if response[0] != &#39;ERROR&#39;:
+            self._mobile_id = response[0]
+    return self._mobile_id</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.model"><code class="name">var <span class="ident">model</span> : str</code></dt>
+<dd>
+<div class="desc"><p>The modem model reported by <code>ATI4</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def model(self) -&gt; str:
+    &#34;&#34;&#34;The modem model reported by `ATI4`.&#34;&#34;&#34;
+    if not self._model:
+        response = self.atcommand(&#39;ATI4&#39;)
+        if response[0] == &#39;ERROR&#39;:
+            self._handle_at_error(response)
+        self._model = response[0]
+    return self._model</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.network_status"><code class="name">var <span class="ident">network_status</span> : str|None</code></dt>
+<dd>
+<div class="desc"><p>The network status derived from control state.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def network_status(self) -&gt; &#39;str|None&#39;:
+    &#34;&#34;&#34;The network status derived from control state.&#34;&#34;&#34;
+    if self._ctrl_state is None:
+        self.satellite_status_get()
+    return SatlliteControlState(self._ctrl_state).name</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.power_mode"><code class="name">var <span class="ident">power_mode</span> : PowerMode|None</code></dt>
+<dd>
+<div class="desc"><p>The modem power mode setting (enumerated) in <code>S50</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def power_mode(self) -&gt; &#39;PowerMode|None&#39;:
+    &#34;&#34;&#34;The modem power mode setting (enumerated) in `S50`.&#34;&#34;&#34;
+    if self._power_mode is None:
+        response = self.atcommand(&#39;ATS50?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            self._power_mode = PowerMode(int(response[0]))
+    return self._power_mode</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.registered"><code class="name">var <span class="ident">registered</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indicates the modem is registered on the network.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def registered(self) -&gt; bool:
+    &#34;&#34;&#34;Indicates the modem is registered on the network.&#34;&#34;&#34;
+    return self.control_state == 10</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.satellite"><code class="name">var <span class="ident">satellite</span> : str|None</code></dt>
+<dd>
+<div class="desc"><p>The current active satellite name.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def satellite(self) -&gt; &#39;str|None&#39;:
+    &#34;&#34;&#34;The current active satellite name.&#34;&#34;&#34;
+    if self._geo_beam_id is None:
+        self.satellite_status_get()
+    if self._geo_beam_id is not None:
+        if GeoBeam.is_valid(self._geo_beam_id):
+            return GeoBeam(self._geo_beam_id).satellite()
+        return f&#39;UNDEFINED {self._geo_beam_id}&#39;</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.signal_quality"><code class="name">var <span class="ident">signal_quality</span> : <a title="idpmodem.constants.SignalQuality" href="../constants.html#idpmodem.constants.SignalQuality">SignalQuality</a></code></dt>
+<dd>
+<div class="desc"><p>Qualitative interpretation of the SNR.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def signal_quality(self) -&gt; SignalQuality:
+    &#34;&#34;&#34;Qualitative interpretation of the SNR.&#34;&#34;&#34;
+    signal_quality = SignalQuality.NONE
+    if self.snr:
+        if self.snr &gt; SignalLevelRegional.INVALID.value:
+            signal_quality = SignalQuality.WARNING
+        elif self.snr &gt; SignalLevelRegional.BARS_5.value:
+            signal_quality = SignalQuality.STRONG
+        elif self.snr &gt; SignalLevelRegional.BARS_4.value:
+            signal_quality = SignalQuality.GOOD
+        elif self.snr &gt; SignalLevelRegional.BARS_3.value:
+            signal_quality = SignalQuality.MID
+        elif self.snr &gt; SignalLevelRegional.BARS_2.value:
+            signal_quality = SignalQuality.LOW
+        elif self.snr &gt; SignalLevelRegional.BARS_1.value:
+            signal_quality = SignalQuality.WEAK
+    return signal_quality</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.snr"><code class="name">var <span class="ident">snr</span> : float|None</code></dt>
+<dd>
+<div class="desc"><p>The average main beam Carrier-to-Noise (C/N0).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def snr(self) -&gt; &#39;float|None&#39;:
+    &#34;&#34;&#34;The average main beam Carrier-to-Noise (C/N0).&#34;&#34;&#34;
+    self.satellite_status_get()
+    return self._snr</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.temperature"><code class="name">var <span class="ident">temperature</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Temperature in degrees Celsius (<code>S85</code>).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def temperature(self) -&gt; int:
+    &#34;&#34;&#34;Temperature in degrees Celsius (`S85`).&#34;&#34;&#34;
+    response = self.atcommand(&#39;ATS85?&#39;)
+    if response[0] != &#39;ERROR&#39;:
+        return int(float(response[0]) / 10)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.trace_event_monitor"><code class="name">var <span class="ident">trace_event_monitor</span> : list[tuple[int, int]]</code></dt>
+<dd>
+<div class="desc"><p>The list of class/subclass pairs being monitored to cache.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def trace_event_monitor(self) -&gt; &#39;list[tuple[int, int]]&#39;:
+    &#34;&#34;&#34;The list of class/subclass pairs being monitored to cache.&#34;&#34;&#34;
+    return self._trace_detail()[&#39;monitored&#39;]</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.trace_events_cached"><code class="name">var <span class="ident">trace_events_cached</span> : list[tuple[int, int]]</code></dt>
+<dd>
+<div class="desc"><p>The list of trace events cached for retrieval.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def trace_events_cached(self) -&gt; &#39;list[tuple[int, int]]&#39;:
+    &#34;&#34;&#34;The list of trace events cached for retrieval.&#34;&#34;&#34;
+    return self._trace_detail()[&#39;cached&#39;]</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.transmitter_status"><code class="name">var <span class="ident">transmitter_status</span> : <a title="idpmodem.constants.TransmitterStatus" href="../constants.html#idpmodem.constants.TransmitterStatus">TransmitterStatus</a></code></dt>
+<dd>
+<div class="desc"><p>The transmitter status reported by <code>S54</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def transmitter_status(self) -&gt; TransmitterStatus:
+    &#34;&#34;&#34;The transmitter status reported by `S54`&#34;&#34;&#34;
+    response = self.atcommand(&#39;ATS54?&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    return TransmitterStatus(int(response[0]))</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.versions"><code class="name">var <span class="ident">versions</span> : dict|None</code></dt>
+<dd>
+<div class="desc"><p>The hardware, firmware and AT versions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def versions(self) -&gt; &#39;dict|None&#39;:
+    &#34;&#34;&#34;The hardware, firmware and AT versions.&#34;&#34;&#34;
+    if not self._versions:
+        response = self.atcommand(&#39;AT+GMR&#39;, filter=[&#39;+GMR:&#39;])
+        if response[0] != &#39;ERROR&#39;:
+            self._versions = {}
+            versions = response[0].split(&#39;,&#39;)
+            if len(versions) == 3:
+                self._versions[&#39;firmware&#39;] = versions[0]
+                self._versions[&#39;hardware&#39;] = versions[1]
+                self._versions[&#39;at&#39;] = versions[2]
+            else:
+                for i, v in enumerate(versions):
+                    self._versions[i] = v
+    return self._versions</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.wakeup_period"><code class="name">var <span class="ident">wakeup_period</span> : WakeupPeriod|None</code></dt>
+<dd>
+<div class="desc"><p>The modem wakeup period setting (enumerated) in <code>S51</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def wakeup_period(self) -&gt; &#39;WakeupPeriod|None&#39;:
+    &#34;&#34;&#34;The modem wakeup period setting (enumerated) in `S51`.&#34;&#34;&#34;
+    if self._wakeup_period is None:
+        response = self.atcommand(&#39;ATS51?&#39;)
+        if response[0] != &#39;ERROR&#39;:
+            self._wakeup_period = WakeupPeriod(int(response[0]))
+    return self._wakeup_period</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="idpmodem.threaded.modem.IdpModem.atcommand"><code class="name flex">
+<span>def <span class="ident">atcommand</span></span>(<span>self, command: str, filter: list[str] = [], timeout: int = 5, await_previous: bool = True) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sends an AT command to the modem and returns the response.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>command</code></strong></dt>
+<dd>The AT command</dd>
+<dt><strong><code>filter</code></strong></dt>
+<dd>(optional) list of sub/strings to remove from response.</dd>
+<dt><strong><code>timeout</code></strong></dt>
+<dd>Number of seconds to wait for a reply
+(not including messages queued by other threads)</dd>
+<dt><strong><code>await_previous</code></strong></dt>
+<dd>If True, this will block if a prior command was
+submitted by another thread</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>list of filtered and stripped response(s) to the command(s)</p>
+<h2 id="raises">Raises</h2>
+<p>ModemBusy if await_previous is False and a prior command is queued.
+AtException if an error occurred that is unrecognized.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def atcommand(self,
+              command: str,
+              filter: &#39;list[str]&#39; = [],
+              timeout: int = 5,
+              await_previous: bool = True,
+              ) -&gt; &#39;list[str]&#39;:
+    &#34;&#34;&#34;Sends an AT command to the modem and returns the response.
+    
+    Args:
+        command: The AT command
+        filter: (optional) list of sub/strings to remove from response.
+        timeout: Number of seconds to wait for a reply
+            (not including messages queued by other threads)
+        await_previous: If True, this will block if a prior command was
+            submitted by another thread
+    
+    Returns:
+        list of filtered and stripped response(s) to the command(s)
+    
+    Raises:
+        ModemBusy if await_previous is False and a prior command is queued.
+        AtException if an error occurred that is unrecognized.
+
+    &#34;&#34;&#34;
+    if not self.transport or not self.protocol:
+        raise ConnectionError(&#39;No serial or protocol instance.&#39;)
+    while self.commands.full():
+        if not await_previous:
+            raise ModemBusy
+        pass
+    self.commands.put(command)
+    try:
+        res: list = self.protocol.command(command,
+                                          filter=filter,
+                                          timeout=timeout,
+                                          debug=self.debug)
+        if self.error_detail and res and res[0] == &#39;ERROR&#39;:
+            err_res = self.protocol.command(&#39;ATS80?&#39;)
+            if not err_res or err_res[0] == &#39;ERROR&#39;:
+                raise AtException(&#39;Unhandled error getting last error code&#39;)
+            last_err_code = err_res[0]
+            detail = &#39;UNDEFINED&#39;
+            if AtErrorCode.is_valid(int(last_err_code)):
+                detail = AtErrorCode(int(last_err_code)).name
+            res.append(f&#39;{detail} ({last_err_code})&#39;)
+            _log.warning(f&#39;AT error: {detail} for command {command}&#39;)
+        return res
+    except AtException as err:
+        _log.error(f&#39;{err} on command {command}&#39;)
+        raise err
+    finally:
+        self.commands.get()
+        self.commands.task_done()</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.config_init"><code class="name flex">
+<span>def <span class="ident">config_init</span></span>(<span>self, crc: bool = False) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initializes modem communications with Echo, Verbose. CRC optional.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def config_init(self, crc: bool = False) -&gt; bool:
+    &#34;&#34;&#34;Initializes modem communications with Echo, Verbose. CRC optional.&#34;&#34;&#34;
+    _log.debug(f&#39;Initializing modem Echo|Verbose{&#34;|CRC&#34; if crc else &#34;&#34;}&#39;
+               f&#39; (CRC={self.protocol.crc})&#39;)
+    command = f&#39;ATZ;E1;V1;Q0;%CRC={1 if crc else 0}&#39;
+    res_attempt_1 = self.atcommand(command)
+    if res_attempt_1[0] != &#39;OK&#39;:
+        # case 1: crc True but previously set; should now be T in factory
+        # case 2: crc False but previously set; should now be F in factory
+        if len(res_attempt_1) &gt; 1:
+            at_error = res_attempt_1[1]
+            if (&#39;INVALID_CRC&#39; not in at_error and
+                &#39;UNKNOWN_COMMAND&#39; not in at_error):
+                _log.warning(f&#39;Unexpected AT error {at_error}&#39;)
+        _log.debug(f&#39;Re-attempting (CRC={self.protocol.crc})&#39;)
+        res_attempt_2 = self.atcommand(command)
+        if res_attempt_2[0] != &#39;OK&#39;:
+            _log.error(&#39;Unable to initialize modem after second attempt&#39;)
+            if len(res_attempt_2) &gt; 1:
+                _log.error(f&#39;AT error: {res_attempt_2[1]}&#39;)
+            return False
+    # self.protocol.crc = crc   #: redundant should be set by attempt
+    self._at_config.crc = crc
+    _log.debug(&#39;Initialization success&#39;)
+    return True</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.config_nvm_save"><code class="name flex">
+<span>def <span class="ident">config_nvm_save</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sends the AT&amp;W command and returns True if successful.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def config_nvm_save(self) -&gt; bool:
+    &#34;&#34;&#34;Sends the AT&amp;W command and returns True if successful.&#34;&#34;&#34;
+    _log.debug(&#39;Saving modem configuration to non-volatile memory&#39;)
+    response = self.atcommand(&#39;AT&amp;W&#39;)
+    return response[0] == &#39;OK&#39;</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.config_report"><code class="name flex">
+<span>def <span class="ident">config_report</span></span>(<span>self) ‑> tuple[dict, dict]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sends the AT&amp;V command to retrieve S-register settings.</p>
+<h2 id="returns">Returns</h2>
+<p>A tuple with two dictionaries (empty if failed) with:
+at_config with booleans crc, echo, quiet and verbose
+reg_config with S-register tags and integer values</p>
+<h2 id="raises">Raises</h2>
+<p>AtException if an error was returned.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def config_report(self) -&gt; &#39;tuple[dict, dict]&#39;:
+    &#34;&#34;&#34;Sends the AT&amp;V command to retrieve S-register settings.
+    
+    Returns:
+        A tuple with two dictionaries (empty if failed) with:
+        at_config with booleans crc, echo, quiet and verbose
+        reg_config with S-register tags and integer values
+    
+    Raises:
+        AtException if an error was returned.
+
+    &#34;&#34;&#34;
+    _log.debug(&#39;Retrieving modem verbose configuration&#39;)
+    response = self.atcommand(&#39;AT&amp;V&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    at_config = response[1]
+    s_regs = response[2]
+    echo, quiet, verbose, crc = at_config.split(&#39; &#39;)
+    self._at_config.crc = bool(int(crc[4]))
+    self._at_config.echo = bool(int(echo[1]))
+    self._at_config.quiet = bool(int(quiet[1]))
+    self._at_config.verbose = bool(int(verbose[1]))
+    reg_config = {}
+    for reg in s_regs.split(&#39; &#39;):
+        name, value = reg.split(&#39;:&#39;)
+        reg_config[name] = int(value)
+    return (at_config, reg_config)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.config_restore_factory"><code class="name flex">
+<span>def <span class="ident">config_restore_factory</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sends AT&amp;F to restore factory default and returns True on success.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def config_restore_factory(self) -&gt; bool:
+    &#34;&#34;&#34;Sends AT&amp;F to restore factory default and returns True on success.&#34;&#34;&#34;
+    _log.debug(&#39;Restoring modem factory defaults&#39;)
+    response = self.atcommand(&#39;AT&amp;F&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        return False
+    return True</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.config_restore_nvm"><code class="name flex">
+<span>def <span class="ident">config_restore_nvm</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sends ATZ to restore config from non-volatile memory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def config_restore_nvm(self) -&gt; bool:
+    &#34;&#34;&#34;Sends ATZ to restore config from non-volatile memory.&#34;&#34;&#34;
+    _log.debug(&#39;Restoring modem stored configuration&#39;)
+    response = self.atcommand(&#39;ATZ&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        return False
+    return True</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.config_volatile_report"><code class="name flex">
+<span>def <span class="ident">config_volatile_report</span></span>(<span>self) ‑> dict|None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets key S-register settings.</p>
+<p>GNSS Mode (S39), GNSS fix timeout (S41), GNSS Continuous (S55),
+GNSS Jamming Status (S56), GNSS Jamming Indicator (S57),
+Low power Wakeup Period (S51)</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary of S-register values, or None if failed</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def config_volatile_report(self) -&gt; &#39;dict|None&#39;:
+    &#34;&#34;&#34;Gets key S-register settings.
+    
+    GNSS Mode (S39), GNSS fix timeout (S41), GNSS Continuous (S55),
+    GNSS Jamming Status (S56), GNSS Jamming Indicator (S57), 
+    Low power Wakeup Period (S51)
+
+    Returns:
+        Dictionary of S-register values, or None if failed
+        
+    &#34;&#34;&#34;
+    register_list = [
+        &#39;S39&#39;,   #: GNSS Mode
+        &#39;S41&#39;,   #: GNSS Fix Timeout
+        &#39;S51&#39;,   #: Wakeup Interval
+        &#39;S55&#39;,   #: GNSS Continuous
+        &#39;S56&#39;,   #: GNSS Jamming Status
+        &#39;S57&#39;,   #: GNSS Jamming Indicator
+    ]
+    command = &#39;AT&#39;
+    for reg in register_list:
+        command += f&#39;{reg if command == &#34;AT&#34; else &#34; &#34; + reg}?&#39;
+    response = self.atcommand(command)
+    if response[0] == &#39;ERROR&#39;:
+        return None
+    #: else
+    response.remove(&#39;OK&#39;)
+    volatile_regs = {}
+    for r in range(len(response)):
+        volatile_regs[register_list[r]] = int(response[r])
+    return volatile_regs</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.connect"><code class="name flex">
+<span>def <span class="ident">connect</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Connects to a modem using a serial and protocol instance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def connect(self):
+    &#34;&#34;&#34;Connects to a modem using a serial and protocol instance.&#34;&#34;&#34;
+    self.serial_port = Serial(**self.serial_kwargs)
+    self.main_thread = ByteReaderThread(self.serial_port,
+                                        AtProtocol,
+                                        **self.protocol_kwargs)
+    self.main_thread.start()
+    self.transport, self.protocol = self.main_thread.connect()</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.crc_enable"><code class="name flex">
+<span>def <span class="ident">crc_enable</span></span>(<span>self, enable: bool = True) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sends the AT%CRC command and returns success flag.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>enable</code></strong></dt>
+<dd>turn on CRC if True else turn off</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the operation succeeded else False</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def crc_enable(self, enable: bool = True) -&gt; bool:
+    &#34;&#34;&#34;Sends the AT%CRC command and returns success flag.
+    
+    Args:
+        enable: turn on CRC if True else turn off
+
+    Returns:
+        True if the operation succeeded else False
+
+    &#34;&#34;&#34;
+    _log.debug(f&#39;{&#34;en&#34; if enable else &#34;dis&#34;}abling modem CRC&#39;)
+    command = f&#39;AT%CRC={1 if enable else 0}&#39;
+    response = self.atcommand(command)
+    if response[0] == &#39;ERROR&#39;:
+        return False
+    self.protocol.crc = enable
+    self._at_config.crc = enable
+    return True</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.disconnect"><code class="name flex">
+<span>def <span class="ident">disconnect</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Disconnects from the modem.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disconnect(self):
+    &#34;&#34;&#34;Disconnects from the modem.&#34;&#34;&#34;
+    with self.commands.mutex:
+        self.commands.queue.clear()
+    if self.main_thread:
+        self.main_thread.close()
+    if self.serial_port:
+        self.serial_port.close()
+    self.transport = None
+    self.protocol = None</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.gnss_continuous_set"><code class="name flex">
+<span>def <span class="ident">gnss_continuous_set</span></span>(<span>self, interval: int = 0, doppler: bool = True) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the GNSS continous mode (0 = on-demand).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>interval</code></strong></dt>
+<dd>Seconds between GNSS refresh.</dd>
+<dt><strong><code>doppler</code></strong></dt>
+<dd>Often required for moving assets.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if successful setting.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def gnss_continuous_set(self,
+                        interval: int = 0,
+                        doppler: bool = True,
+                        ) -&gt; bool:
+    &#34;&#34;&#34;Sets the GNSS continous mode (0 = on-demand).
+    
+    Args:
+        interval: Seconds between GNSS refresh.
+        doppler: Often required for moving assets.
+    
+    Returns:
+        True if successful setting.
+    &#34;&#34;&#34;
+    if interval &lt; 0 or interval &gt; 30:
+        raise ValueError(&#39;GNSS continuous interval must be in range 0..30&#39;)
+    response = self.atcommand(f&#39;AT%TRK={interval}{&#34;,1&#34; if doppler else &#34;&#34;}&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        return False
+    return True</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.gnss_nmea_get"><code class="name flex">
+<span>def <span class="ident">gnss_nmea_get</span></span>(<span>self, stale_secs: int = 1, wait_secs: int = 35, nmea: list[str] = ['RMC', 'GSA', 'GGA', 'GSV']) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets a list of NMEA-formatted sentences from GNSS.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>stale_secs</code></strong></dt>
+<dd>Maximum age of fix in seconds (1..600)</dd>
+<dt><strong><code>wait_secs</code></strong></dt>
+<dd>Maximum time to wait for fix (1..600)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of NMEA sentences</p>
+<h2 id="raises">Raises</h2>
+<p>ValueError if parameter out of range
+AtGnssTimeout if the fix timed out
+AtException if any other error code was returned</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def gnss_nmea_get(self,
+                  stale_secs: int = GNSS_STALE_SECS,
+                  wait_secs: int = GNSS_WAIT_SECS,
+                  nmea: &#39;list[str]&#39; = [&#39;RMC&#39;, &#39;GSA&#39;, &#39;GGA&#39;, &#39;GSV&#39;],
+                  ) -&gt; list:
+    &#34;&#34;&#34;Gets a list of NMEA-formatted sentences from GNSS.
+
+    Args:
+        stale_secs: Maximum age of fix in seconds (1..600)
+        wait_secs: Maximum time to wait for fix (1..600)
+
+    Returns:
+        List of NMEA sentences
+
+    Raises:
+        ValueError if parameter out of range
+        AtGnssTimeout if the fix timed out
+        AtException if any other error code was returned
+
+    &#34;&#34;&#34;
+    NMEA_SUPPORTED = [&#39;RMC&#39;, &#39;GGA&#39;, &#39;GSA&#39;, &#39;GSV&#39;]
+    BUFFER_SECONDS = 5
+    if (stale_secs not in range(1, 600+1) or
+        wait_secs not in range(1, 600+1)):
+        raise ValueError(&#39;stale_secs and wait_secs must be 1..600&#39;)
+    sentences = &#39;&#39;
+    for sentence in nmea:
+        sentence = sentence.upper()
+        if sentence not in NMEA_SUPPORTED:
+            raise ValueError(f&#39;Unsupported NMEA sentence: {sentence}&#39;)
+        if len(sentences) &gt; 0:
+            sentences += &#39;,&#39;
+        sentences += f&#39;&#34;{sentence}&#34;&#39;
+    timeout = wait_secs + BUFFER_SECONDS
+    request_time = time()
+    response = self.atcommand(f&#39;AT%GPS={stale_secs}&#39;
+                                    f&#39;,{wait_secs},{sentences}&#39;,
+                                    timeout=timeout,
+                                    filter=[&#39;%GPS:&#39;])
+    if response[0] == &#39;ERROR&#39;:
+        if self.error_detail:
+            if &#39;TIMEOUT&#39; in response[1]:
+                raise AtGnssTimeout(response[1])
+        self._handle_at_error(response)
+    response.remove(&#39;OK&#39;)
+    time_to_fix = round(time() - request_time, 3)
+    if &#39;gnss_ttf&#39; not in self._statistics:
+        self._statistics[&#39;gnss_ttf&#39;] = time_to_fix
+    else:
+        old_ttf = self._statistics[&#39;gnss_ttf&#39;]
+        avg_ttf = round((time_to_fix + old_ttf) / 2, 3)
+        self._statistics[&#39;gnss_ttf&#39;] = avg_ttf
+    return response</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.message_mo_cancel"><code class="name flex">
+<span>def <span class="ident">message_mo_cancel</span></span>(<span>self, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Cancels a mobile-originated message in the Tx ready state.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def message_mo_cancel(self, name: str) -&gt; bool:
+    &#34;&#34;&#34;Cancels a mobile-originated message in the Tx ready state.&#34;&#34;&#34;
+    response = self.atcommand(f&#39;AT%MGRC=&#34;{name}&#34;&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        return False
+    return True</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.message_mo_clear"><code class="name flex">
+<span>def <span class="ident">message_mo_clear</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Clears the modem transmit queue and returns the count cancelled.</p>
+<h2 id="returns">Returns</h2>
+<p>Count of messages deleted, or -1 in case of error</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def message_mo_clear(self) -&gt; int:
+    &#34;&#34;&#34;Clears the modem transmit queue and returns the count cancelled.
+    
+    Returns:
+        Count of messages deleted, or -1 in case of error
+
+    &#34;&#34;&#34;
+    list_response = self.atcommand(&#39;AT%MGRL&#39;, filter=[&#39;%MGRL:&#39;])
+    if list_response[0] == &#39;ERROR&#39;:
+        return -1
+    message_count = len(list_response)
+    for msg in list_response:
+        del_response = self.atcommand(f&#39;AT%MGRD={msg}C&#39;)
+        if del_response[0] == &#39;ERROR&#39;:
+            _log.error(f&#39;Error clearing messages from transmit queue&#39;)
+            return -1
+    return message_count</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.message_mo_send"><code class="name flex">
+<span>def <span class="ident">message_mo_send</span></span>(<span>self, data: bytes|bytearray|str, data_format: int = DataFormat.BASE64, name: str = None, priority: int = MessagePriority.LOW, sin: int = None, min: int = None) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Submits a mobile-originated message to send.</p>
+<p>When submitting raw bytes, the first byte will be used as SIN. The
+first byte must not be in the reserved range (0..15).
+When submitting a string, the <code>sin</code> field is expected to be set and
+the data field will be appended to the <code>sin</code> byte and optionally the
+<code>min</code> byte if specified.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The data raw bytes or UTF-8 Text, Hexadecimal or Base64 string</dd>
+<dt><strong><code>data_format</code></strong></dt>
+<dd>1=text, 2=hexadecimal, 3=base64 (default)</dd>
+<dt><strong><code>name</code></strong></dt>
+<dd>Optional unique name up to 8 characters long. If none is
+specified, use the 8 least-significant digits of unix timestamp.</dd>
+<dt><strong><code>priority</code></strong></dt>
+<dd>1=high, 4=low (default)</dd>
+<dt><strong><code>sin</code></strong></dt>
+<dd>Optional first byte of payload used for codec, required if data
+is string type.</dd>
+<dt><strong><code>min</code></strong></dt>
+<dd>Optional second byte of payload used for codec</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Name of the message if successful, or the error string.</p>
+<h2 id="raises">Raises</h2>
+<p>AtException if an error was returned by the modem.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def message_mo_send(self,
+                    data: &#39;bytes|bytearray|str&#39;,
+                    data_format: int = DataFormat.BASE64,
+                    name: str = None,
+                    priority: int = MessagePriority.LOW,
+                    sin: int = None,
+                    min: int = None,
+                    ) -&gt; str:
+    &#34;&#34;&#34;Submits a mobile-originated message to send.
+
+    When submitting raw bytes, the first byte will be used as SIN. The
+    first byte must not be in the reserved range (0..15).
+    When submitting a string, the `sin` field is expected to be set and
+    the data field will be appended to the `sin` byte and optionally the
+    `min` byte if specified.
+    
+    Args:
+        data: The data raw bytes or UTF-8 Text, Hexadecimal or Base64 string
+        data_format: 1=text, 2=hexadecimal, 3=base64 (default)
+        name: Optional unique name up to 8 characters long. If none is
+            specified, use the 8 least-significant digits of unix timestamp.
+        priority: 1=high, 4=low (default)
+        sin: Optional first byte of payload used for codec, required if data
+            is string type.
+        min: Optional second byte of payload used for codec
+
+    Returns:
+        Name of the message if successful, or the error string.
+    
+    Raises:
+        AtException if an error was returned by the modem.
+
+    &#34;&#34;&#34;
+    name = str(int(time()))[-8:] if not name else name[0:8]
+    if isinstance(data, bytes) or isinstance(data, bytearray):
+        sin = data[0]
+        data = b64encode(data[1:]).decode(&#39;utf-8&#39;)
+        data_format = DataFormat.BASE64
+    elif not isinstance(data, str):
+        raise ValueError(&#39;Invalid data must be bytes, bytearray or string&#39;)
+    elif not isinstance(sin, int) or sin not in range(16, 256):
+        raise ValueError(&#39;Invalid SIN must be 16..255&#39;)
+    if isinstance(min, int) and min not in range(0, 256):
+        raise ValueError(&#39;Invalid MIN must be 0..255&#39;)
+    min = f&#39;.{min}&#39; if min is not None else &#39;&#39;
+    data = f&#39;&#34;{data}&#34;&#39; if data_format == DataFormat.TEXT else data
+    command = f&#39;AT%MGRT=&#34;{name}&#34;,{priority},{sin}{min},{data_format},{data}&#39;
+    response = self.atcommand(command)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    return name</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.message_mo_state"><code class="name flex">
+<span>def <span class="ident">message_mo_state</span></span>(<span>self, name: str = None) ‑> list[dict]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the message state(s) requested.</p>
+<p>If no name filter is passed in, all available messages states
+are returned.
+Returns False is the request failed.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The unique message name in the modem queue. If none is
+provided, all available message states in transmit queue will be
+returned.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of metadata for each message in transmit queue including:
+- <code>name</code> (str) The ID in the modem transmit queue
+- <code>state</code> (int) The state of the message
+- <code>state_name</code> (str) The <code>MessageState.name</code>
+- <code>size</code> (int) in bytes
+- <code>sent</code> (int) in bytes for large message progress</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def message_mo_state(self, name: str = None) -&gt; &#39;list[dict]&#39;:
+    &#34;&#34;&#34;Gets the message state(s) requested.
+    
+    If no name filter is passed in, all available messages states
+    are returned.  Returns False is the request failed.
+
+    Args:
+        name: The unique message name in the modem queue. If none is
+            provided, all available message states in transmit queue will be
+            returned.
+
+    Returns:
+        List of metadata for each message in transmit queue including:
+        - `name` (str) The ID in the modem transmit queue
+        - `state` (int) The state of the message
+        - `state_name` (str) The `MessageState.name`
+        - `size` (int) in bytes
+        - `sent` (int) in bytes for large message progress
+
+    &#34;&#34;&#34;
+    states = []
+    name = f&#39;=&#34;{name}&#34;&#39; if name is not None else &#39;&#39;
+    response = self.atcommand(f&#39;AT%MGRS{name}&#39;, filter=[&#39;%MGRS:&#39;])
+    # %MGRS: &#34;&lt;name&gt;&#34;,&lt;msg_no&gt;,&lt;priority&gt;,&lt;sin&gt;,&lt;state&gt;,&lt;size&gt;,&lt;sent_bytes&gt;
+    if response[0] != &#39;ERROR&#39;:
+        response.remove(&#39;OK&#39;)
+        for msg in response:
+            if &#39;,&#39; in msg:
+                detail = msg.split(&#39;,&#39;)
+                states.append({
+                    &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+                    &#39;state&#39;: int(detail[4]),
+                    &#39;state_name&#39;: MessageState(int(detail[4])).name,
+                    &#39;size&#39;: int(detail[5]),
+                    &#39;sent&#39;: int(detail[6]),
+                })
+    return states</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.message_mt_delete"><code class="name flex">
+<span>def <span class="ident">message_mt_delete</span></span>(<span>self, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Marks a Return message for deletion by the modem.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The unique mobile-terminated name in the queue</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the operation succeeded</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def message_mt_delete(self, name: str) -&gt; bool:
+    &#34;&#34;&#34;Marks a Return message for deletion by the modem.
+    
+    Args:
+        name: The unique mobile-terminated name in the queue
+
+    Returns:
+        True if the operation succeeded
+
+    &#34;&#34;&#34;
+    response = self.atcommand(f&#39;AT%MGFM=&#34;{name}&#34;&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        err = f&#39; ({response[1]})&#39; if self.error_detail else &#39;&#39;
+        _log.error(f&#39;Error deleting message {name}{err}&#39;)
+    return response[0] == &#39;OK&#39;</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.message_mt_get"><code class="name flex">
+<span>def <span class="ident">message_mt_get</span></span>(<span>self, name: str, data_format: int = DataFormat.BASE64, meta: bool = False) ‑> bytes|dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the payload of a specified mobile-terminated message.</p>
+<p>Payload is presented as a string with encoding based on data_format. </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The unique name in the modem queue e.g. FM01.01</dd>
+<dt><strong><code>data_format</code></strong></dt>
+<dd>text=1, hex=2, base64=3 (default)</dd>
+<dt><strong><code>meta</code></strong></dt>
+<dd>If False returns raw bytes, else returns formatted data
+with metadata.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The raw data bytes if meta is False, or a dictionary with:
+- <code>name</code> (str) The name assigned by the modem
+- <code>system_message_number</code> (int) System-assigned number
+- <code>system_message_sequence</code> (int) System-assigned number
+- <code>sin</code> (int) First byte of payload
+- <code>priority</code> (int)
+- <code>state</code> (int) The message state number
+- <code>state_name</code> (str) The <code>MessageState.name</code>
+- <code>size</code> (int) in bytes
+- <code>data_format</code> (int) 1=text, 2=hex, 3=base64
+- <code>data</code> (str) presented based on data_format</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def message_mt_get(self,
+                   name: str,
+                   data_format: int = DataFormat.BASE64,
+                   meta: bool = False,
+                   ) -&gt; &#39;bytes|dict&#39;:
+    &#34;&#34;&#34;Gets the payload of a specified mobile-terminated message.
+    
+    Payload is presented as a string with encoding based on data_format. 
+
+    Args:
+        name: The unique name in the modem queue e.g. FM01.01
+        data_format: text=1, hex=2, base64=3 (default)
+        meta: If False returns raw bytes, else returns formatted data
+            with metadata.
+
+    Returns:
+        The raw data bytes if meta is False, or a dictionary with:
+        - `name` (str) The name assigned by the modem
+        - `system_message_number` (int) System-assigned number
+        - `system_message_sequence` (int) System-assigned number
+        - `sin` (int) First byte of payload
+        - `priority` (int)
+        - `state` (int) The message state number
+        - `state_name` (str) The `MessageState.name`
+        - `size` (int) in bytes
+        - `data_format` (int) 1=text, 2=hex, 3=base64
+        - `data` (str) presented based on data_format
+
+    &#34;&#34;&#34;
+    if not meta and data_format != DataFormat.BASE64:
+        data_format = DataFormat.BASE64
+    response = self.atcommand(f&#39;AT%MGFG=&#34;{name}&#34;,{data_format}&#39;,
+                              filter=[&#39;%MGFG:&#39;])
+    if response[0] == &#39;ERROR&#39;:
+        _log.error(f&#39;Error retrieving message {name}&#39;)
+        self._handle_at_error(response)
+    #: name, number, priority, sin, state, length, data_format, data
+    try:
+        detail = response[0].split(&#39;,&#39;)
+        sys_msg_num, sys_msg_seq = detail[1].split(&#39;.&#39;)
+        msg_sin = int(detail[3])
+        data_str_no_sin = detail[7]
+        if data_format == DataFormat.HEX:
+            data = hex(msg_sin) + data_str_no_sin.lower()
+        elif data_format == DataFormat.BASE64:
+            # add SIN byte to base64 blob
+            databytes = bytes([msg_sin]) + b64decode(data_str_no_sin)
+            if not meta:
+                return databytes
+            data = b64encode(databytes).decode(&#39;ascii&#39;)
+        elif data_format == DataFormat.TEXT:
+            data = f&#39;\\{msg_sin:02x}&#39; + data_str_no_sin
+        return {
+            &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+            &#39;system_message_number&#39;: int(sys_msg_num),
+            &#39;system_message_sequence&#39;: int(sys_msg_seq),
+            &#39;priority&#39;: int(detail[2]),
+            &#39;sin&#39;: msg_sin,
+            &#39;state&#39;: int(detail[4]),
+            &#39;state_name&#39;: MessageState(int(detail[4])).name,
+            &#39;size&#39;: int(detail[5]),
+            &#39;data_format&#39;: data_format,
+            &#39;data&#39;: data
+        }
+    except Exception as err:
+        _log.exception(err)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.message_mt_waiting"><code class="name flex">
+<span>def <span class="ident">message_mt_waiting</span></span>(<span>self) ‑> list[dict]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets a list of received mobile-terminated message information.</p>
+<h2 id="returns">Returns</h2>
+<p>List of message metadata in the receive queue including:
+- <code>name</code> (str)
+- <code>sin</code> (int) first byte of payload
+- <code>priority</code> (int)
+- <code>state</code> (int) The state number
+- <code>state_name</code> (str) The <code>MessageState.name</code>
+- <code>size</code> (int) in bytes
+- <code>received</code> (int) in bytes for large message progress</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def message_mt_waiting(self) -&gt; &#39;list[dict]&#39;:
+    &#34;&#34;&#34;Gets a list of received mobile-terminated message information.
+    
+    Returns:
+        List of message metadata in the receive queue including:
+        - `name` (str)
+        - `sin` (int) first byte of payload
+        - `priority` (int)
+        - `state` (int) The state number
+        - `state_name` (str) The `MessageState.name`
+        - `size` (int) in bytes
+        - `received` (int) in bytes for large message progress
+
+    &#34;&#34;&#34;
+    waiting = []
+    response = self.atcommand(&#39;AT%MGFN&#39;, filter=[&#39;%MGFN:&#39;])
+    #: %MGFN: &#34;name&#34;,number,priority,sin,state,length,bytes_received
+    if response[0] != &#39;ERROR&#39;:
+        response.remove(&#39;OK&#39;)
+        for msg in response:
+            if (&#39;,&#39; in msg):
+                detail = msg.split(&#39;,&#39;)
+                waiting.append({
+                    &#39;name&#39;: detail[0].replace(&#39;&#34;&#39;, &#39;&#39;),
+                    &#39;sin&#39;: int(detail[3]),
+                    &#39;priority&#39;: int(detail[2]),
+                    &#39;state&#39;: int(detail[4]),
+                    &#39;state_name&#39;: MessageState(int(detail[4])).name,
+                    &#39;size&#39;: int(detail[5]),
+                    &#39;received&#39;: int(detail[6])
+                    })
+    return waiting</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.s_register_get"><code class="name flex">
+<span>def <span class="ident">s_register_get</span></span>(<span>self, register: str|int) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the value of the S-register requested.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>register</code></strong></dt>
+<dd>The register name/number (e.g. S80)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>integer value or None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def s_register_get(self, register: &#39;str|int&#39;) -&gt; int:
+    &#34;&#34;&#34;Gets the value of the S-register requested.
+
+    Args:
+        register: The register name/number (e.g. S80)
+
+    Returns:
+        integer value or None
+    &#34;&#34;&#34;
+    if isinstance(register, str):
+        try:
+            register = int(register.replace(&#39;S&#39;, &#39;&#39;))
+        except ValueError:
+            raise ValueError(f&#39;Invalid S-register {register}&#39;)
+    _log.debug(f&#39;Querying S-register {register}&#39;)
+    response = self.atcommand(f&#39;ATS{register}?&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    return int(response[0])</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.s_register_get_definitions"><code class="name flex">
+<span>def <span class="ident">s_register_get_definitions</span></span>(<span>self) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>(Future) Gets a list of S-register definitions.</p>
+<p>R=read-only, S=signed, V=volatile</p>
+<h2 id="returns">Returns</h2>
+<p>tuple(register, RSV, current, default, minimum, maximum) or None</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def s_register_get_definitions(self) -&gt; list:
+    &#34;&#34;&#34;(Future) Gets a list of S-register definitions.
+    
+    R=read-only, S=signed, V=volatile
+    
+    Returns:
+        tuple(register, RSV, current, default, minimum, maximum) or None
+    &#34;&#34;&#34;
+    raise NotImplementedError
+    #: AT%SREG
+    #: Sreg, RSV, CurrentVal, DefaultVal, MinimumVal, MaximumVal
+    response = self.atcommand(&#39;AT%SREG&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    response.remove(&#39;OK&#39;)
+    # header_rows = response[0:1]
+    # Sreg RSV CurrentVal NvmValue DefaultValue MinimumValue MaximumVal
+    reg_defs = response[2:]
+    registers = []
+    for row in reg_defs:
+        reg_def = row.split(&#39; &#39;)
+        reg_def = tuple(filter(None, reg_def))
+        registers.append(reg_def)
+    return registers</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.satellite_status_get"><code class="name flex">
+<span>def <span class="ident">satellite_status_get</span></span>(<span>self) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets various satellite acquisition metrics.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary including:
+- <code>satellite</code> (str)
+- <code>beam_id</code> (str)
+- <code>network_status</code> (str)
+- <code>control_state</code> (int)
+- <code>beamsearch</code> (str)
+- <code>beamsearch_state</code> (int)
+- <code>snr</code> (float)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def satellite_status_get(self) -&gt; dict:
+    &#34;&#34;&#34;Gets various satellite acquisition metrics.
+    
+    Returns:
+        Dictionary including:
+        - `satellite` (str)
+        - `beam_id` (str)
+        - `network_status` (str)
+        - `control_state` (int)
+        - `beamsearch` (str)
+        - `beamsearch_state` (int)
+        - `snr` (float)
+    
+    &#34;&#34;&#34;
+    if (&#39;sat_status&#39; in self._holdoffs and
+        int(time()) - self._holdoffs[&#39;sat_status&#39;] &lt; SAT_STATUS_HOLDOFF):
+        _log.debug(&#39;Ignoring repeat satellite status query&#39;)
+        return
+    _log.debug(&#39;Querying satellite status&#39;)
+    self._holdoffs[&#39;sat_status&#39;] = int(time())
+    # Trace events:
+    #   Class 3 Subclass 1 C/N, Satellite Control State, Beam Search State
+    #   Class 3 Subclass 5 Geo Beam ID
+    command = (&#39;ATS90=3 S91=1 S92=1 S116? S122? S123?&#39;
+               &#39; S90=3 S91=5 S92=1 S102?&#39;)
+    response = self.atcommand(command)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    self._snr = round(int(response[0]) / 100.0, 2)
+    self._ctrl_state = int(response[1])
+    self._beamsearch_state = int(response[2])
+    self._geo_beam_id = int(response[3])
+    return {
+        &#39;satellite&#39;: self.satellite,
+        &#39;beam_id&#39;: self.beam_id,
+        &#39;network_status&#39;: self.network_status,
+        &#39;control_state&#39;: self._ctrl_state,
+        &#39;beamsearch&#39;: self.beamsearch,
+        &#39;beamsearch_state&#39;: self._beamsearch_state,
+        &#39;snr&#39;: self._snr,
+    }</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.shutdown"><code class="name flex">
+<span>def <span class="ident">shutdown</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Tell the modem to prepare for power-down.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def shutdown(self) -&gt; bool:
+    &#34;&#34;&#34;Tell the modem to prepare for power-down.&#34;&#34;&#34;
+    _log.warning(&#39;Attempting to shut down&#39;)
+    response = self.atcommand(&#39;AT%OFF&#39;)
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    return True</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.trace_event_get"><code class="name flex">
+<span>def <span class="ident">trace_event_get</span></span>(<span>self, event: tuple[int, int], meta: bool = False) ‑> str|dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the cached event by class/subclass.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>event</code></strong></dt>
+<dd>tuple of (class, subclass)</dd>
+<dt><strong><code>meta</code></strong></dt>
+<dd>Returns the raw text string if False (default)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>String if meta is True, else metadata dictionary including:
+- <code>data_count</code> (int)
+- <code>signed_bitmask</code> (str)
+- <code>mobile_id</code> (str)
+- <code>timestamp</code> (str)
+- <code>class</code> (str)
+- <code>subclass</code> (str)
+- <code>priority</code> (str)
+- <code>data</code> (str)</p>
+<h2 id="raises">Raises</h2>
+<p>AtException</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def trace_event_get(self,
+                    event: &#39;tuple[int, int]&#39;,
+                    meta: bool = False,
+                    ) -&gt; &#39;str|dict&#39;:
+    &#34;&#34;&#34;Gets the cached event by class/subclass.
+
+    Args:
+        event: tuple of (class, subclass)
+        meta: Returns the raw text string if False (default)
+    
+    Returns:
+        String if meta is True, else metadata dictionary including:
+        - `data_count` (int)
+        - `signed_bitmask` (str)
+        - `mobile_id` (str)
+        - `timestamp` (str)
+        - `class` (str)
+        - `subclass` (str)
+        - `priority` (str)
+        - `data` (str)
+    
+    Raises:
+        AtException
+
+    &#34;&#34;&#34;
+    def signed32(n: int) -&gt; int:
+        &#34;&#34;&#34;Converts an integer to signed 32-bit format.&#34;&#34;&#34;
+        n = n &amp; 0xffffffff
+        return (n ^ 0x80000000) - 0x80000000
+    def event_timestamp(log_timestamp: int) -&gt; int:
+        offset = int(datetime(2001, 1, 1, tzinfo=timezone.utc).timestamp())
+        return log_timestamp + offset
+    if not (isinstance(event, tuple) and len(event) == 2):
+        raise ValueError(&#39;event_get expects (class, subclass)&#39;)
+    trace_class, trace_subclass = event
+    response = self.atcommand(f&#39;AT%EVNT={trace_class},{trace_subclass}&#39;,
+                              filter=[&#39;%EVNT:&#39;])
+    #: res %EVNT: &lt;dataCount&gt;,&lt;signedBitmask&gt;,&lt;MTID&gt;,&lt;timestamp&gt;,
+    # &lt;class&gt;,&lt;subclass&gt;,&lt;priority&gt;,&lt;data0&gt;,&lt;data1&gt;,..,&lt;dataN&gt;
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    if not meta:
+        return response[0]
+    eventdata = response[0].split(&#39;,&#39;)
+    event = {
+        &#39;data_count&#39;: int(eventdata[0]),
+        &#39;signed_bitmask&#39;: bin(int(eventdata[1])),
+        &#39;timestamp&#39;: event_timestamp(int(eventdata[3])),
+        &#39;class&#39;: int(eventdata[4]),
+        &#39;subclass&#39;: int(eventdata[5]),
+        &#39;priority&#39;: int(eventdata[6]),
+        &#39;raw_data&#39;: eventdata[7:],
+        &#39;data&#39;: {},
+    }
+    iso_time = datetime.utcfromtimestamp(event[&#39;timestamp&#39;]).isoformat()
+    event[&#39;isotime&#39;] = iso_time[:19] + &#39;Z&#39;
+    bitmask = event[&#39;signed_bitmask&#39;][2:]
+    while len(bitmask) &lt; event[&#39;data_count&#39;]:
+        bitmask = &#39;0&#39; + bitmask
+    for i, bit in enumerate(reversed(bitmask)):
+        if bit == &#39;1&#39;:
+            event[&#39;raw_data&#39;][i] = signed32(int(event[&#39;raw_data&#39;][i]))
+        else:
+            event[&#39;raw_data&#39;][i] = int(event[&#39;raw_data&#39;][i])
+    # TODO lookup class/subclass definitions
+    for trace_def in EVENT_TRACES:
+        if trace_def.trace_class != trace_class:
+            continue
+        if trace_def.trace_subclass != trace_subclass:
+            continue
+        try:
+            for i, value in enumerate(event[&#39;raw_data&#39;]):
+                tag, data_type = trace_def.data[i]
+                new_value = value
+                if &#39;flags&#39; in tag and isinstance(data_type, dict):
+                    new_value = []
+                    for flag in data_type:
+                        if flag &amp; value:
+                            new_value.append(data_type[flag])
+                elif str(tag).endswith(&#39;_state&#39;):
+                    if isinstance(data_type, dict):
+                        new_value = data_type[value]
+                    else:
+                        try:   #: IntEnum
+                            new_value = data_type(value)
+                        except:
+                            pass   # new_value stays as value
+                event[&#39;data&#39;][tag] = new_value
+        except Exception as err:
+            _log.exception(err)
+    return event</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.modem.IdpModem.utc_time"><code class="name flex">
+<span>def <span class="ident">utc_time</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets current UTC time of the modem in ISO8601 format.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def utc_time(self) -&gt; str:
+    &#34;&#34;&#34;Gets current UTC time of the modem in ISO8601 format.&#34;&#34;&#34;
+    _log.debug(&#39;Querying system time&#39;)
+    response = self.atcommand(&#39;AT%UTC&#39;, filter=[&#39;%UTC:&#39;])
+    if response[0] == &#39;ERROR&#39;:
+        self._handle_at_error(response)
+    return response[0].replace(&#39; &#39;, &#39;T&#39;) + &#39;Z&#39;</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.threaded.modem.ModemBusy"><code class="flex name class">
+<span>class <span class="ident">ModemBusy</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Indicates the modem is busy processing a prior command.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ModemBusy(Exception):
+    &#34;&#34;&#34;Indicates the modem is busy processing a prior command.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="idpmodem.threaded" href="index.html">idpmodem.threaded</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="idpmodem.threaded.modem.AtConfiguration" href="#idpmodem.threaded.modem.AtConfiguration">AtConfiguration</a></code></h4>
+</li>
+<li>
+<h4><code><a title="idpmodem.threaded.modem.IdpModem" href="#idpmodem.threaded.modem.IdpModem">IdpModem</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.threaded.modem.IdpModem.BAUD_RATES" href="#idpmodem.threaded.modem.IdpModem.BAUD_RATES">BAUD_RATES</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.OTHER_KWARGS" href="#idpmodem.threaded.modem.IdpModem.OTHER_KWARGS">OTHER_KWARGS</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.PROTOCOL_KWARGS" href="#idpmodem.threaded.modem.IdpModem.PROTOCOL_KWARGS">PROTOCOL_KWARGS</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.SERIAL_KWARGS" href="#idpmodem.threaded.modem.IdpModem.SERIAL_KWARGS">SERIAL_KWARGS</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.atcommand" href="#idpmodem.threaded.modem.IdpModem.atcommand">atcommand</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.baudrate" href="#idpmodem.threaded.modem.IdpModem.baudrate">baudrate</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.beam_id" href="#idpmodem.threaded.modem.IdpModem.beam_id">beam_id</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.beamsearch" href="#idpmodem.threaded.modem.IdpModem.beamsearch">beamsearch</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.beamsearch_state" href="#idpmodem.threaded.modem.IdpModem.beamsearch_state">beamsearch_state</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.config_init" href="#idpmodem.threaded.modem.IdpModem.config_init">config_init</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.config_nvm_save" href="#idpmodem.threaded.modem.IdpModem.config_nvm_save">config_nvm_save</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.config_report" href="#idpmodem.threaded.modem.IdpModem.config_report">config_report</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.config_restore_factory" href="#idpmodem.threaded.modem.IdpModem.config_restore_factory">config_restore_factory</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.config_restore_nvm" href="#idpmodem.threaded.modem.IdpModem.config_restore_nvm">config_restore_nvm</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.config_volatile_report" href="#idpmodem.threaded.modem.IdpModem.config_volatile_report">config_volatile_report</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.connect" href="#idpmodem.threaded.modem.IdpModem.connect">connect</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.connected" href="#idpmodem.threaded.modem.IdpModem.connected">connected</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.control_state" href="#idpmodem.threaded.modem.IdpModem.control_state">control_state</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.crc" href="#idpmodem.threaded.modem.IdpModem.crc">crc</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.crc_enable" href="#idpmodem.threaded.modem.IdpModem.crc_enable">crc_enable</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.disconnect" href="#idpmodem.threaded.modem.IdpModem.disconnect">disconnect</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.event_notification_monitor" href="#idpmodem.threaded.modem.IdpModem.event_notification_monitor">event_notification_monitor</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.event_notifications" href="#idpmodem.threaded.modem.IdpModem.event_notifications">event_notifications</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.gnss_continuous_set" href="#idpmodem.threaded.modem.IdpModem.gnss_continuous_set">gnss_continuous_set</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.gnss_jamming" href="#idpmodem.threaded.modem.IdpModem.gnss_jamming">gnss_jamming</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.gnss_mode" href="#idpmodem.threaded.modem.IdpModem.gnss_mode">gnss_mode</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.gnss_nmea_get" href="#idpmodem.threaded.modem.IdpModem.gnss_nmea_get">gnss_nmea_get</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.gnss_refresh_interval" href="#idpmodem.threaded.modem.IdpModem.gnss_refresh_interval">gnss_refresh_interval</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.location" href="#idpmodem.threaded.modem.IdpModem.location">location</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.manufacturer" href="#idpmodem.threaded.modem.IdpModem.manufacturer">manufacturer</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.message_mo_cancel" href="#idpmodem.threaded.modem.IdpModem.message_mo_cancel">message_mo_cancel</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.message_mo_clear" href="#idpmodem.threaded.modem.IdpModem.message_mo_clear">message_mo_clear</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.message_mo_send" href="#idpmodem.threaded.modem.IdpModem.message_mo_send">message_mo_send</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.message_mo_state" href="#idpmodem.threaded.modem.IdpModem.message_mo_state">message_mo_state</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.message_mt_delete" href="#idpmodem.threaded.modem.IdpModem.message_mt_delete">message_mt_delete</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.message_mt_get" href="#idpmodem.threaded.modem.IdpModem.message_mt_get">message_mt_get</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.message_mt_waiting" href="#idpmodem.threaded.modem.IdpModem.message_mt_waiting">message_mt_waiting</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.mobile_id" href="#idpmodem.threaded.modem.IdpModem.mobile_id">mobile_id</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.model" href="#idpmodem.threaded.modem.IdpModem.model">model</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.network_status" href="#idpmodem.threaded.modem.IdpModem.network_status">network_status</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.power_mode" href="#idpmodem.threaded.modem.IdpModem.power_mode">power_mode</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.registered" href="#idpmodem.threaded.modem.IdpModem.registered">registered</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.s_register_get" href="#idpmodem.threaded.modem.IdpModem.s_register_get">s_register_get</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.s_register_get_definitions" href="#idpmodem.threaded.modem.IdpModem.s_register_get_definitions">s_register_get_definitions</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.satellite" href="#idpmodem.threaded.modem.IdpModem.satellite">satellite</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.satellite_status_get" href="#idpmodem.threaded.modem.IdpModem.satellite_status_get">satellite_status_get</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.shutdown" href="#idpmodem.threaded.modem.IdpModem.shutdown">shutdown</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.signal_quality" href="#idpmodem.threaded.modem.IdpModem.signal_quality">signal_quality</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.snr" href="#idpmodem.threaded.modem.IdpModem.snr">snr</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.temperature" href="#idpmodem.threaded.modem.IdpModem.temperature">temperature</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.trace_event_get" href="#idpmodem.threaded.modem.IdpModem.trace_event_get">trace_event_get</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.trace_event_monitor" href="#idpmodem.threaded.modem.IdpModem.trace_event_monitor">trace_event_monitor</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.trace_events_cached" href="#idpmodem.threaded.modem.IdpModem.trace_events_cached">trace_events_cached</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.transmitter_status" href="#idpmodem.threaded.modem.IdpModem.transmitter_status">transmitter_status</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.utc_time" href="#idpmodem.threaded.modem.IdpModem.utc_time">utc_time</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.versions" href="#idpmodem.threaded.modem.IdpModem.versions">versions</a></code></li>
+<li><code><a title="idpmodem.threaded.modem.IdpModem.wakeup_period" href="#idpmodem.threaded.modem.IdpModem.wakeup_period">wakeup_period</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.threaded.modem.ModemBusy" href="#idpmodem.threaded.modem.ModemBusy">ModemBusy</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

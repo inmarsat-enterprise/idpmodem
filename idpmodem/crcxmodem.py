@@ -1,7 +1,10 @@
 #!/usr/bin/env python
-"""
-| Calculates CRC-16-CCITT checksum for xmodem, intended for use with SkyWave/ORBCOMM IDP modem.
-| Borrowed from https://stackoverflow.com/questions/25239423/crc-ccitt-16-bit-python-manual-calculation.
+"""Calculates CRC-16-CCITT checksum for xmodem.
+
+Intended for use with SkyWave/ORBCOMM IDP modem.
+
+Thanks to: https://stackoverflow.com/questions/25239423/crc-ccitt-16-bit-python-manual-calculation.
+
 """
 import logging
 

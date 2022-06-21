@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>idpmodem.threaded.atcommand API documentation</title>
+<meta name="description" content="AT command protocol (threaded) for Inmarsat IDP satellite messaging modems …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>idpmodem.threaded.atcommand</code></h1>
+</header>
+<section id="section-intro">
+<p>AT command protocol (threaded) for Inmarsat IDP satellite messaging modems.</p>
+<p>This module provides a threaded serial interface that sends and receives
+AT commands, decoding/abstracting typically used operations.
+Based on the PySerial threaded protocol factory, using a byte reader.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+&#34;&#34;&#34;AT command protocol (threaded) for Inmarsat IDP satellite messaging modems.
+
+This module provides a threaded serial interface that sends and receives 
+AT commands, decoding/abstracting typically used operations.
+Based on the PySerial threaded protocol factory, using a byte reader.
+
+&#34;&#34;&#34;
+
+import logging
+import queue
+import threading
+from time import sleep, time
+
+from serial import Serial, SerialException
+from serial.threaded import LineReader, ReaderThread, Protocol
+
+from idpmodem.aterror import AtCrcError, AtTimeout
+from idpmodem.crcxmodem import apply_crc, validate_crc
+
+
+_log = logging.getLogger(__name__)
+
+
+class AtProtocol(LineReader):
+    &#34;&#34;&#34;Threaded protocol factory for the IDP Modem.
+    
+    Maintains queues for requests, responses and unsolicited reports using
+    task objects with callbacks.
+
+    Accepts only one AT command at a time.  Handles command echo 
+    terminated with &lt;cr&gt;, verbose response framed with &lt;cr&gt;&lt;lf&gt;, 
+    unsolicited data terminated with &lt;lf&gt;, and CRC error checking.
+
+    Attributes:
+        alive (bool): True while the factory is running.
+        crc (bool): Indicates if CRC error checking is enabled.
+        pending_command (str): The AT command being processed.
+        responses (Queue): Queued responses to be processed as a line.
+        unsolicited (Queue): Unexpected data received if no pending command.
+        event_callback (Callable): optional callback function for 
+        unexpected data
+    &#34;&#34;&#34;
+
+    TERMINATOR = &#39;\r&#39;
+    ENCODING = &#39;utf-8&#39;
+    UNICODE_HANDLING = &#39;replace&#39;
+    DEFAULT_TIMEOUT = 5
+
+    def __init__(self,
+                 event_callback: callable = None,
+                 at_timeout: int = 5):
+        &#34;&#34;&#34;Initialize with CRC and optional callback
+
+        Args:
+            crc: Use CRC error checking (for long serial line).
+            event_callback: Handler for non-command data.
+
+        &#34;&#34;&#34;
+        super().__init__()
+        # self.buffer = bytearray()   #: inherited from LineReader/Packetizer
+        # self.transport = None   #: inherited from LineReader/Packetizer
+        self.crc = False   #: This will be inferred from communications
+        self.alive = True
+        self.at_timeout = at_timeout
+        self.pending_command = None
+        self.command_time = None
+        self.response_time = None
+        self.responses = queue.Queue()
+        self.events = queue.Queue()
+        self._event_thread = threading.Thread(target=self._run_event,
+                                              name=&#39;at_unsolicited&#39;,
+                                              daemon=True)
+        self._event_thread.start()
+        self._lock = threading.Lock()
+        self.event_callback = event_callback
+
+    # def connection_made(self, transport):
+    #     &#34;&#34;&#34;Store transport - inherited from LineReader/Packetizer.&#34;&#34;&#34;
+    #     self.transport = transport
+
+    # def connection_lost(self, exc):
+    #     &#34;&#34;&#34;Forget transport - inherited from LineReader/Packetizer.&#34;&#34;&#34;
+    #     self.transport = None
+    #     if isinstance(exc, Exception):
+    #         raise exc
+
+    def data_received(self, data: bytearray):
+        &#34;&#34;&#34;Buffer received data and create packets for handlers.
+
+        handle_packet() is inherited from LineReader.
+
+        Args:
+            data: a data byte received from the serial device
+
+        &#34;&#34;&#34;
+        self.buffer.extend(data)
+        if self.pending_command is not None:
+            if data == b&#39;\r&#39;:
+                #: Echo case
+                if self.buffer == self.pending_command.encode() + b&#39;\r&#39;:
+                    echo = self.buffer
+                    #: reset buffer for response
+                    self.buffer = bytearray(b&#39;&#39;)
+                    self.handle_packet(echo)
+            elif data == b&#39;\n&#39;:
+                if (self.buffer != bytearray(b&#39;\r\n&#39;)
+                    and self.buffer != bytearray(b&#39;\n&#39;)):
+                    #: Framed/multiline response, error code or CRC
+                    packet = self.buffer
+                    self.buffer = bytearray(b&#39;&#39;)
+                    self.handle_packet(packet)
+                elif self.buffer == bytearray(b&#39;\n&#39;):
+                    #: (Unexpected) drop any empty lines
+                    self.buffer = bytearray(b&#39;&#39;)
+        else:   # no pending command
+            if data == b&#39;\n&#39;:
+                unsolicited = self.buffer
+                self.buffer = bytearray(b&#39;&#39;)
+                self.handle_packet(unsolicited)
+
+    # def handle_packet(self, packet: bytearray):
+    #     &#34;&#34;&#34;Decodes packet(s) - inherited from LineReader.&#34;&#34;&#34;
+    #     self.handle_line(packet.decode(self.ENCODING, self.UNICODE_HANDLING))
+
+    def handle_line(self, line: str):
+        &#34;&#34;&#34;Enqueues lines for parsing by command handler.
+
+        Args:
+            line: The unicode string received from the serial port.
+        &#34;&#34;&#34;
+        if self.pending_command is not None:
+            self.responses.put(line)
+        else:
+            if line != &#39;\n&#39;:
+                self.events.put(line)
+
+    def write_line(self, text):
+        &#34;&#34;&#34;Appends a terminator, encodes and writes text to the transport.&#34;&#34;&#34;
+        send = text + self.TERMINATOR
+        self.transport.write(send.encode(self.ENCODING, self.UNICODE_HANDLING))
+    
+    def stop(self):
+        &#34;&#34;&#34;Stop the event processing thread and abort pending commands.&#34;&#34;&#34;
+        self.alive = False
+        self.events.put(None)
+        self.responses.put(&#39;&lt;exit&gt;&#39;)
+
+    def _run_event(self):
+        &#34;&#34;&#34;Process events (unsolicited messages) in a separate thread.
+        
+        Ensures the command response thread is not blocked.
+
+        Raises:
+            AtUnsolicited: If an unexpected handling error occurs.
+        
+        &#34;&#34;&#34;
+        while self.alive:
+            try:
+                self.handle_event(self.events.get())
+            except:
+                _log.exception(f&#39;Unexpected _run_event error&#39;)
+
+    def handle_event(self, unsolicited: str):
+        &#34;&#34;&#34;Calls a user-defined function with the unicode string.
+
+        Args:
+            unsolicited: A unicode string terminated by &lt;lf&gt;.
+
+        &#34;&#34;&#34;
+        if unsolicited is not None:
+            if self.event_callback is not None:
+                self.event_callback(unsolicited)
+            else: 
+                unsolicited = unsolicited.replace(&#39;\r&#39;, &#39;&lt;cr&gt;&#39;)
+                unsolicited = unsolicited.replace(&#39;\n&#39;, &#39;&lt;lf&gt;&#39;)
+                _log.warning(f&#39;Unhandled event: {unsolicited}&#39;)
+
+    def _clean_response(self,
+                        lines: &#39;list[str]&#39;,
+                        filter: &#39;list[str]&#39; = [],
+                        debug: bool = False,
+                        ) -&gt; &#39;list[str]&#39;:
+        &#34;&#34;&#34;Removes empty lines from response and returns a list.
+        
+        Args:
+            lines: A list of reponse lines.
+            filter: Optional list of strings/substrings to filter from response.
+            debug: If True, logs the command latency
+        
+        Returns:
+            List with filtered and stripped lines
+
+        Raises:
+            ValueError if filter is invalid.
+
+        &#34;&#34;&#34;
+        if filter and not isinstance(filter, list):
+            raise ValueError(&#39;filter must be a list of strings&#39;)
+        if debug:
+            latency = round(self.response_time - self.command_time, 3)
+            _log.debug(f&#39;Command {self.pending_command}&#39;
+                       f&#39; latency: {latency} seconds&#39;)
+        for l in range(len(lines)):
+            lines[l] = lines[l].strip()
+            if isinstance(filter, list) and len(filter) &gt; 0:
+                for s in filter:
+                    if lines[l].startswith(s):
+                        s += &#39;:&#39; if lines[l].startswith(f&#39;{s}:&#39;) else &#39;&#39;
+                        lines[l] = lines[l].replace(s, &#39;&#39;).strip()
+        return [x for x in lines if x != &#39;&#39;]
+
+    def command(self,
+                command: str,
+                filter: &#39;list[str]&#39; = [],
+                timeout: int = 5,
+                debug: bool = False,
+                ) -&gt; &#39;list[str]&#39;:
+        &#34;&#34;&#34;Send an AT command and wait for the response.
+
+        Returns the response as a list.  If an error response code was
+        received then &#39;ERROR&#39; will be the only string in the list.
+
+        .. todo: generalize for OK-only response, and provide error detail
+
+        Args:
+            command: The AT command
+            timeout: Time to wait for response in seconds (default 5)
+        
+        Returns:
+            A list of strings. The list will be [&#39;ERROR&#39;] in case of a problem.
+
+        Raises:
+            AtCrcError if CRC does not match.
+            AtTimeout if the request timed out.
+
+        &#34;&#34;&#34;
+        with self._lock:  # ensure that just one thread is sending commands at once
+            try:
+                oldbuffer: str = self.responses.get(timeout=0.05)
+                oldbuffer = oldbuffer.replace(&#39;\r&#39;, &#39;\\r&#39;).replace(&#39;\n&#39;, &#39;\\n&#39;)
+                _log.warning(f&#39;Cleared old buffer: {oldbuffer}&#39;)
+            except queue.Empty:
+                pass
+            timeout = 1 if timeout &lt; 1 else timeout
+            command = apply_crc(command) if self.crc else command
+            self.pending_command = command
+            self.command_time = time()
+            self.response_time = None
+            self.write_line(command)
+            lines = []
+            while self.pending_command is not None:
+                try:
+                    line: str = self.responses.get(timeout=timeout)
+                    content = line.strip()
+                    if self.response_time is None:
+                        self.response_time = time()
+                    if content == command:
+                        pass   # ignore echo
+                    elif content in [&#39;OK&#39;, &#39;ERROR&#39;]:
+                        lines.append(line)
+                        if content == &#39;OK&#39;:
+                            if self.crc and &#39;%CRC=0&#39; in self.pending_command:
+                                _log.debug(&#39;CRC disabled by command&#39;)
+                                self.crc = False
+                            elif (not self.crc and
+                                  &#39;%CRC=1&#39; in self.pending_command):
+                                _log.debug(&#39;CRC enabled for next command&#39;)
+                                self.crc = True
+                            if not self.crc:
+                                return self._clean_response(lines, filter, debug)
+                        # else wait for CRC or timeout
+                    elif content.startswith(&#39;*&#39;):
+                        if not self.crc:
+                            if not &#39;%CRC=1&#39; in self.pending_command:
+                                _log.debug(&#39;Found CRC enabled&#39;)
+                            self.crc = True
+                        crc = content.replace(&#39;*&#39;, &#39;&#39;)
+                        if not validate_crc(&#39;&#39;.join(lines), crc):
+                            raise AtCrcError(f&#39;INVALID_CRC_RESPONSE&#39;)
+                        return self._clean_response(lines, filter, debug)
+                    else:   #: including &#39;ERROR&#39;
+                        lines.append(line)
+                        # keep parsing in case CRC follows
+                except queue.Empty:
+                    if not self.response_time:
+                        raise AtTimeout(f&#39;TIMEOUT ({timeout}s)&#39;)
+                    return self._clean_response(lines, filter, debug)
+
+
+class ByteReaderThread(ReaderThread):
+    &#34;&#34;&#34;Modifies the ReaderThread class to process bytes individually.
+    
+    This is required due to complexities of optional checksum use 
+    for long serial lines.
+
+    &#34;&#34;&#34;
+    def __init__(self,
+                 serial_instance: Serial,
+                 protocol_factory: Protocol,
+                 **kwargs):
+        super().__init__(serial_instance, protocol_factory)
+        self.name = None
+        self.kwargs = kwargs
+
+    def run(self):
+        &#34;&#34;&#34;Reader loop&#34;&#34;&#34;
+        self.name = f&#39;bytereader@{self.serial.name}&#39;
+        if not hasattr(self.serial, &#39;cancel_read&#39;):
+            self.serial.timeout = 1
+        self.protocol = self.protocol_factory(**self.kwargs)
+        try:
+            self.protocol.connection_made(self)
+        except Exception as err:
+            self.alive = False
+            self.protocol.connection_lost(err)
+            self._connection_made.set()
+            return
+        error = None
+        self._connection_made.set()
+        data = bytearray()
+        while self.alive and self.serial.is_open:
+            try:
+                # read all that is there or wait for one byte (blocking)
+                if self.serial.in_waiting &gt; 0:
+                    data = self.serial.read()
+                    self.protocol.data_received(data)
+                sleep(0.001)
+            except SerialException as err:
+                # probably some I/O problem such as disconnected USB serial
+                # adapters -&gt; exit
+                error = err
+                break
+            except Exception as err:
+                error = err
+                break
+        self.alive = False
+        self.protocol.connection_lost(error)
+        self.protocol = None</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="idpmodem.threaded.atcommand.AtProtocol"><code class="flex name class">
+<span>class <span class="ident">AtProtocol</span></span>
+<span>(</span><span>event_callback: <built-in function callable> = None, at_timeout: int = 5)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Threaded protocol factory for the IDP Modem.</p>
+<p>Maintains queues for requests, responses and unsolicited reports using
+task objects with callbacks.</p>
+<p>Accepts only one AT command at a time.
+Handles command echo
+terminated with <cr>, verbose response framed with <cr><lf>,
+unsolicited data terminated with <lf>, and CRC error checking.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>alive</code></strong> :&ensp;<code>bool</code></dt>
+<dd>True while the factory is running.</dd>
+<dt><strong><code>crc</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indicates if CRC error checking is enabled.</dd>
+<dt><strong><code>pending_command</code></strong> :&ensp;<code>str</code></dt>
+<dd>The AT command being processed.</dd>
+<dt><strong><code>responses</code></strong> :&ensp;<code>Queue</code></dt>
+<dd>Queued responses to be processed as a line.</dd>
+<dt><strong><code>unsolicited</code></strong> :&ensp;<code>Queue</code></dt>
+<dd>Unexpected data received if no pending command.</dd>
+<dt><strong><code>event_callback</code></strong> :&ensp;<code>Callable</code></dt>
+<dd>optional callback function for </dd>
+</dl>
+<p>unexpected data
+Initialize with CRC and optional callback</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>crc</code></strong></dt>
+<dd>Use CRC error checking (for long serial line).</dd>
+<dt><strong><code>event_callback</code></strong></dt>
+<dd>Handler for non-command data.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AtProtocol(LineReader):
+    &#34;&#34;&#34;Threaded protocol factory for the IDP Modem.
+    
+    Maintains queues for requests, responses and unsolicited reports using
+    task objects with callbacks.
+
+    Accepts only one AT command at a time.  Handles command echo 
+    terminated with &lt;cr&gt;, verbose response framed with &lt;cr&gt;&lt;lf&gt;, 
+    unsolicited data terminated with &lt;lf&gt;, and CRC error checking.
+
+    Attributes:
+        alive (bool): True while the factory is running.
+        crc (bool): Indicates if CRC error checking is enabled.
+        pending_command (str): The AT command being processed.
+        responses (Queue): Queued responses to be processed as a line.
+        unsolicited (Queue): Unexpected data received if no pending command.
+        event_callback (Callable): optional callback function for 
+        unexpected data
+    &#34;&#34;&#34;
+
+    TERMINATOR = &#39;\r&#39;
+    ENCODING = &#39;utf-8&#39;
+    UNICODE_HANDLING = &#39;replace&#39;
+    DEFAULT_TIMEOUT = 5
+
+    def __init__(self,
+                 event_callback: callable = None,
+                 at_timeout: int = 5):
+        &#34;&#34;&#34;Initialize with CRC and optional callback
+
+        Args:
+            crc: Use CRC error checking (for long serial line).
+            event_callback: Handler for non-command data.
+
+        &#34;&#34;&#34;
+        super().__init__()
+        # self.buffer = bytearray()   #: inherited from LineReader/Packetizer
+        # self.transport = None   #: inherited from LineReader/Packetizer
+        self.crc = False   #: This will be inferred from communications
+        self.alive = True
+        self.at_timeout = at_timeout
+        self.pending_command = None
+        self.command_time = None
+        self.response_time = None
+        self.responses = queue.Queue()
+        self.events = queue.Queue()
+        self._event_thread = threading.Thread(target=self._run_event,
+                                              name=&#39;at_unsolicited&#39;,
+                                              daemon=True)
+        self._event_thread.start()
+        self._lock = threading.Lock()
+        self.event_callback = event_callback
+
+    # def connection_made(self, transport):
+    #     &#34;&#34;&#34;Store transport - inherited from LineReader/Packetizer.&#34;&#34;&#34;
+    #     self.transport = transport
+
+    # def connection_lost(self, exc):
+    #     &#34;&#34;&#34;Forget transport - inherited from LineReader/Packetizer.&#34;&#34;&#34;
+    #     self.transport = None
+    #     if isinstance(exc, Exception):
+    #         raise exc
+
+    def data_received(self, data: bytearray):
+        &#34;&#34;&#34;Buffer received data and create packets for handlers.
+
+        handle_packet() is inherited from LineReader.
+
+        Args:
+            data: a data byte received from the serial device
+
+        &#34;&#34;&#34;
+        self.buffer.extend(data)
+        if self.pending_command is not None:
+            if data == b&#39;\r&#39;:
+                #: Echo case
+                if self.buffer == self.pending_command.encode() + b&#39;\r&#39;:
+                    echo = self.buffer
+                    #: reset buffer for response
+                    self.buffer = bytearray(b&#39;&#39;)
+                    self.handle_packet(echo)
+            elif data == b&#39;\n&#39;:
+                if (self.buffer != bytearray(b&#39;\r\n&#39;)
+                    and self.buffer != bytearray(b&#39;\n&#39;)):
+                    #: Framed/multiline response, error code or CRC
+                    packet = self.buffer
+                    self.buffer = bytearray(b&#39;&#39;)
+                    self.handle_packet(packet)
+                elif self.buffer == bytearray(b&#39;\n&#39;):
+                    #: (Unexpected) drop any empty lines
+                    self.buffer = bytearray(b&#39;&#39;)
+        else:   # no pending command
+            if data == b&#39;\n&#39;:
+                unsolicited = self.buffer
+                self.buffer = bytearray(b&#39;&#39;)
+                self.handle_packet(unsolicited)
+
+    # def handle_packet(self, packet: bytearray):
+    #     &#34;&#34;&#34;Decodes packet(s) - inherited from LineReader.&#34;&#34;&#34;
+    #     self.handle_line(packet.decode(self.ENCODING, self.UNICODE_HANDLING))
+
+    def handle_line(self, line: str):
+        &#34;&#34;&#34;Enqueues lines for parsing by command handler.
+
+        Args:
+            line: The unicode string received from the serial port.
+        &#34;&#34;&#34;
+        if self.pending_command is not None:
+            self.responses.put(line)
+        else:
+            if line != &#39;\n&#39;:
+                self.events.put(line)
+
+    def write_line(self, text):
+        &#34;&#34;&#34;Appends a terminator, encodes and writes text to the transport.&#34;&#34;&#34;
+        send = text + self.TERMINATOR
+        self.transport.write(send.encode(self.ENCODING, self.UNICODE_HANDLING))
+    
+    def stop(self):
+        &#34;&#34;&#34;Stop the event processing thread and abort pending commands.&#34;&#34;&#34;
+        self.alive = False
+        self.events.put(None)
+        self.responses.put(&#39;&lt;exit&gt;&#39;)
+
+    def _run_event(self):
+        &#34;&#34;&#34;Process events (unsolicited messages) in a separate thread.
+        
+        Ensures the command response thread is not blocked.
+
+        Raises:
+            AtUnsolicited: If an unexpected handling error occurs.
+        
+        &#34;&#34;&#34;
+        while self.alive:
+            try:
+                self.handle_event(self.events.get())
+            except:
+                _log.exception(f&#39;Unexpected _run_event error&#39;)
+
+    def handle_event(self, unsolicited: str):
+        &#34;&#34;&#34;Calls a user-defined function with the unicode string.
+
+        Args:
+            unsolicited: A unicode string terminated by &lt;lf&gt;.
+
+        &#34;&#34;&#34;
+        if unsolicited is not None:
+            if self.event_callback is not None:
+                self.event_callback(unsolicited)
+            else: 
+                unsolicited = unsolicited.replace(&#39;\r&#39;, &#39;&lt;cr&gt;&#39;)
+                unsolicited = unsolicited.replace(&#39;\n&#39;, &#39;&lt;lf&gt;&#39;)
+                _log.warning(f&#39;Unhandled event: {unsolicited}&#39;)
+
+    def _clean_response(self,
+                        lines: &#39;list[str]&#39;,
+                        filter: &#39;list[str]&#39; = [],
+                        debug: bool = False,
+                        ) -&gt; &#39;list[str]&#39;:
+        &#34;&#34;&#34;Removes empty lines from response and returns a list.
+        
+        Args:
+            lines: A list of reponse lines.
+            filter: Optional list of strings/substrings to filter from response.
+            debug: If True, logs the command latency
+        
+        Returns:
+            List with filtered and stripped lines
+
+        Raises:
+            ValueError if filter is invalid.
+
+        &#34;&#34;&#34;
+        if filter and not isinstance(filter, list):
+            raise ValueError(&#39;filter must be a list of strings&#39;)
+        if debug:
+            latency = round(self.response_time - self.command_time, 3)
+            _log.debug(f&#39;Command {self.pending_command}&#39;
+                       f&#39; latency: {latency} seconds&#39;)
+        for l in range(len(lines)):
+            lines[l] = lines[l].strip()
+            if isinstance(filter, list) and len(filter) &gt; 0:
+                for s in filter:
+                    if lines[l].startswith(s):
+                        s += &#39;:&#39; if lines[l].startswith(f&#39;{s}:&#39;) else &#39;&#39;
+                        lines[l] = lines[l].replace(s, &#39;&#39;).strip()
+        return [x for x in lines if x != &#39;&#39;]
+
+    def command(self,
+                command: str,
+                filter: &#39;list[str]&#39; = [],
+                timeout: int = 5,
+                debug: bool = False,
+                ) -&gt; &#39;list[str]&#39;:
+        &#34;&#34;&#34;Send an AT command and wait for the response.
+
+        Returns the response as a list.  If an error response code was
+        received then &#39;ERROR&#39; will be the only string in the list.
+
+        .. todo: generalize for OK-only response, and provide error detail
+
+        Args:
+            command: The AT command
+            timeout: Time to wait for response in seconds (default 5)
+        
+        Returns:
+            A list of strings. The list will be [&#39;ERROR&#39;] in case of a problem.
+
+        Raises:
+            AtCrcError if CRC does not match.
+            AtTimeout if the request timed out.
+
+        &#34;&#34;&#34;
+        with self._lock:  # ensure that just one thread is sending commands at once
+            try:
+                oldbuffer: str = self.responses.get(timeout=0.05)
+                oldbuffer = oldbuffer.replace(&#39;\r&#39;, &#39;\\r&#39;).replace(&#39;\n&#39;, &#39;\\n&#39;)
+                _log.warning(f&#39;Cleared old buffer: {oldbuffer}&#39;)
+            except queue.Empty:
+                pass
+            timeout = 1 if timeout &lt; 1 else timeout
+            command = apply_crc(command) if self.crc else command
+            self.pending_command = command
+            self.command_time = time()
+            self.response_time = None
+            self.write_line(command)
+            lines = []
+            while self.pending_command is not None:
+                try:
+                    line: str = self.responses.get(timeout=timeout)
+                    content = line.strip()
+                    if self.response_time is None:
+                        self.response_time = time()
+                    if content == command:
+                        pass   # ignore echo
+                    elif content in [&#39;OK&#39;, &#39;ERROR&#39;]:
+                        lines.append(line)
+                        if content == &#39;OK&#39;:
+                            if self.crc and &#39;%CRC=0&#39; in self.pending_command:
+                                _log.debug(&#39;CRC disabled by command&#39;)
+                                self.crc = False
+                            elif (not self.crc and
+                                  &#39;%CRC=1&#39; in self.pending_command):
+                                _log.debug(&#39;CRC enabled for next command&#39;)
+                                self.crc = True
+                            if not self.crc:
+                                return self._clean_response(lines, filter, debug)
+                        # else wait for CRC or timeout
+                    elif content.startswith(&#39;*&#39;):
+                        if not self.crc:
+                            if not &#39;%CRC=1&#39; in self.pending_command:
+                                _log.debug(&#39;Found CRC enabled&#39;)
+                            self.crc = True
+                        crc = content.replace(&#39;*&#39;, &#39;&#39;)
+                        if not validate_crc(&#39;&#39;.join(lines), crc):
+                            raise AtCrcError(f&#39;INVALID_CRC_RESPONSE&#39;)
+                        return self._clean_response(lines, filter, debug)
+                    else:   #: including &#39;ERROR&#39;
+                        lines.append(line)
+                        # keep parsing in case CRC follows
+                except queue.Empty:
+                    if not self.response_time:
+                        raise AtTimeout(f&#39;TIMEOUT ({timeout}s)&#39;)
+                    return self._clean_response(lines, filter, debug)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>serial.threaded.LineReader</li>
+<li>serial.threaded.Packetizer</li>
+<li>serial.threaded.Protocol</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.DEFAULT_TIMEOUT"><code class="name">var <span class="ident">DEFAULT_TIMEOUT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.ENCODING"><code class="name">var <span class="ident">ENCODING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.TERMINATOR"><code class="name">var <span class="ident">TERMINATOR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.UNICODE_HANDLING"><code class="name">var <span class="ident">UNICODE_HANDLING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.crc"><code class="name">var <span class="ident">crc</span></code></dt>
+<dd>
+<div class="desc"><p>This will be inferred from communications</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.command"><code class="name flex">
+<span>def <span class="ident">command</span></span>(<span>self, command: str, filter: list[str] = [], timeout: int = 5, debug: bool = False) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Send an AT command and wait for the response.</p>
+<p>Returns the response as a list.
+If an error response code was
+received then 'ERROR' will be the only string in the list.</p>
+<p>.. todo: generalize for OK-only response, and provide error detail</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>command</code></strong></dt>
+<dd>The AT command</dd>
+<dt><strong><code>timeout</code></strong></dt>
+<dd>Time to wait for response in seconds (default 5)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of strings. The list will be ['ERROR'] in case of a problem.</p>
+<h2 id="raises">Raises</h2>
+<p>AtCrcError if CRC does not match.
+AtTimeout if the request timed out.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def command(self,
+            command: str,
+            filter: &#39;list[str]&#39; = [],
+            timeout: int = 5,
+            debug: bool = False,
+            ) -&gt; &#39;list[str]&#39;:
+    &#34;&#34;&#34;Send an AT command and wait for the response.
+
+    Returns the response as a list.  If an error response code was
+    received then &#39;ERROR&#39; will be the only string in the list.
+
+    .. todo: generalize for OK-only response, and provide error detail
+
+    Args:
+        command: The AT command
+        timeout: Time to wait for response in seconds (default 5)
+    
+    Returns:
+        A list of strings. The list will be [&#39;ERROR&#39;] in case of a problem.
+
+    Raises:
+        AtCrcError if CRC does not match.
+        AtTimeout if the request timed out.
+
+    &#34;&#34;&#34;
+    with self._lock:  # ensure that just one thread is sending commands at once
+        try:
+            oldbuffer: str = self.responses.get(timeout=0.05)
+            oldbuffer = oldbuffer.replace(&#39;\r&#39;, &#39;\\r&#39;).replace(&#39;\n&#39;, &#39;\\n&#39;)
+            _log.warning(f&#39;Cleared old buffer: {oldbuffer}&#39;)
+        except queue.Empty:
+            pass
+        timeout = 1 if timeout &lt; 1 else timeout
+        command = apply_crc(command) if self.crc else command
+        self.pending_command = command
+        self.command_time = time()
+        self.response_time = None
+        self.write_line(command)
+        lines = []
+        while self.pending_command is not None:
+            try:
+                line: str = self.responses.get(timeout=timeout)
+                content = line.strip()
+                if self.response_time is None:
+                    self.response_time = time()
+                if content == command:
+                    pass   # ignore echo
+                elif content in [&#39;OK&#39;, &#39;ERROR&#39;]:
+                    lines.append(line)
+                    if content == &#39;OK&#39;:
+                        if self.crc and &#39;%CRC=0&#39; in self.pending_command:
+                            _log.debug(&#39;CRC disabled by command&#39;)
+                            self.crc = False
+                        elif (not self.crc and
+                              &#39;%CRC=1&#39; in self.pending_command):
+                            _log.debug(&#39;CRC enabled for next command&#39;)
+                            self.crc = True
+                        if not self.crc:
+                            return self._clean_response(lines, filter, debug)
+                    # else wait for CRC or timeout
+                elif content.startswith(&#39;*&#39;):
+                    if not self.crc:
+                        if not &#39;%CRC=1&#39; in self.pending_command:
+                            _log.debug(&#39;Found CRC enabled&#39;)
+                        self.crc = True
+                    crc = content.replace(&#39;*&#39;, &#39;&#39;)
+                    if not validate_crc(&#39;&#39;.join(lines), crc):
+                        raise AtCrcError(f&#39;INVALID_CRC_RESPONSE&#39;)
+                    return self._clean_response(lines, filter, debug)
+                else:   #: including &#39;ERROR&#39;
+                    lines.append(line)
+                    # keep parsing in case CRC follows
+            except queue.Empty:
+                if not self.response_time:
+                    raise AtTimeout(f&#39;TIMEOUT ({timeout}s)&#39;)
+                return self._clean_response(lines, filter, debug)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.data_received"><code class="name flex">
+<span>def <span class="ident">data_received</span></span>(<span>self, data: bytearray)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Buffer received data and create packets for handlers.</p>
+<p>handle_packet() is inherited from LineReader.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>a data byte received from the serial device</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def data_received(self, data: bytearray):
+    &#34;&#34;&#34;Buffer received data and create packets for handlers.
+
+    handle_packet() is inherited from LineReader.
+
+    Args:
+        data: a data byte received from the serial device
+
+    &#34;&#34;&#34;
+    self.buffer.extend(data)
+    if self.pending_command is not None:
+        if data == b&#39;\r&#39;:
+            #: Echo case
+            if self.buffer == self.pending_command.encode() + b&#39;\r&#39;:
+                echo = self.buffer
+                #: reset buffer for response
+                self.buffer = bytearray(b&#39;&#39;)
+                self.handle_packet(echo)
+        elif data == b&#39;\n&#39;:
+            if (self.buffer != bytearray(b&#39;\r\n&#39;)
+                and self.buffer != bytearray(b&#39;\n&#39;)):
+                #: Framed/multiline response, error code or CRC
+                packet = self.buffer
+                self.buffer = bytearray(b&#39;&#39;)
+                self.handle_packet(packet)
+            elif self.buffer == bytearray(b&#39;\n&#39;):
+                #: (Unexpected) drop any empty lines
+                self.buffer = bytearray(b&#39;&#39;)
+    else:   # no pending command
+        if data == b&#39;\n&#39;:
+            unsolicited = self.buffer
+            self.buffer = bytearray(b&#39;&#39;)
+            self.handle_packet(unsolicited)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.handle_event"><code class="name flex">
+<span>def <span class="ident">handle_event</span></span>(<span>self, unsolicited: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calls a user-defined function with the unicode string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>unsolicited</code></strong></dt>
+<dd>A unicode string terminated by <lf>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_event(self, unsolicited: str):
+    &#34;&#34;&#34;Calls a user-defined function with the unicode string.
+
+    Args:
+        unsolicited: A unicode string terminated by &lt;lf&gt;.
+
+    &#34;&#34;&#34;
+    if unsolicited is not None:
+        if self.event_callback is not None:
+            self.event_callback(unsolicited)
+        else: 
+            unsolicited = unsolicited.replace(&#39;\r&#39;, &#39;&lt;cr&gt;&#39;)
+            unsolicited = unsolicited.replace(&#39;\n&#39;, &#39;&lt;lf&gt;&#39;)
+            _log.warning(f&#39;Unhandled event: {unsolicited}&#39;)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.handle_line"><code class="name flex">
+<span>def <span class="ident">handle_line</span></span>(<span>self, line: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Enqueues lines for parsing by command handler.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>line</code></strong></dt>
+<dd>The unicode string received from the serial port.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_line(self, line: str):
+    &#34;&#34;&#34;Enqueues lines for parsing by command handler.
+
+    Args:
+        line: The unicode string received from the serial port.
+    &#34;&#34;&#34;
+    if self.pending_command is not None:
+        self.responses.put(line)
+    else:
+        if line != &#39;\n&#39;:
+            self.events.put(line)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.stop"><code class="name flex">
+<span>def <span class="ident">stop</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Stop the event processing thread and abort pending commands.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stop(self):
+    &#34;&#34;&#34;Stop the event processing thread and abort pending commands.&#34;&#34;&#34;
+    self.alive = False
+    self.events.put(None)
+    self.responses.put(&#39;&lt;exit&gt;&#39;)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.threaded.atcommand.AtProtocol.write_line"><code class="name flex">
+<span>def <span class="ident">write_line</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Appends a terminator, encodes and writes text to the transport.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_line(self, text):
+    &#34;&#34;&#34;Appends a terminator, encodes and writes text to the transport.&#34;&#34;&#34;
+    send = text + self.TERMINATOR
+    self.transport.write(send.encode(self.ENCODING, self.UNICODE_HANDLING))</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.threaded.atcommand.ByteReaderThread"><code class="flex name class">
+<span>class <span class="ident">ByteReaderThread</span></span>
+<span>(</span><span>serial_instance: serial.serialposix.Serial, protocol_factory: serial.threaded.Protocol, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Modifies the ReaderThread class to process bytes individually.</p>
+<p>This is required due to complexities of optional checksum use
+for long serial lines.</p>
+<p>Initialize thread.</p>
+<p>Note that the serial_instance' timeout is set to one second!
+Other settings are not changed.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ByteReaderThread(ReaderThread):
+    &#34;&#34;&#34;Modifies the ReaderThread class to process bytes individually.
+    
+    This is required due to complexities of optional checksum use 
+    for long serial lines.
+
+    &#34;&#34;&#34;
+    def __init__(self,
+                 serial_instance: Serial,
+                 protocol_factory: Protocol,
+                 **kwargs):
+        super().__init__(serial_instance, protocol_factory)
+        self.name = None
+        self.kwargs = kwargs
+
+    def run(self):
+        &#34;&#34;&#34;Reader loop&#34;&#34;&#34;
+        self.name = f&#39;bytereader@{self.serial.name}&#39;
+        if not hasattr(self.serial, &#39;cancel_read&#39;):
+            self.serial.timeout = 1
+        self.protocol = self.protocol_factory(**self.kwargs)
+        try:
+            self.protocol.connection_made(self)
+        except Exception as err:
+            self.alive = False
+            self.protocol.connection_lost(err)
+            self._connection_made.set()
+            return
+        error = None
+        self._connection_made.set()
+        data = bytearray()
+        while self.alive and self.serial.is_open:
+            try:
+                # read all that is there or wait for one byte (blocking)
+                if self.serial.in_waiting &gt; 0:
+                    data = self.serial.read()
+                    self.protocol.data_received(data)
+                sleep(0.001)
+            except SerialException as err:
+                # probably some I/O problem such as disconnected USB serial
+                # adapters -&gt; exit
+                error = err
+                break
+            except Exception as err:
+                error = err
+                break
+        self.alive = False
+        self.protocol.connection_lost(error)
+        self.protocol = None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>serial.threaded.ReaderThread</li>
+<li>threading.Thread</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="idpmodem.threaded.atcommand.ByteReaderThread.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reader loop</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self):
+    &#34;&#34;&#34;Reader loop&#34;&#34;&#34;
+    self.name = f&#39;bytereader@{self.serial.name}&#39;
+    if not hasattr(self.serial, &#39;cancel_read&#39;):
+        self.serial.timeout = 1
+    self.protocol = self.protocol_factory(**self.kwargs)
+    try:
+        self.protocol.connection_made(self)
+    except Exception as err:
+        self.alive = False
+        self.protocol.connection_lost(err)
+        self._connection_made.set()
+        return
+    error = None
+    self._connection_made.set()
+    data = bytearray()
+    while self.alive and self.serial.is_open:
+        try:
+            # read all that is there or wait for one byte (blocking)
+            if self.serial.in_waiting &gt; 0:
+                data = self.serial.read()
+                self.protocol.data_received(data)
+            sleep(0.001)
+        except SerialException as err:
+            # probably some I/O problem such as disconnected USB serial
+            # adapters -&gt; exit
+            error = err
+            break
+        except Exception as err:
+            error = err
+            break
+    self.alive = False
+    self.protocol.connection_lost(error)
+    self.protocol = None</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="idpmodem.threaded" href="index.html">idpmodem.threaded</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="idpmodem.threaded.atcommand.AtProtocol" href="#idpmodem.threaded.atcommand.AtProtocol">AtProtocol</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.DEFAULT_TIMEOUT" href="#idpmodem.threaded.atcommand.AtProtocol.DEFAULT_TIMEOUT">DEFAULT_TIMEOUT</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.ENCODING" href="#idpmodem.threaded.atcommand.AtProtocol.ENCODING">ENCODING</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.TERMINATOR" href="#idpmodem.threaded.atcommand.AtProtocol.TERMINATOR">TERMINATOR</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.UNICODE_HANDLING" href="#idpmodem.threaded.atcommand.AtProtocol.UNICODE_HANDLING">UNICODE_HANDLING</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.command" href="#idpmodem.threaded.atcommand.AtProtocol.command">command</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.crc" href="#idpmodem.threaded.atcommand.AtProtocol.crc">crc</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.data_received" href="#idpmodem.threaded.atcommand.AtProtocol.data_received">data_received</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.handle_event" href="#idpmodem.threaded.atcommand.AtProtocol.handle_event">handle_event</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.handle_line" href="#idpmodem.threaded.atcommand.AtProtocol.handle_line">handle_line</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.stop" href="#idpmodem.threaded.atcommand.AtProtocol.stop">stop</a></code></li>
+<li><code><a title="idpmodem.threaded.atcommand.AtProtocol.write_line" href="#idpmodem.threaded.atcommand.AtProtocol.write_line">write_line</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.threaded.atcommand.ByteReaderThread" href="#idpmodem.threaded.atcommand.ByteReaderThread">ByteReaderThread</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.threaded.atcommand.ByteReaderThread.run" href="#idpmodem.threaded.atcommand.ByteReaderThread.run">run</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

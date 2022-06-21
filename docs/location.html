@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>idpmodem.location API documentation</title>
+<meta name="description" content="Utilities for validating and parsing NMEA data into a `Location` object." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>idpmodem.location</code></h1>
+</header>
+<section id="section-intro">
+<p>Utilities for validating and parsing NMEA data into a <code><a title="idpmodem.location.Location" href="#idpmodem.location.Location">Location</a></code> object.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Utilities for validating and parsing NMEA data into a `Location` object.
+
+&#34;&#34;&#34;
+import logging
+from calendar import timegm
+from datetime import datetime
+from functools import reduce
+from operator import xor
+
+_log = logging.getLogger(__name__)
+
+
+class NmeaException(Exception):
+    &#34;&#34;&#34;An exception triggered during NMEA sentence parsing.&#34;&#34;&#34;
+    pass
+
+
+class NmeaInvalid(NmeaException):
+    &#34;&#34;&#34;Invalid NMEA sentence.&#34;&#34;&#34;
+    pass
+
+
+class NmeaChecksumError(NmeaException):
+    &#34;&#34;&#34;NMEA sentence checksum error.&#34;&#34;&#34;
+    pass
+
+
+class GnssSatelliteInfo(object):
+    &#34;&#34;&#34;Information specific to a GNSS satellite.
+    
+    Attributes:
+        prn: The PRN code (Pseudo-Random Number sequence)
+        elevation: The satellite elevation
+        azimuth: The satellite azimuth
+        snr: The satellite Signal-to-Noise Ratio
+    &#34;&#34;&#34;
+    def __init__(self,
+                    prn: int,
+                    elevation: int,
+                    azimuth: int,
+                    snr: int):
+        &#34;&#34;&#34;Initializes GNSS satellite details.&#34;&#34;&#34;
+        self.prn = prn
+        self.elevation = elevation
+        self.azimuth = azimuth
+        self.snr = snr
+
+
+class Location:
+    &#34;&#34;&#34;A set of location-based information for a given point in time.
+    
+    Uses 90.0/180.0 if latitude/longitude are unknown
+
+    Attributes:
+        latitude: decimal degrees
+        longitude: decimal degrees
+        altitude: in metres
+        speed: in knots
+        heading: in degrees
+        timestamp: in seconds since 1970-01-01T00:00:00Z
+        satellites: in view at time of fix
+        fix_type: 1=None, 2=2D or 3=3D
+        pdop: Probability Dilution of Precision
+        hdop: Horizontal Dilution of Precision
+        vdop: Vertical Dilution of Precision
+        time_iso: ISO 8601 formatted timestamp
+        satellites_info: `GnssSatelliteInfo`
+
+    &#34;&#34;&#34;
+
+    def __init__(self, **kwargs):
+        &#34;&#34;&#34;Initializes a Location with default latitude/longitude 90/180.&#34;&#34;&#34;
+        self.latitude = float(kwargs.get(&#39;latitude&#39;, 90.0))
+        self.longitude = float(kwargs.get(&#39;longitude&#39;, 180.0))
+        self.resolution = int(kwargs.get(&#39;resolution&#39;, 6))
+        self.altitude = float(kwargs.get(&#39;altitude&#39;, 0.0))   # metres
+        self.speed = float(kwargs.get(&#39;speed&#39;, 0.0))  # knots
+        self.heading = float(kwargs.get(&#39;heading&#39;, 0.0))   # degrees
+        self.timestamp = int(kwargs.get(&#39;timestamp&#39;, 0))   # seconds (unix)
+        self.satellites = int(kwargs.get(&#39;satellites&#39;, 0))
+        self.fix_type = int(kwargs.get(&#39;fix_type&#39;, 1))
+        self.pdop = float(kwargs.get(&#39;pdop&#39;, 99.9))
+        self.hdop = float(kwargs.get(&#39;hdop&#39;, 99.9))
+        self.vdop = float(kwargs.get(&#39;vdop&#39;, 99.9))
+        self.satellites_info: &#39;list[GnssSatelliteInfo]&#39; = kwargs.get(
+            &#39;satellites_info&#39;, []
+        )
+
+    @property
+    def time_iso(self) -&gt; str:
+        return f&#39;{datetime.utcfromtimestamp(self.timestamp).isoformat()}Z&#39;
+
+    def _update_satellites_info(self,
+                                satellites_info: &#39;list[GnssSatelliteInfo]&#39;):
+        &#34;&#34;&#34;Populates satellite information based on NMEA GSV data.&#34;&#34;&#34;
+        for satellite_info in satellites_info:
+            if isinstance(satellite_info, GnssSatelliteInfo):
+                new = True
+                for i, info in enumerate(self.satellites_info):
+                    if info.prn == satellite_info.prn:
+                        new = False
+                        self.satellites_info[i] = satellite_info
+                        break
+                if new:
+                    self.satellites_info.append(satellite_info)
+    
+    def serialize(self, include_satellite_details: bool = False) -&gt; str:
+        d = vars(self)
+        if include_satellite_details:
+            for i, satellite_info in enumerate(d[&#39;satellites_info&#39;]):
+                d[&#39;satellites_info&#39;][i] = vars(satellite_info)
+        else:
+            del d[&#39;satellites_info&#39;]
+        return d
+
+
+def validate_nmea_checksum(sentence: str) -&gt; &#39;tuple[bool, str]&#39;:
+    &#34;&#34;&#34;Validates NMEA sentence using checksum according to the standard.
+
+    Args:
+        sentence: NMEA sentence including checksum
+    
+    Returns:
+       A tuple with Boolean result (checksum correct) and
+       raw NMEA data string, with prefix $Gx and checksum suffix removed
+
+    &#34;&#34;&#34;
+    sentence = sentence.strip(&#39;\n&#39;).strip(&#39;\r&#39;)
+    nmeadata, cksum = sentence.split(&#39;*&#39;, 1)
+    nmeadata = nmeadata.replace(&#39;$&#39;, &#39;&#39;)
+    xcksum = str(&#34;%0.2x&#34; % (reduce(xor, (ord(c) for c in nmeadata), 0))).upper()
+    return (cksum == xcksum), nmeadata[2:]
+
+
+def location_from_nmea(nmea_data_set: &#39;list[str]&#39;,
+                       degrees_resolution: int = 6,
+                       ) -&gt; Location:
+    &#34;&#34;&#34;Returns a Location object based on an NMEA sentences data set.
+    
+    Args:
+        nmea_data_set: A list of valid NMEA sentences
+        degrees_resolution: The desired precision of latitude/longitude
+    
+    Returns:
+        A `Location` object
+
+    &#34;&#34;&#34;
+    loc = Location()
+    for sentence in nmea_data_set:
+        if not sentence.startswith(&#39;$G&#39;):
+            raise NmeaInvalid(&#39;Invalid NMEA string {}&#39;.format(sentence))
+        valid, nmea_data = validate_nmea_checksum(sentence)
+        if not valid:
+            raise NmeaChecksumError(&#39;Invalid NMEA checksum for {}&#39;.format(sentence))
+        sentence_type = nmea_data[0:3]
+        if sentence_type == &#39;GGA&#39;:          # GGA is essential fix information for 3D location and accuracy
+            gga = nmea_data.split(&#39;,&#39;)      # $GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*4
+            &#39;&#39;&#39;
+            gga_utc_hhmmss = gga[1]         # Fix taken at 12:35:19 UTC
+            gga_latitude_dms = gga[2]       # Latitude 48 deg 07.038&#39;
+            gga_latitude_ns = gga[3]        # Latitude N
+            gga_longitude_dms = gga[4]      # Longitude 11 deg 31.000&#39;
+            gga_longitude_ew = gga[5]       # Longitude E
+            gga_quality = gga[6]            # Fix quality
+            gga_fix_qualities = (
+                &#39;invalid&#39;,                  # 0 = invalid
+                &#39;GPS fix&#39;,                  # 1 = GPS fix (SPS)
+                &#39;DGPS fix&#39;,                 # 2 = DGPS fix
+                &#39;PPS fix&#39;,                  # 3 = PPS fix
+                &#39;RTK&#39;,                      # 4 = Real Time Kinematic
+                &#39;Float RTK&#39;,                # 5 = Float RTK
+                &#39;Estimated&#39;,                # 6 = estimated (dead reckoning)
+                &#39;Manual&#39;,                   # 7 = Manual input mode
+                &#39;Simulation&#39;                # 8 = Simulation mode
+            )
+            &#39;&#39;&#39;
+            gga_satellites = gga[7]         # Number of satellites being tracked
+            gga_hdop = gga[8]               # Horizontal dilution of precision
+            gga_altitude = gga[9]           # Altitude above mean sea level
+            &#39;&#39;&#39;
+            gga_altitude_unit = gga[10]     # Altitude units (M)eters
+            gga_height_wgs84 = gga[11]      # Height of geoid (mean sea level) above WGS84 ellipsoid
+            gga_height_unit = gga[12]       # Height units (M)eters
+            gga_dgps_update_time = gga[13]  # Time in seconds since last DGPS update
+            gga_dgps_station = gga[14]      # DGPS station ID number
+            &#39;&#39;&#39;
+            satellites = int(gga_satellites)
+            if loc.satellites &lt; satellites:
+                loc.satellites = satellites
+            else:
+                # TODO: log this case; should be limited to GPS simulation in Modem Simulator (3 satellites)
+                pass
+            loc.altitude = float(gga_altitude) if gga_altitude != &#39;&#39; else 0.0
+            loc.hdop = min(float(gga_hdop), 32.0) if gga_hdop != &#39;&#39; else 32.0
+        # RMC
+        elif sentence_type == &#39;RMC&#39;:          # RMC Recommended Minimum is used for most location information
+            rmc = nmea_data.split(&#39;,&#39;)        # $GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A
+            rmc_fixtime_utc_hhmmss = rmc[1]   # fix taken at 12:35:19 UTC
+            # rmc_active = RMC[2]             # status (A)ctive or (V)oid
+            rmc_latitude_dms = rmc[3]         # 4807.038 = 48 deg 07.038&#39;
+            rmc_latitude_ns = rmc[4]          # (N)orth or (S)outh
+            rmc_longitude_dms = rmc[5]        # 01131.000 = 11 deg 31.000&#39;
+            rmc_longitude_ew = rmc[6]         # (E)east or (W)est
+            rmc_speed_knots = rmc[7]          # 022.4 = 22.4 knots
+            rmc_heading_deg_true = rmc[8]     # 084.4 = 84.4 degrees True
+            rmc_date_ddmmyy = rmc[9]          # date 23rd of March 1994
+            &#39;&#39;&#39;
+            rmc_mag_var_mag = rmc[10]         # Magnetic Variation (magnitude)
+            rmc_mag_var_dir = rmc[11]         # Magnetic Variation (direction)
+            &#39;&#39;&#39;
+            # Convert text values to workable numbers
+            year = int(rmc_date_ddmmyy[4:6]) + 2000
+            month = int(rmc_date_ddmmyy[2:4])
+            day = int(rmc_date_ddmmyy[0:2])
+            hour = int(rmc_fixtime_utc_hhmmss[0:2])
+            minute = int(rmc_fixtime_utc_hhmmss[2:4])
+            second = int(rmc_fixtime_utc_hhmmss[4:6])
+            dt = datetime(year, month, day, hour, minute, second)
+            loc.timestamp = int(timegm(dt.timetuple()))
+            # Convert to decimal degrees latitude/longitude
+            if rmc_longitude_dms != &#39;&#39; and rmc_longitude_dms != &#39;&#39;:
+                loc.latitude = round(float(rmc_latitude_dms[0:2]) +
+                                     float(rmc_latitude_dms[2:]) /
+                                     60.0, degrees_resolution)
+                if rmc_latitude_ns == &#39;S&#39;:
+                    loc.latitude *= -1
+                loc.longitude = round(float(rmc_longitude_dms[0:3]) +
+                                      float(rmc_longitude_dms[3:]) /
+                                      60.0, degrees_resolution)
+                if rmc_longitude_ew == &#39;W&#39;:
+                    loc.longitude *= -1
+            loc.speed = float(rmc_speed_knots) if rmc_speed_knots != &#39;&#39; else 0.0  # multiply by 1.852 for kph
+            if rmc_heading_deg_true:
+                loc.heading = float(rmc_heading_deg_true)
+            else:
+                loc.heading = 0.0
+        # GSA
+        elif sentence_type == &#39;GSA&#39;:                    # GSA is used for DOP and active satellites
+            gsa = nmea_data.split(&#39;,&#39;)                  # $GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39
+            #: gsa_auto = gsa[1]                           # Auto selection of 2D or 3D fix (M = manual)
+            gsa_fix_type = gsa[2]                       # 3D fix type
+            &#39;&#39;&#39;
+            gsa_fix_types = {
+                &#39;none&#39;: 1,
+                &#39;2D&#39;: 2,
+                &#39;3D&#39;: 3
+            }
+            &#39;&#39;&#39;
+            gsa_prns = []                               # PRNs of satellites used for fix (space for 12)
+            for prn in range(1, 12):
+                gsa_prns.append(gsa[prn+2])             # offset of prns in the split array is [3]
+            gsa_pdop = gsa[15]                          # Probability dilution of precision (DOP), above 20 is bad
+            #: gsa_hdop = gsa[16]                          # Horizontal DOP
+            gsa_vdop = gsa[17]                          # Vertical DOP
+            # Use GSA for fix_type, PDOP, VDOP (HDOP comes from GGA)
+            loc.fix_type = int(gsa_fix_type) if gsa_fix_type != &#39;&#39; else 0
+            loc.pdop = min(float(gsa_pdop), 32.0) if gsa_pdop != &#39;&#39; else 32.0
+            loc.vdop = min(float(gsa_vdop), 32.0) if gsa_vdop != &#39;&#39; else 32.0
+        # GSV
+        elif sentence_type == &#39;GSV&#39;:         # Satellites in View
+            gsv = nmea_data.split(&#39;,&#39;)       # $GPGSV,2,1,08,01,40,083,46,02,17,308,41,12,07,344,39,14,22,228,45*75
+            &#39;&#39;&#39;
+            gsv_sentences = gsv[1]           # Number of sentences for full data
+            gsv_sentence = gsv[2]            # Sentence number (up to 4 satellites per sentence)
+            &#39;&#39;&#39;
+            gsv_satellites = gsv[3]          # Number of satellites in view
+            # following supports up to 4 satellites per sentence
+            satellites_info = []
+            if (len(gsv) - 4) % 4 &gt; 0:
+                # TODO: warn/log this case of extra GSV data in sentence
+                pass
+            num_satellites_in_sentence = int((len(gsv)-4)/4)
+            for i in range(1, num_satellites_in_sentence+1):
+                prn = int(gsv[i*4]) if gsv[i*4] != &#39;&#39; else 0             # satellite PRN number
+                elevation = int(gsv[i*4+1]) if gsv[i*4+1] != &#39;&#39; else 0   # Elevation in degrees
+                azimuth = int(gsv[i*4+2]) if gsv[i*4+2] != &#39;&#39; else 0     # Azimuth in degrees
+                snr = int(gsv[i*4+3]) if gsv[i*4+3] != &#39;&#39; else 0         # Signal to Noise Ratio
+                satellites_info.append(GnssSatelliteInfo(prn,
+                                                         elevation,
+                                                         azimuth,
+                                                         snr))
+            loc._update_satellites_info(satellites_info)
+            satellites = int(gsv_satellites) if gsv_satellites != &#39;&#39; else 0
+            if loc.satellites &lt; satellites:
+                loc.satellites = satellites
+            else:
+                # TODO: log this case; should be limited to GPS simulation in Modem Simulator (3 satellites)
+                pass
+        else:
+            err = f&#39;{sentence[0:3]} NMEA sentence type not recognized&#39;
+            raise NmeaException(err)
+    return loc</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="idpmodem.location.location_from_nmea"><code class="name flex">
+<span>def <span class="ident">location_from_nmea</span></span>(<span>nmea_data_set: list[str], degrees_resolution: int = 6) ‑> <a title="idpmodem.location.Location" href="#idpmodem.location.Location">Location</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a Location object based on an NMEA sentences data set.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>nmea_data_set</code></strong></dt>
+<dd>A list of valid NMEA sentences</dd>
+<dt><strong><code>degrees_resolution</code></strong></dt>
+<dd>The desired precision of latitude/longitude</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A <code><a title="idpmodem.location.Location" href="#idpmodem.location.Location">Location</a></code> object</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def location_from_nmea(nmea_data_set: &#39;list[str]&#39;,
+                       degrees_resolution: int = 6,
+                       ) -&gt; Location:
+    &#34;&#34;&#34;Returns a Location object based on an NMEA sentences data set.
+    
+    Args:
+        nmea_data_set: A list of valid NMEA sentences
+        degrees_resolution: The desired precision of latitude/longitude
+    
+    Returns:
+        A `Location` object
+
+    &#34;&#34;&#34;
+    loc = Location()
+    for sentence in nmea_data_set:
+        if not sentence.startswith(&#39;$G&#39;):
+            raise NmeaInvalid(&#39;Invalid NMEA string {}&#39;.format(sentence))
+        valid, nmea_data = validate_nmea_checksum(sentence)
+        if not valid:
+            raise NmeaChecksumError(&#39;Invalid NMEA checksum for {}&#39;.format(sentence))
+        sentence_type = nmea_data[0:3]
+        if sentence_type == &#39;GGA&#39;:          # GGA is essential fix information for 3D location and accuracy
+            gga = nmea_data.split(&#39;,&#39;)      # $GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*4
+            &#39;&#39;&#39;
+            gga_utc_hhmmss = gga[1]         # Fix taken at 12:35:19 UTC
+            gga_latitude_dms = gga[2]       # Latitude 48 deg 07.038&#39;
+            gga_latitude_ns = gga[3]        # Latitude N
+            gga_longitude_dms = gga[4]      # Longitude 11 deg 31.000&#39;
+            gga_longitude_ew = gga[5]       # Longitude E
+            gga_quality = gga[6]            # Fix quality
+            gga_fix_qualities = (
+                &#39;invalid&#39;,                  # 0 = invalid
+                &#39;GPS fix&#39;,                  # 1 = GPS fix (SPS)
+                &#39;DGPS fix&#39;,                 # 2 = DGPS fix
+                &#39;PPS fix&#39;,                  # 3 = PPS fix
+                &#39;RTK&#39;,                      # 4 = Real Time Kinematic
+                &#39;Float RTK&#39;,                # 5 = Float RTK
+                &#39;Estimated&#39;,                # 6 = estimated (dead reckoning)
+                &#39;Manual&#39;,                   # 7 = Manual input mode
+                &#39;Simulation&#39;                # 8 = Simulation mode
+            )
+            &#39;&#39;&#39;
+            gga_satellites = gga[7]         # Number of satellites being tracked
+            gga_hdop = gga[8]               # Horizontal dilution of precision
+            gga_altitude = gga[9]           # Altitude above mean sea level
+            &#39;&#39;&#39;
+            gga_altitude_unit = gga[10]     # Altitude units (M)eters
+            gga_height_wgs84 = gga[11]      # Height of geoid (mean sea level) above WGS84 ellipsoid
+            gga_height_unit = gga[12]       # Height units (M)eters
+            gga_dgps_update_time = gga[13]  # Time in seconds since last DGPS update
+            gga_dgps_station = gga[14]      # DGPS station ID number
+            &#39;&#39;&#39;
+            satellites = int(gga_satellites)
+            if loc.satellites &lt; satellites:
+                loc.satellites = satellites
+            else:
+                # TODO: log this case; should be limited to GPS simulation in Modem Simulator (3 satellites)
+                pass
+            loc.altitude = float(gga_altitude) if gga_altitude != &#39;&#39; else 0.0
+            loc.hdop = min(float(gga_hdop), 32.0) if gga_hdop != &#39;&#39; else 32.0
+        # RMC
+        elif sentence_type == &#39;RMC&#39;:          # RMC Recommended Minimum is used for most location information
+            rmc = nmea_data.split(&#39;,&#39;)        # $GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A
+            rmc_fixtime_utc_hhmmss = rmc[1]   # fix taken at 12:35:19 UTC
+            # rmc_active = RMC[2]             # status (A)ctive or (V)oid
+            rmc_latitude_dms = rmc[3]         # 4807.038 = 48 deg 07.038&#39;
+            rmc_latitude_ns = rmc[4]          # (N)orth or (S)outh
+            rmc_longitude_dms = rmc[5]        # 01131.000 = 11 deg 31.000&#39;
+            rmc_longitude_ew = rmc[6]         # (E)east or (W)est
+            rmc_speed_knots = rmc[7]          # 022.4 = 22.4 knots
+            rmc_heading_deg_true = rmc[8]     # 084.4 = 84.4 degrees True
+            rmc_date_ddmmyy = rmc[9]          # date 23rd of March 1994
+            &#39;&#39;&#39;
+            rmc_mag_var_mag = rmc[10]         # Magnetic Variation (magnitude)
+            rmc_mag_var_dir = rmc[11]         # Magnetic Variation (direction)
+            &#39;&#39;&#39;
+            # Convert text values to workable numbers
+            year = int(rmc_date_ddmmyy[4:6]) + 2000
+            month = int(rmc_date_ddmmyy[2:4])
+            day = int(rmc_date_ddmmyy[0:2])
+            hour = int(rmc_fixtime_utc_hhmmss[0:2])
+            minute = int(rmc_fixtime_utc_hhmmss[2:4])
+            second = int(rmc_fixtime_utc_hhmmss[4:6])
+            dt = datetime(year, month, day, hour, minute, second)
+            loc.timestamp = int(timegm(dt.timetuple()))
+            # Convert to decimal degrees latitude/longitude
+            if rmc_longitude_dms != &#39;&#39; and rmc_longitude_dms != &#39;&#39;:
+                loc.latitude = round(float(rmc_latitude_dms[0:2]) +
+                                     float(rmc_latitude_dms[2:]) /
+                                     60.0, degrees_resolution)
+                if rmc_latitude_ns == &#39;S&#39;:
+                    loc.latitude *= -1
+                loc.longitude = round(float(rmc_longitude_dms[0:3]) +
+                                      float(rmc_longitude_dms[3:]) /
+                                      60.0, degrees_resolution)
+                if rmc_longitude_ew == &#39;W&#39;:
+                    loc.longitude *= -1
+            loc.speed = float(rmc_speed_knots) if rmc_speed_knots != &#39;&#39; else 0.0  # multiply by 1.852 for kph
+            if rmc_heading_deg_true:
+                loc.heading = float(rmc_heading_deg_true)
+            else:
+                loc.heading = 0.0
+        # GSA
+        elif sentence_type == &#39;GSA&#39;:                    # GSA is used for DOP and active satellites
+            gsa = nmea_data.split(&#39;,&#39;)                  # $GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39
+            #: gsa_auto = gsa[1]                           # Auto selection of 2D or 3D fix (M = manual)
+            gsa_fix_type = gsa[2]                       # 3D fix type
+            &#39;&#39;&#39;
+            gsa_fix_types = {
+                &#39;none&#39;: 1,
+                &#39;2D&#39;: 2,
+                &#39;3D&#39;: 3
+            }
+            &#39;&#39;&#39;
+            gsa_prns = []                               # PRNs of satellites used for fix (space for 12)
+            for prn in range(1, 12):
+                gsa_prns.append(gsa[prn+2])             # offset of prns in the split array is [3]
+            gsa_pdop = gsa[15]                          # Probability dilution of precision (DOP), above 20 is bad
+            #: gsa_hdop = gsa[16]                          # Horizontal DOP
+            gsa_vdop = gsa[17]                          # Vertical DOP
+            # Use GSA for fix_type, PDOP, VDOP (HDOP comes from GGA)
+            loc.fix_type = int(gsa_fix_type) if gsa_fix_type != &#39;&#39; else 0
+            loc.pdop = min(float(gsa_pdop), 32.0) if gsa_pdop != &#39;&#39; else 32.0
+            loc.vdop = min(float(gsa_vdop), 32.0) if gsa_vdop != &#39;&#39; else 32.0
+        # GSV
+        elif sentence_type == &#39;GSV&#39;:         # Satellites in View
+            gsv = nmea_data.split(&#39;,&#39;)       # $GPGSV,2,1,08,01,40,083,46,02,17,308,41,12,07,344,39,14,22,228,45*75
+            &#39;&#39;&#39;
+            gsv_sentences = gsv[1]           # Number of sentences for full data
+            gsv_sentence = gsv[2]            # Sentence number (up to 4 satellites per sentence)
+            &#39;&#39;&#39;
+            gsv_satellites = gsv[3]          # Number of satellites in view
+            # following supports up to 4 satellites per sentence
+            satellites_info = []
+            if (len(gsv) - 4) % 4 &gt; 0:
+                # TODO: warn/log this case of extra GSV data in sentence
+                pass
+            num_satellites_in_sentence = int((len(gsv)-4)/4)
+            for i in range(1, num_satellites_in_sentence+1):
+                prn = int(gsv[i*4]) if gsv[i*4] != &#39;&#39; else 0             # satellite PRN number
+                elevation = int(gsv[i*4+1]) if gsv[i*4+1] != &#39;&#39; else 0   # Elevation in degrees
+                azimuth = int(gsv[i*4+2]) if gsv[i*4+2] != &#39;&#39; else 0     # Azimuth in degrees
+                snr = int(gsv[i*4+3]) if gsv[i*4+3] != &#39;&#39; else 0         # Signal to Noise Ratio
+                satellites_info.append(GnssSatelliteInfo(prn,
+                                                         elevation,
+                                                         azimuth,
+                                                         snr))
+            loc._update_satellites_info(satellites_info)
+            satellites = int(gsv_satellites) if gsv_satellites != &#39;&#39; else 0
+            if loc.satellites &lt; satellites:
+                loc.satellites = satellites
+            else:
+                # TODO: log this case; should be limited to GPS simulation in Modem Simulator (3 satellites)
+                pass
+        else:
+            err = f&#39;{sentence[0:3]} NMEA sentence type not recognized&#39;
+            raise NmeaException(err)
+    return loc</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.location.validate_nmea_checksum"><code class="name flex">
+<span>def <span class="ident">validate_nmea_checksum</span></span>(<span>sentence: str) ‑> tuple[bool, str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validates NMEA sentence using checksum according to the standard.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>sentence</code></strong></dt>
+<dd>NMEA sentence including checksum</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple with Boolean result (checksum correct) and
+raw NMEA data string, with prefix $Gx and checksum suffix removed</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_nmea_checksum(sentence: str) -&gt; &#39;tuple[bool, str]&#39;:
+    &#34;&#34;&#34;Validates NMEA sentence using checksum according to the standard.
+
+    Args:
+        sentence: NMEA sentence including checksum
+    
+    Returns:
+       A tuple with Boolean result (checksum correct) and
+       raw NMEA data string, with prefix $Gx and checksum suffix removed
+
+    &#34;&#34;&#34;
+    sentence = sentence.strip(&#39;\n&#39;).strip(&#39;\r&#39;)
+    nmeadata, cksum = sentence.split(&#39;*&#39;, 1)
+    nmeadata = nmeadata.replace(&#39;$&#39;, &#39;&#39;)
+    xcksum = str(&#34;%0.2x&#34; % (reduce(xor, (ord(c) for c in nmeadata), 0))).upper()
+    return (cksum == xcksum), nmeadata[2:]</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="idpmodem.location.GnssSatelliteInfo"><code class="flex name class">
+<span>class <span class="ident">GnssSatelliteInfo</span></span>
+<span>(</span><span>prn: int, elevation: int, azimuth: int, snr: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Information specific to a GNSS satellite.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>prn</code></strong></dt>
+<dd>The PRN code (Pseudo-Random Number sequence)</dd>
+<dt><strong><code>elevation</code></strong></dt>
+<dd>The satellite elevation</dd>
+<dt><strong><code>azimuth</code></strong></dt>
+<dd>The satellite azimuth</dd>
+<dt><strong><code>snr</code></strong></dt>
+<dd>The satellite Signal-to-Noise Ratio</dd>
+</dl>
+<p>Initializes GNSS satellite details.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GnssSatelliteInfo(object):
+    &#34;&#34;&#34;Information specific to a GNSS satellite.
+    
+    Attributes:
+        prn: The PRN code (Pseudo-Random Number sequence)
+        elevation: The satellite elevation
+        azimuth: The satellite azimuth
+        snr: The satellite Signal-to-Noise Ratio
+    &#34;&#34;&#34;
+    def __init__(self,
+                    prn: int,
+                    elevation: int,
+                    azimuth: int,
+                    snr: int):
+        &#34;&#34;&#34;Initializes GNSS satellite details.&#34;&#34;&#34;
+        self.prn = prn
+        self.elevation = elevation
+        self.azimuth = azimuth
+        self.snr = snr</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.location.Location"><code class="flex name class">
+<span>class <span class="ident">Location</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A set of location-based information for a given point in time.</p>
+<p>Uses 90.0/180.0 if latitude/longitude are unknown</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>latitude</code></strong></dt>
+<dd>decimal degrees</dd>
+<dt><strong><code>longitude</code></strong></dt>
+<dd>decimal degrees</dd>
+<dt><strong><code>altitude</code></strong></dt>
+<dd>in metres</dd>
+<dt><strong><code>speed</code></strong></dt>
+<dd>in knots</dd>
+<dt><strong><code>heading</code></strong></dt>
+<dd>in degrees</dd>
+<dt><strong><code>timestamp</code></strong></dt>
+<dd>in seconds since 1970-01-01T00:00:00Z</dd>
+<dt><strong><code>satellites</code></strong></dt>
+<dd>in view at time of fix</dd>
+<dt><strong><code>fix_type</code></strong></dt>
+<dd>1=None, 2=2D or 3=3D</dd>
+<dt><strong><code>pdop</code></strong></dt>
+<dd>Probability Dilution of Precision</dd>
+<dt><strong><code>hdop</code></strong></dt>
+<dd>Horizontal Dilution of Precision</dd>
+<dt><strong><code>vdop</code></strong></dt>
+<dd>Vertical Dilution of Precision</dd>
+<dt><strong><code>time_iso</code></strong></dt>
+<dd>ISO 8601 formatted timestamp</dd>
+<dt><strong><code>satellites_info</code></strong></dt>
+<dd><code><a title="idpmodem.location.GnssSatelliteInfo" href="#idpmodem.location.GnssSatelliteInfo">GnssSatelliteInfo</a></code></dd>
+</dl>
+<p>Initializes a Location with default latitude/longitude 90/180.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Location:
+    &#34;&#34;&#34;A set of location-based information for a given point in time.
+    
+    Uses 90.0/180.0 if latitude/longitude are unknown
+
+    Attributes:
+        latitude: decimal degrees
+        longitude: decimal degrees
+        altitude: in metres
+        speed: in knots
+        heading: in degrees
+        timestamp: in seconds since 1970-01-01T00:00:00Z
+        satellites: in view at time of fix
+        fix_type: 1=None, 2=2D or 3=3D
+        pdop: Probability Dilution of Precision
+        hdop: Horizontal Dilution of Precision
+        vdop: Vertical Dilution of Precision
+        time_iso: ISO 8601 formatted timestamp
+        satellites_info: `GnssSatelliteInfo`
+
+    &#34;&#34;&#34;
+
+    def __init__(self, **kwargs):
+        &#34;&#34;&#34;Initializes a Location with default latitude/longitude 90/180.&#34;&#34;&#34;
+        self.latitude = float(kwargs.get(&#39;latitude&#39;, 90.0))
+        self.longitude = float(kwargs.get(&#39;longitude&#39;, 180.0))
+        self.resolution = int(kwargs.get(&#39;resolution&#39;, 6))
+        self.altitude = float(kwargs.get(&#39;altitude&#39;, 0.0))   # metres
+        self.speed = float(kwargs.get(&#39;speed&#39;, 0.0))  # knots
+        self.heading = float(kwargs.get(&#39;heading&#39;, 0.0))   # degrees
+        self.timestamp = int(kwargs.get(&#39;timestamp&#39;, 0))   # seconds (unix)
+        self.satellites = int(kwargs.get(&#39;satellites&#39;, 0))
+        self.fix_type = int(kwargs.get(&#39;fix_type&#39;, 1))
+        self.pdop = float(kwargs.get(&#39;pdop&#39;, 99.9))
+        self.hdop = float(kwargs.get(&#39;hdop&#39;, 99.9))
+        self.vdop = float(kwargs.get(&#39;vdop&#39;, 99.9))
+        self.satellites_info: &#39;list[GnssSatelliteInfo]&#39; = kwargs.get(
+            &#39;satellites_info&#39;, []
+        )
+
+    @property
+    def time_iso(self) -&gt; str:
+        return f&#39;{datetime.utcfromtimestamp(self.timestamp).isoformat()}Z&#39;
+
+    def _update_satellites_info(self,
+                                satellites_info: &#39;list[GnssSatelliteInfo]&#39;):
+        &#34;&#34;&#34;Populates satellite information based on NMEA GSV data.&#34;&#34;&#34;
+        for satellite_info in satellites_info:
+            if isinstance(satellite_info, GnssSatelliteInfo):
+                new = True
+                for i, info in enumerate(self.satellites_info):
+                    if info.prn == satellite_info.prn:
+                        new = False
+                        self.satellites_info[i] = satellite_info
+                        break
+                if new:
+                    self.satellites_info.append(satellite_info)
+    
+    def serialize(self, include_satellite_details: bool = False) -&gt; str:
+        d = vars(self)
+        if include_satellite_details:
+            for i, satellite_info in enumerate(d[&#39;satellites_info&#39;]):
+                d[&#39;satellites_info&#39;][i] = vars(satellite_info)
+        else:
+            del d[&#39;satellites_info&#39;]
+        return d</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="idpmodem.location.Location.time_iso"><code class="name">var <span class="ident">time_iso</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def time_iso(self) -&gt; str:
+    return f&#39;{datetime.utcfromtimestamp(self.timestamp).isoformat()}Z&#39;</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="idpmodem.location.Location.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self, include_satellite_details: bool = False) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self, include_satellite_details: bool = False) -&gt; str:
+    d = vars(self)
+    if include_satellite_details:
+        for i, satellite_info in enumerate(d[&#39;satellites_info&#39;]):
+            d[&#39;satellites_info&#39;][i] = vars(satellite_info)
+    else:
+        del d[&#39;satellites_info&#39;]
+    return d</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.location.NmeaChecksumError"><code class="flex name class">
+<span>class <span class="ident">NmeaChecksumError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>NMEA sentence checksum error.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NmeaChecksumError(NmeaException):
+    &#34;&#34;&#34;NMEA sentence checksum error.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.location.NmeaException" href="#idpmodem.location.NmeaException">NmeaException</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="idpmodem.location.NmeaException"><code class="flex name class">
+<span>class <span class="ident">NmeaException</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An exception triggered during NMEA sentence parsing.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NmeaException(Exception):
+    &#34;&#34;&#34;An exception triggered during NMEA sentence parsing.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="idpmodem.location.NmeaChecksumError" href="#idpmodem.location.NmeaChecksumError">NmeaChecksumError</a></li>
+<li><a title="idpmodem.location.NmeaInvalid" href="#idpmodem.location.NmeaInvalid">NmeaInvalid</a></li>
+</ul>
+</dd>
+<dt id="idpmodem.location.NmeaInvalid"><code class="flex name class">
+<span>class <span class="ident">NmeaInvalid</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Invalid NMEA sentence.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NmeaInvalid(NmeaException):
+    &#34;&#34;&#34;Invalid NMEA sentence.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.location.NmeaException" href="#idpmodem.location.NmeaException">NmeaException</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="idpmodem" href="index.html">idpmodem</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="idpmodem.location.location_from_nmea" href="#idpmodem.location.location_from_nmea">location_from_nmea</a></code></li>
+<li><code><a title="idpmodem.location.validate_nmea_checksum" href="#idpmodem.location.validate_nmea_checksum">validate_nmea_checksum</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="idpmodem.location.GnssSatelliteInfo" href="#idpmodem.location.GnssSatelliteInfo">GnssSatelliteInfo</a></code></h4>
+</li>
+<li>
+<h4><code><a title="idpmodem.location.Location" href="#idpmodem.location.Location">Location</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.location.Location.serialize" href="#idpmodem.location.Location.serialize">serialize</a></code></li>
+<li><code><a title="idpmodem.location.Location.time_iso" href="#idpmodem.location.Location.time_iso">time_iso</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.location.NmeaChecksumError" href="#idpmodem.location.NmeaChecksumError">NmeaChecksumError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="idpmodem.location.NmeaException" href="#idpmodem.location.NmeaException">NmeaException</a></code></h4>
+</li>
+<li>
+<h4><code><a title="idpmodem.location.NmeaInvalid" href="#idpmodem.location.NmeaInvalid">NmeaInvalid</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

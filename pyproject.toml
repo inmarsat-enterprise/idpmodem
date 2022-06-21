@@ -16,6 +16,7 @@ pylint = "^2.13.5"
 pytest-asyncio = "^0.18.3"
 pytest-mock = "^3.7.0"
 asynctest = "^0.13.0"
+pdoc3 = "^0.10.0"
 
 [tool.pytest.ini_options]
 log_cli = true

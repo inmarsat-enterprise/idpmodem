@@ -1,0 +1,2816 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>idpmodem.constants API documentation</title>
+<meta name="description" content="IsatData Pro modem constants …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>idpmodem.constants</code></h1>
+</header>
+<section id="section-intro">
+<p>IsatData Pro modem constants.</p>
+<p>This module provides mapping of constants used within an IDP modem.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+&#34;&#34;&#34;IsatData Pro modem constants.
+
+This module provides mapping of constants used within an IDP modem.
+
+&#34;&#34;&#34;
+
+from enum import Enum, IntEnum, IntFlag
+
+
+class MessagePriority(IntEnum):
+    NONE = 0
+    HIGH = 1
+    MEDH = 2
+    MEDL = 3
+    LOW = 4
+
+
+class DataFormat(IntEnum):
+    TEXT = 1
+    HEX = 2
+    BASE64 = 3
+
+
+CONTROL_STATES = {
+    0: &#39;Stopped&#39;,
+    1: &#39;Waiting for GNSS fix&#39;,
+    2: &#39;Starting search&#39;,
+    3: &#39;Beam search&#39;,
+    4: &#39;Beam found&#39;,
+    5: &#39;Beam acquired&#39;,
+    6: &#39;Beam switch in progress&#39;,
+    7: &#39;Registration in progress&#39;,
+    8: &#39;Receive only&#39;,
+    9: &#39;Downloading Bulletin Board&#39;,
+    10: &#39;Active&#39;,
+    11: &#39;Blocked&#39;,
+    12: &#39;Confirm previously registered beam&#39;,
+    13: &#39;Confirm requested beam&#39;,
+    14: &#39;Connect to confirmed beam&#39;
+}
+
+
+class SatlliteControlState(IntEnum):
+    STOPPED = 0
+    GNSS_WAIT = 1
+    SEARCH_START = 2
+    BEAM_SEARCH = 3
+    BEAM_FOUND = 4
+    BEAM_ACQUIRED = 5
+    BEAM_SWITCH = 6
+    REGISTERING = 7
+    RECEIVE_ONLY = 8
+    BB_DOWNLOAD = 9
+    ACTIVE = 10
+    BLOCKED = 11
+    CONFIRM_PREVIOUS_BEAM = 12
+    CONFIRM_REQUESTED_BEAM = 13
+    CONNECT_CONFIRMED_BEAM = 14
+
+
+class BeamSearchState(IntEnum):
+    IDLE = 0
+    SEARCH_ANY_TRAFFIC = 1
+    SEARCH_LAST_TRAFFIC = 2
+    RESERVED = 3
+    SEARCH_NEW_TRAFFIC = 4
+    SEARCH_BULLETIN_BOARD = 5
+    DELAY_TRAFFIC_SEARCH = 6
+
+
+class MessageState(IntEnum):
+    UNAVAILABLE = 0
+    RX_PENDING = 1
+    RX_COMPLETE = 2
+    RX_RETRIEVED = 3
+    TX_READY = 4
+    TX_SENDING = 5
+    TX_COMPLETE = 6
+    TX_FAILED = 7
+    TX_CANCELLED = 8
+
+
+AT_ERROR_CODES = {
+    0: &#39;OK&#39;,
+    4: &#39;ERROR&#39;,
+    100: &#39;ERR_INVALID_CRC_SEQUENCE&#39;,
+    101: &#39;ERR_UNKNOWN_COMMAND&#39;,
+    102: &#39;ERR_INVALID_COMMAND_PARAMETERS&#39;,
+    103: &#39;ERR_MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE&#39;,
+    104: &#39;ERR_RESERVED_104&#39;,
+    105: &#39;ERR_SYSTEM_ERROR&#39;,
+    106: &#39;ERR_QUEUE_INSUFFICIENT_RESOURCES&#39;,
+    107: &#39;ERR_MESSAGE_NAME_ALREADY_IN_USE&#39;,
+    108: &#39;ERR_TIMEOUT_OCCURRED&#39;,
+    109: &#39;ERR_UNAVAILABLE&#39;,
+    110: &#39;ERR_RESERVED_110&#39;,
+    111: &#39;ERR_RESERVED_111&#39;,
+    112: &#39;ERR_ATTEMPT_TO_WRITE_READ_ONLY_PARAMETER&#39;
+}
+
+
+WAKEUP_PERIODS = {
+    0: &#39;SECONDS_5&#39;,
+    1: &#39;SECONDS_30&#39;,
+    2: &#39;MINUTES_1&#39;,
+    3: &#39;MINUTES_3&#39;,
+    4: &#39;MINUTES_10&#39;,
+    5: &#39;MINUTES_30&#39;,
+    6: &#39;MINUTES_60&#39;,
+    7: &#39;MINUTES_2&#39;,
+    8: &#39;MINUTES_5&#39;,
+    9: &#39;MINUTES_15&#39;,
+    10: &#39;MINUTES_20&#39;
+}
+
+POWER_MODES = {
+    0: &#39;MOBILE_POWERED&#39;,
+    1: &#39;FIXED_POWERED&#39;,
+    2: &#39;MOBILE_BATTERY&#39;,
+    3: &#39;FIXED_BATTERY&#39;,
+    4: &#39;MOBILE_MINIMAL&#39;,
+    5: &#39;MOBILE_PARKED&#39;
+}
+
+
+class IdpEnum(IntEnum):
+    @classmethod
+    def is_valid(cls, value: int) -&gt; bool:
+        &#34;&#34;&#34;True if the value exists in the enumeration.&#34;&#34;&#34;
+        return value in [v.value for v in cls.__members__.values()]
+
+
+class AtErrorCode(IdpEnum):
+    OK = 0
+    ERROR = 4
+    INVALID_CRC = 100
+    UNKNOWN_COMMAND = 101
+    INVALID_COMMAND_PARAMETERS = 102
+    MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE = 103
+    RESERVED_104 = 104
+    SYSTEM_ERROR = 105
+    QUEUE_INSUFFICIENT_RESOURCES = 106
+    DUPLICATE_MESSAGE_NAME = 107
+    GNSS_TIMEOUT = 108
+    MESSAGE_UNAVAILABLE = 109
+    RESERVED_110 = 110
+    RESERVED_111 = 111
+    READ_ONLY_PARAMETER = 112
+
+
+class PowerMode(IdpEnum):
+    MOBILE_POWERED = 0
+    FIXED_POWERED = 1
+    MOBILE_BATTERY = 2
+    FIXED_BATTERY = 3
+    MOBILE_MINIMAL = 4
+    MOBILE_PARKED = 5
+
+    def gnss_refresh_hours(self):
+        &#34;&#34;&#34;The minimum GNSS refresh interval [hours].&#34;&#34;&#34;
+        if self.value == 0:
+            return 3
+        if self.value == 1:
+            return 24
+        if self.value == 2:
+            return 6
+        if self.value == 3:
+            return 14 * 24
+        if self.value == 4:
+            return 12
+        if self.value == 5:
+            return 24
+    
+    def transmit_lifetime_seconds(self):
+        &#34;&#34;&#34;The maximum duration of a message in the transmit queue [seconds].&#34;&#34;&#34;
+        if self.value in [0, 1]:
+            return 3 * 3600
+        return  3 * 60
+    
+    def beam_search_interval_seconds(self):
+        &#34;&#34;&#34;The minimum time between background beam searches [seconds].&#34;&#34;&#34;
+        if self.value in [0, 2, 4]:
+            return 20 * 60
+        return 60 * 60
+
+    def short_term_blockage_seconds(self):
+        &#34;&#34;&#34;The time in blockage before initiating a beam search [seconds].&#34;&#34;&#34;
+        if self.value in [0, 1]:
+            return 5 * 60
+        if self.value in [2, 3, 4]:
+            return 20 * 60
+        return 15 * 60
+    
+    def beam_search_maximum_seconds(self):
+        &#34;&#34;&#34;The maximum backoff interval between searches when blocked [seconds].
+        &#34;&#34;&#34;
+        if self.value in [0, 1]:
+            return 0
+        return 1600 * 60
+
+
+class WakeupPeriod(IdpEnum):
+    SECONDS_5 = 0
+    SECONDS_30 = 1
+    MINUTES_1 = 2
+    MINUTES_3 = 3
+    MINUTES_10 = 4
+    MINUTES_30 = 5
+    MINUTES_60 = 6
+    MINUTES_2 = 7
+    MINUTES_5 = 8
+    MINUTES_15 = 9
+    MINUTES_20 = 10
+
+    def seconds(self):
+        value = int(self.name.split(&#39;_&#39;))[1]
+        if self.name.startswith(&#39;MINUTES&#39;):
+            return value * 60
+        return value
+
+
+class GnssMode(IdpEnum):
+    GPS = 0
+    GLONASS = 1
+    BEIDOU = 2
+    GALILEO = 3
+    GPS_GLONASS = 10
+    GPS_BEIDOU = 11
+    GLONASS_BEIDOU = 12
+    GPS_GALILEO = 13
+    GLONASS_GALILEO = 14
+    BEIDOU_GALILEO = 15
+
+
+# Dynamic Platform Model - use with caution
+GNSS_DPM_MODES = {
+    0: &#39;PORTABLE&#39;,
+    2: &#39;STATIONARY&#39;,
+    3: &#39;PEDESTRIAN&#39;,
+    4: &#39;AUTOMOTIVE&#39;,
+    5: &#39;SEA&#39;,
+    6: &#39;AIR_1G&#39;,
+    7: &#39;AIR_2G&#39;,
+    8: &#39;AIR_4G&#39;
+}
+
+
+class SignalLevelRegional(Enum):
+    &#34;&#34;&#34;Qualitative descriptors for SNR/CN0 values for a IDP Regional Beam.
+    
+    BARS_n: *n* is a scale from 0..5 to be used as greaterThan threshold
+    NONE, MARGINAL, GOOD: a scale to be used as greaterOrEqual threshold
+
+    &#34;&#34;&#34;
+    BARS_0 = 0
+    BARS_1 = 37.0
+    BARS_2 = 39.0
+    BARS_3 = 41.0
+    BARS_4 = 43.0
+    BARS_5 = 45.5
+    INVALID = 55.0
+
+
+class SignalQuality(IntEnum):
+    NONE = 0
+    WEAK = 1
+    LOW = 2
+    MID = 3
+    GOOD = 4
+    STRONG = 5
+    WARNING = 6
+
+
+class EventNotification(IntFlag):
+    GNSS_FIX_NEW = 0b000000000001
+    MESSAGE_MT_RECEIVED = 0b000000000010
+    MESSAGE_MO_COMPLETE = 0b000000000100
+    NETWORK_REGISTERED = 0b000000001000
+    MODEM_RESET_COMPLETE = 0b000000010000
+    JAMMING_ANTENNA_CHANGE = 0b000000100000
+    MODEM_RESET_PENDING = 0b000001000000
+    WAKEUP_PERIOD_CHANGE = 0b000010000000
+    UTC_TIME_SYNC = 0b000100000000
+    GNSS_FIX_TIMEOUT = 0b001000000000
+    EVENT_TRACE_CACHED = 0b010000000000
+    NETWORK_PING_ACKNOWLEDGED = 0b100000000000
+
+
+class TransmitterStatus(IdpEnum):
+    RX_ONLY_NOT_REGISTERED = 4
+    OK = 5
+    SUSPENDED = 6
+    MUTED = 7
+    BLOCKED = 8
+
+
+class EventTraceClass(IdpEnum):
+    HARDWARE_FAULT = 1
+    SYSTEM = 2
+    SATELLITE = 3
+    GNSS = 4
+    MESSAGE = 5
+
+
+class EventTraceSubclass(IdpEnum):
+    &#34;&#34;&#34;Base class for trace subclasses&#34;&#34;&#34;
+
+
+class EventTraceSystem(EventTraceSubclass):
+    RESET = 1
+    LOW_POWER = 2
+    SYSTEM_STATS = 3
+    SATCOM_STATS = 4
+
+
+class EventTraceSatellite(EventTraceSubclass):
+    RX_STATUS = 1
+    TX_STATUS = 2
+    BEAM_CONNECT = 3
+    BEAM_SEARCH_RESULT = 4
+    GEO_ADJUST = 5
+    EVENT_LOG = 6
+    RX_METRICS_SUBFRAME = 16
+    RX_METRICS_MINUTE = 17
+    RX_METRICS_HOUR = 18
+    RX_METRICS_DAY = 19
+    TX_METRICS_SUBFRAME = 20
+    TX_METRICS_MINUTE = 21
+    TX_METRICS_HOUR = 22
+    TX_METRICS_DAY = 23
+
+
+class EventTraceGnss(EventTraceSubclass):
+    FIX_STATS = 1
+    DOPPLER = 4
+
+
+class EventTraceMessage(EventTraceSubclass):
+    RECEIVE_STATS = 1
+    TRANSMIT_STATS = 2
+    TRANSMIT_UTILITY = 3
+
+
+class EventTrace:
+    def __init__(self,
+                 trace_class: EventTraceClass,
+                 trace_subclass: EventTraceSubclass,
+                 data: &#39;tuple[str, str|dict|IntEnum]&#39;) -&gt; None:
+        &#34;&#34;&#34;Defines an event trace.
+        
+        Args:
+            trace_class: The enumerated class
+            trace_subclass: The enumerated subclass dependent on the class
+            data: The set of (name, meta) where meta defines either a
+                data type (e.g. `uint`) or a mapping (`dict` or `IntEnum`)
+        &#34;&#34;&#34;
+        self.trace_class: EventTraceClass = trace_class
+        self.trace_subclass: EventTraceSubclass = trace_subclass
+        self.data: &#39;tuple[str, str|dict|IntEnum]&#39; = data
+
+
+EVENT_TRACE_SATELLITE_GENERAL = EventTrace(
+    trace_class=EventTraceClass.SATELLITE,
+    trace_subclass=EventTraceSatellite.RX_STATUS,
+    data=(
+        (&#39;subframe_number&#39;, &#39;uint&#39;),
+        (&#39;traffic_vcid&#39;, &#39;uint&#39;),
+        (&#39;configuration_id&#39;, &#39;uint&#39;),
+        (&#39;beam_number&#39;, &#39;uint&#39;),
+        (&#39;reserved04&#39;, &#39;uint&#39;),
+        (&#39;tx_access_sip&#39;, &#39;uint&#39;),
+        (&#39;tx_access_operator&#39;, &#39;uint&#39;),
+        (&#39;tx_access_user&#39;, &#39;uint&#39;),
+        (&#39;tx_suspend_flags&#39;, {
+            0x1: &#39;BEAM_REGISTRATION&#39;,
+            0x2: &#39;BEAM_SWITCH&#39;,
+            0x4: &#39;RESERVED&#39;,
+            0x8: &#39;BLOCKED&#39;,
+        }),
+        (&#39;tx_messages_active&#39;, &#39;uint&#39;),
+        (&#39;tx_messages_total&#39;, &#39;uint&#39;),
+        (&#39;tx_packets_active&#39;, &#39;uint&#39;),
+        (&#39;tx_state&#39;, {
+            0: &#39;ACTIVE&#39;,
+            1: &#39;SUSPENDING&#39;,
+            2: &#39;SUSPENDED_PENDING_GNSS&#39;}),
+        (&#39;active_rx_messages&#39;, &#39;uint&#39;),
+        (&#39;beamswitch_averaging_window&#39;, &#39;uint&#39;),
+        (&#39;beamswitch_averaging_count&#39;, &#39;uint&#39;),
+        (&#39;c_n_x100&#39;, &#39;uint&#39;),
+        (&#39;beamsample_threshold&#39;, &#39;uint&#39;),
+        (&#39;beamsample_timer&#39;, &#39;uint&#39;),
+        (&#39;flags&#39;, {
+            0x1: &#39;REGISTERED&#39;,
+            0x2: &#39;SENDING_BEAM_REGISTRATION&#39;,
+            0x10: &#39;BEAM_SEARCH&#39;,
+            0x20: &#39;BEAM_SAMPLE_REQUIRED&#39;,
+            0x40: &#39;BEAM_SWITCH_PENDING&#39;,
+            0x100: &#39;GNSS_VALID&#39;,
+            0x200: &#39;GNSS_REQUIRED&#39;,
+            0x400: &#39;GNSS_PENDING&#39;,
+        }),
+        (&#39;gnss_state_timer&#39;, &#39;uint&#39;),
+        (&#39;reserved21&#39;, &#39;uint&#39;),
+        (&#39;satellite_control_state&#39;, SatlliteControlState),
+        (&#39;beam_search_state&#39;, BeamSearchState),
+    )
+)
+
+
+EVENT_TRACES = (
+    EVENT_TRACE_SATELLITE_GENERAL,
+)
+
+
+GEOBEAMS = {
+    1: &#39;AMER RB1&#39;,
+    2: &#39;AMER RB2&#39;,
+    3: &#39;AMER RB3&#39;,
+    4: &#39;AMER RB4&#39;,
+    5: &#39;AMER RB5&#39;,
+    6: &#39;AMER RB6&#39;,
+    7: &#39;AMER RB7&#39;,
+    8: &#39;AMER RB8&#39;,
+    9: &#39;AMER RB9&#39;,
+    10: &#39;AMER RB10&#39;,
+    11: &#39;AMER RB11&#39;,
+    12: &#39;AMER RB12&#39;,
+    13: &#39;AMER RB13&#39;,
+    14: &#39;AMER RB14&#39;,
+    15: &#39;AMER RB15&#39;,
+    16: &#39;AMER RB16&#39;,
+    17: &#39;AMER RB17&#39;,
+    18: &#39;AMER RB18&#39;,
+    19: &#39;AMER RB19&#39;,
+    61: &#39;AORW SC&#39;,
+    21: &#39;EMEA RB1&#39;,
+    22: &#39;EMEA RB2&#39;,
+    23: &#39;EMEA RB3&#39;,
+    24: &#39;EMEA RB4&#39;,
+    25: &#39;EMEA RB5&#39;,
+    26: &#39;EMEA RB6&#39;,
+    27: &#39;EMEA RB7&#39;,
+    28: &#39;EMEA RB8&#39;,
+    29: &#39;EMEA RB9&#39;,
+    30: &#39;EMEA RB10&#39;,
+    31: &#39;EMEA RB11&#39;,
+    32: &#39;EMEA RB12&#39;,
+    33: &#39;EMEA RB13&#39;,
+    34: &#39;EMEA RB14&#39;,
+    35: &#39;EMEA RB15&#39;,
+    36: &#39;EMEA RB16&#39;,
+    37: &#39;EMEA RB17&#39;,
+    38: &#39;EMEA RB18&#39;,
+    39: &#39;EMEA RB19&#39;,
+    41: &#39;APAC RB1&#39;,
+    42: &#39;APAC RB2&#39;,
+    43: &#39;APAC RB3&#39;,
+    44: &#39;APAC RB4&#39;,
+    45: &#39;APAC RB5&#39;,
+    46: &#39;APAC RB6&#39;,
+    47: &#39;APAC RB7&#39;,
+    48: &#39;APAC RB8&#39;,
+    49: &#39;APAC RB9&#39;,
+    50: &#39;APAC RB10&#39;,
+    51: &#39;APAC RB11&#39;,
+    52: &#39;APAC RB12&#39;,
+    53: &#39;APAC RB13&#39;,
+    54: &#39;APAC RB14&#39;,
+    55: &#39;APAC RB15&#39;,
+    56: &#39;APAC RB16&#39;,
+    57: &#39;APAC RB17&#39;,
+    58: &#39;APAC RB18&#39;,
+    59: &#39;APAC RB19&#39;,
+    90: &#39;MEAS RB10&#39;,
+    91: &#39;MEAS RB11&#39;,
+    92: &#39;MEAS RB12&#39;,
+    93: &#39;MEAS RB15&#39;,
+}
+
+
+class GeoBeam(IdpEnum):
+    AMER_RB1 = 1
+    AMER_RB2 = 2
+    AMER_RB3 = 3
+    AMER_RB4 = 4
+    AMER_RB5 = 5
+    AMER_RB6 = 6
+    AMER_RB7 = 7
+    AMER_RB8 = 8
+    AMER_RB9 = 9
+    AMER_RB10 = 10
+    AMER_RB11 = 11
+    AMER_RB12 = 12
+    AMER_RB13 = 13
+    AMER_RB14 = 14
+    AMER_RB15 = 15
+    AMER_RB16 = 16
+    AMER_RB17 = 17
+    AMER_RB18 = 18
+    AMER_RB19 = 19
+    AORW_SC = 61
+    EMEA_RB1 = 21
+    EMEA_RB2 = 22
+    EMEA_RB3 = 23
+    EMEA_RB4 = 24
+    EMEA_RB5 = 25
+    EMEA_RB6 = 26
+    EMEA_RB7 = 27
+    EMEA_RB8 = 28
+    EMEA_RB9 = 29
+    EMEA_RB10 = 30
+    EMEA_RB11 = 31
+    EMEA_RB12 = 32
+    EMEA_RB13 = 33
+    EMEA_RB14 = 34
+    EMEA_RB15 = 35
+    EMEA_RB16 = 36
+    EMEA_RB17 = 37
+    EMEA_RB18 = 38
+    EMEA_RB19 = 39
+    APAC_RB1 = 41
+    APAC_RB2 = 42
+    APAC_RB3 = 43
+    APAC_RB4 = 44
+    APAC_RB5 = 45
+    APAC_RB6 = 46
+    APAC_RB7 = 47
+    APAC_RB8 = 48
+    APAC_RB9 = 49
+    APAC_RB10 = 50
+    APAC_RB11 = 51
+    APAC_RB12 = 52
+    APAC_RB13 = 53
+    APAC_RB14 = 54
+    APAC_RB15 = 55
+    APAC_RB16 = 56
+    APAC_RB17 = 57
+    APAC_RB18 = 58
+    APAC_RB19 = 59
+    MEAS_RB10 = 90
+    MEAS_RB11 = 91
+    MEAS_RB12 = 92
+    MEAS_RB15 = 93
+
+    def satellite(self):
+        return self.name.split(&#39;_&#39;)[0]
+
+    def beam(self):
+        return self.name.split(&#39;_&#39;)[1]
+    
+    def id(self):
+        return self.value</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="idpmodem.constants.AtErrorCode"><code class="flex name class">
+<span>class <span class="ident">AtErrorCode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AtErrorCode(IdpEnum):
+    OK = 0
+    ERROR = 4
+    INVALID_CRC = 100
+    UNKNOWN_COMMAND = 101
+    INVALID_COMMAND_PARAMETERS = 102
+    MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE = 103
+    RESERVED_104 = 104
+    SYSTEM_ERROR = 105
+    QUEUE_INSUFFICIENT_RESOURCES = 106
+    DUPLICATE_MESSAGE_NAME = 107
+    GNSS_TIMEOUT = 108
+    MESSAGE_UNAVAILABLE = 109
+    RESERVED_110 = 110
+    RESERVED_111 = 111
+    READ_ONLY_PARAMETER = 112</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.AtErrorCode.DUPLICATE_MESSAGE_NAME"><code class="name">var <span class="ident">DUPLICATE_MESSAGE_NAME</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.ERROR"><code class="name">var <span class="ident">ERROR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.GNSS_TIMEOUT"><code class="name">var <span class="ident">GNSS_TIMEOUT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.INVALID_COMMAND_PARAMETERS"><code class="name">var <span class="ident">INVALID_COMMAND_PARAMETERS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.INVALID_CRC"><code class="name">var <span class="ident">INVALID_CRC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE"><code class="name">var <span class="ident">MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.MESSAGE_UNAVAILABLE"><code class="name">var <span class="ident">MESSAGE_UNAVAILABLE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.OK"><code class="name">var <span class="ident">OK</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.QUEUE_INSUFFICIENT_RESOURCES"><code class="name">var <span class="ident">QUEUE_INSUFFICIENT_RESOURCES</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.READ_ONLY_PARAMETER"><code class="name">var <span class="ident">READ_ONLY_PARAMETER</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.RESERVED_104"><code class="name">var <span class="ident">RESERVED_104</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.RESERVED_110"><code class="name">var <span class="ident">RESERVED_110</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.RESERVED_111"><code class="name">var <span class="ident">RESERVED_111</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.SYSTEM_ERROR"><code class="name">var <span class="ident">SYSTEM_ERROR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.AtErrorCode.UNKNOWN_COMMAND"><code class="name">var <span class="ident">UNKNOWN_COMMAND</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.BeamSearchState"><code class="flex name class">
+<span>class <span class="ident">BeamSearchState</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BeamSearchState(IntEnum):
+    IDLE = 0
+    SEARCH_ANY_TRAFFIC = 1
+    SEARCH_LAST_TRAFFIC = 2
+    RESERVED = 3
+    SEARCH_NEW_TRAFFIC = 4
+    SEARCH_BULLETIN_BOARD = 5
+    DELAY_TRAFFIC_SEARCH = 6</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.BeamSearchState.DELAY_TRAFFIC_SEARCH"><code class="name">var <span class="ident">DELAY_TRAFFIC_SEARCH</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.BeamSearchState.IDLE"><code class="name">var <span class="ident">IDLE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.BeamSearchState.RESERVED"><code class="name">var <span class="ident">RESERVED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.BeamSearchState.SEARCH_ANY_TRAFFIC"><code class="name">var <span class="ident">SEARCH_ANY_TRAFFIC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.BeamSearchState.SEARCH_BULLETIN_BOARD"><code class="name">var <span class="ident">SEARCH_BULLETIN_BOARD</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.BeamSearchState.SEARCH_LAST_TRAFFIC"><code class="name">var <span class="ident">SEARCH_LAST_TRAFFIC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.BeamSearchState.SEARCH_NEW_TRAFFIC"><code class="name">var <span class="ident">SEARCH_NEW_TRAFFIC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.DataFormat"><code class="flex name class">
+<span>class <span class="ident">DataFormat</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataFormat(IntEnum):
+    TEXT = 1
+    HEX = 2
+    BASE64 = 3</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.DataFormat.BASE64"><code class="name">var <span class="ident">BASE64</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.DataFormat.HEX"><code class="name">var <span class="ident">HEX</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.DataFormat.TEXT"><code class="name">var <span class="ident">TEXT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.EventNotification"><code class="flex name class">
+<span>class <span class="ident">EventNotification</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventNotification(IntFlag):
+    GNSS_FIX_NEW = 0b000000000001
+    MESSAGE_MT_RECEIVED = 0b000000000010
+    MESSAGE_MO_COMPLETE = 0b000000000100
+    NETWORK_REGISTERED = 0b000000001000
+    MODEM_RESET_COMPLETE = 0b000000010000
+    JAMMING_ANTENNA_CHANGE = 0b000000100000
+    MODEM_RESET_PENDING = 0b000001000000
+    WAKEUP_PERIOD_CHANGE = 0b000010000000
+    UTC_TIME_SYNC = 0b000100000000
+    GNSS_FIX_TIMEOUT = 0b001000000000
+    EVENT_TRACE_CACHED = 0b010000000000
+    NETWORK_PING_ACKNOWLEDGED = 0b100000000000</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntFlag</li>
+<li>builtins.int</li>
+<li>enum.Flag</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.EventNotification.EVENT_TRACE_CACHED"><code class="name">var <span class="ident">EVENT_TRACE_CACHED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.GNSS_FIX_NEW"><code class="name">var <span class="ident">GNSS_FIX_NEW</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.GNSS_FIX_TIMEOUT"><code class="name">var <span class="ident">GNSS_FIX_TIMEOUT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.JAMMING_ANTENNA_CHANGE"><code class="name">var <span class="ident">JAMMING_ANTENNA_CHANGE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.MESSAGE_MO_COMPLETE"><code class="name">var <span class="ident">MESSAGE_MO_COMPLETE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.MESSAGE_MT_RECEIVED"><code class="name">var <span class="ident">MESSAGE_MT_RECEIVED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.MODEM_RESET_COMPLETE"><code class="name">var <span class="ident">MODEM_RESET_COMPLETE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.MODEM_RESET_PENDING"><code class="name">var <span class="ident">MODEM_RESET_PENDING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.NETWORK_PING_ACKNOWLEDGED"><code class="name">var <span class="ident">NETWORK_PING_ACKNOWLEDGED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.NETWORK_REGISTERED"><code class="name">var <span class="ident">NETWORK_REGISTERED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.UTC_TIME_SYNC"><code class="name">var <span class="ident">UTC_TIME_SYNC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventNotification.WAKEUP_PERIOD_CHANGE"><code class="name">var <span class="ident">WAKEUP_PERIOD_CHANGE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.EventTrace"><code class="flex name class">
+<span>class <span class="ident">EventTrace</span></span>
+<span>(</span><span>trace_class: <a title="idpmodem.constants.EventTraceClass" href="#idpmodem.constants.EventTraceClass">EventTraceClass</a>, trace_subclass: <a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a>, data: tuple[str, str|dict|IntEnum])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Defines an event trace.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>trace_class</code></strong></dt>
+<dd>The enumerated class</dd>
+<dt><strong><code>trace_subclass</code></strong></dt>
+<dd>The enumerated subclass dependent on the class</dd>
+<dt><strong><code>data</code></strong></dt>
+<dd>The set of (name, meta) where meta defines either a
+data type (e.g. <code>uint</code>) or a mapping (<code>dict</code> or <code>IntEnum</code>)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventTrace:
+    def __init__(self,
+                 trace_class: EventTraceClass,
+                 trace_subclass: EventTraceSubclass,
+                 data: &#39;tuple[str, str|dict|IntEnum]&#39;) -&gt; None:
+        &#34;&#34;&#34;Defines an event trace.
+        
+        Args:
+            trace_class: The enumerated class
+            trace_subclass: The enumerated subclass dependent on the class
+            data: The set of (name, meta) where meta defines either a
+                data type (e.g. `uint`) or a mapping (`dict` or `IntEnum`)
+        &#34;&#34;&#34;
+        self.trace_class: EventTraceClass = trace_class
+        self.trace_subclass: EventTraceSubclass = trace_subclass
+        self.data: &#39;tuple[str, str|dict|IntEnum]&#39; = data</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.constants.EventTraceClass"><code class="flex name class">
+<span>class <span class="ident">EventTraceClass</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventTraceClass(IdpEnum):
+    HARDWARE_FAULT = 1
+    SYSTEM = 2
+    SATELLITE = 3
+    GNSS = 4
+    MESSAGE = 5</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.EventTraceClass.GNSS"><code class="name">var <span class="ident">GNSS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceClass.HARDWARE_FAULT"><code class="name">var <span class="ident">HARDWARE_FAULT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceClass.MESSAGE"><code class="name">var <span class="ident">MESSAGE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceClass.SATELLITE"><code class="name">var <span class="ident">SATELLITE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceClass.SYSTEM"><code class="name">var <span class="ident">SYSTEM</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.EventTraceGnss"><code class="flex name class">
+<span>class <span class="ident">EventTraceGnss</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventTraceGnss(EventTraceSubclass):
+    FIX_STATS = 1
+    DOPPLER = 4</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></li>
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.EventTraceGnss.DOPPLER"><code class="name">var <span class="ident">DOPPLER</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceGnss.FIX_STATS"><code class="name">var <span class="ident">FIX_STATS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.EventTraceSubclass.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.EventTraceMessage"><code class="flex name class">
+<span>class <span class="ident">EventTraceMessage</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventTraceMessage(EventTraceSubclass):
+    RECEIVE_STATS = 1
+    TRANSMIT_STATS = 2
+    TRANSMIT_UTILITY = 3</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></li>
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.EventTraceMessage.RECEIVE_STATS"><code class="name">var <span class="ident">RECEIVE_STATS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceMessage.TRANSMIT_STATS"><code class="name">var <span class="ident">TRANSMIT_STATS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceMessage.TRANSMIT_UTILITY"><code class="name">var <span class="ident">TRANSMIT_UTILITY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.EventTraceSubclass.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite"><code class="flex name class">
+<span>class <span class="ident">EventTraceSatellite</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventTraceSatellite(EventTraceSubclass):
+    RX_STATUS = 1
+    TX_STATUS = 2
+    BEAM_CONNECT = 3
+    BEAM_SEARCH_RESULT = 4
+    GEO_ADJUST = 5
+    EVENT_LOG = 6
+    RX_METRICS_SUBFRAME = 16
+    RX_METRICS_MINUTE = 17
+    RX_METRICS_HOUR = 18
+    RX_METRICS_DAY = 19
+    TX_METRICS_SUBFRAME = 20
+    TX_METRICS_MINUTE = 21
+    TX_METRICS_HOUR = 22
+    TX_METRICS_DAY = 23</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></li>
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.EventTraceSatellite.BEAM_CONNECT"><code class="name">var <span class="ident">BEAM_CONNECT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.BEAM_SEARCH_RESULT"><code class="name">var <span class="ident">BEAM_SEARCH_RESULT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.EVENT_LOG"><code class="name">var <span class="ident">EVENT_LOG</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.GEO_ADJUST"><code class="name">var <span class="ident">GEO_ADJUST</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.RX_METRICS_DAY"><code class="name">var <span class="ident">RX_METRICS_DAY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.RX_METRICS_HOUR"><code class="name">var <span class="ident">RX_METRICS_HOUR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.RX_METRICS_MINUTE"><code class="name">var <span class="ident">RX_METRICS_MINUTE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.RX_METRICS_SUBFRAME"><code class="name">var <span class="ident">RX_METRICS_SUBFRAME</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.RX_STATUS"><code class="name">var <span class="ident">RX_STATUS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.TX_METRICS_DAY"><code class="name">var <span class="ident">TX_METRICS_DAY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.TX_METRICS_HOUR"><code class="name">var <span class="ident">TX_METRICS_HOUR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.TX_METRICS_MINUTE"><code class="name">var <span class="ident">TX_METRICS_MINUTE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.TX_METRICS_SUBFRAME"><code class="name">var <span class="ident">TX_METRICS_SUBFRAME</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSatellite.TX_STATUS"><code class="name">var <span class="ident">TX_STATUS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.EventTraceSubclass.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.EventTraceSubclass"><code class="flex name class">
+<span>class <span class="ident">EventTraceSubclass</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for trace subclasses</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventTraceSubclass(IdpEnum):
+    &#34;&#34;&#34;Base class for trace subclasses&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.EventTraceGnss" href="#idpmodem.constants.EventTraceGnss">EventTraceGnss</a></li>
+<li><a title="idpmodem.constants.EventTraceMessage" href="#idpmodem.constants.EventTraceMessage">EventTraceMessage</a></li>
+<li><a title="idpmodem.constants.EventTraceSatellite" href="#idpmodem.constants.EventTraceSatellite">EventTraceSatellite</a></li>
+<li><a title="idpmodem.constants.EventTraceSystem" href="#idpmodem.constants.EventTraceSystem">EventTraceSystem</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.EventTraceSystem"><code class="flex name class">
+<span>class <span class="ident">EventTraceSystem</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventTraceSystem(EventTraceSubclass):
+    RESET = 1
+    LOW_POWER = 2
+    SYSTEM_STATS = 3
+    SATCOM_STATS = 4</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></li>
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.EventTraceSystem.LOW_POWER"><code class="name">var <span class="ident">LOW_POWER</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSystem.RESET"><code class="name">var <span class="ident">RESET</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSystem.SATCOM_STATS"><code class="name">var <span class="ident">SATCOM_STATS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.EventTraceSystem.SYSTEM_STATS"><code class="name">var <span class="ident">SYSTEM_STATS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.EventTraceSubclass.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.GeoBeam"><code class="flex name class">
+<span>class <span class="ident">GeoBeam</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GeoBeam(IdpEnum):
+    AMER_RB1 = 1
+    AMER_RB2 = 2
+    AMER_RB3 = 3
+    AMER_RB4 = 4
+    AMER_RB5 = 5
+    AMER_RB6 = 6
+    AMER_RB7 = 7
+    AMER_RB8 = 8
+    AMER_RB9 = 9
+    AMER_RB10 = 10
+    AMER_RB11 = 11
+    AMER_RB12 = 12
+    AMER_RB13 = 13
+    AMER_RB14 = 14
+    AMER_RB15 = 15
+    AMER_RB16 = 16
+    AMER_RB17 = 17
+    AMER_RB18 = 18
+    AMER_RB19 = 19
+    AORW_SC = 61
+    EMEA_RB1 = 21
+    EMEA_RB2 = 22
+    EMEA_RB3 = 23
+    EMEA_RB4 = 24
+    EMEA_RB5 = 25
+    EMEA_RB6 = 26
+    EMEA_RB7 = 27
+    EMEA_RB8 = 28
+    EMEA_RB9 = 29
+    EMEA_RB10 = 30
+    EMEA_RB11 = 31
+    EMEA_RB12 = 32
+    EMEA_RB13 = 33
+    EMEA_RB14 = 34
+    EMEA_RB15 = 35
+    EMEA_RB16 = 36
+    EMEA_RB17 = 37
+    EMEA_RB18 = 38
+    EMEA_RB19 = 39
+    APAC_RB1 = 41
+    APAC_RB2 = 42
+    APAC_RB3 = 43
+    APAC_RB4 = 44
+    APAC_RB5 = 45
+    APAC_RB6 = 46
+    APAC_RB7 = 47
+    APAC_RB8 = 48
+    APAC_RB9 = 49
+    APAC_RB10 = 50
+    APAC_RB11 = 51
+    APAC_RB12 = 52
+    APAC_RB13 = 53
+    APAC_RB14 = 54
+    APAC_RB15 = 55
+    APAC_RB16 = 56
+    APAC_RB17 = 57
+    APAC_RB18 = 58
+    APAC_RB19 = 59
+    MEAS_RB10 = 90
+    MEAS_RB11 = 91
+    MEAS_RB12 = 92
+    MEAS_RB15 = 93
+
+    def satellite(self):
+        return self.name.split(&#39;_&#39;)[0]
+
+    def beam(self):
+        return self.name.split(&#39;_&#39;)[1]
+    
+    def id(self):
+        return self.value</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB1"><code class="name">var <span class="ident">AMER_RB1</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB10"><code class="name">var <span class="ident">AMER_RB10</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB11"><code class="name">var <span class="ident">AMER_RB11</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB12"><code class="name">var <span class="ident">AMER_RB12</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB13"><code class="name">var <span class="ident">AMER_RB13</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB14"><code class="name">var <span class="ident">AMER_RB14</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB15"><code class="name">var <span class="ident">AMER_RB15</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB16"><code class="name">var <span class="ident">AMER_RB16</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB17"><code class="name">var <span class="ident">AMER_RB17</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB18"><code class="name">var <span class="ident">AMER_RB18</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB19"><code class="name">var <span class="ident">AMER_RB19</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB2"><code class="name">var <span class="ident">AMER_RB2</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB3"><code class="name">var <span class="ident">AMER_RB3</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB4"><code class="name">var <span class="ident">AMER_RB4</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB5"><code class="name">var <span class="ident">AMER_RB5</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB6"><code class="name">var <span class="ident">AMER_RB6</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB7"><code class="name">var <span class="ident">AMER_RB7</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB8"><code class="name">var <span class="ident">AMER_RB8</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AMER_RB9"><code class="name">var <span class="ident">AMER_RB9</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.AORW_SC"><code class="name">var <span class="ident">AORW_SC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB1"><code class="name">var <span class="ident">APAC_RB1</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB10"><code class="name">var <span class="ident">APAC_RB10</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB11"><code class="name">var <span class="ident">APAC_RB11</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB12"><code class="name">var <span class="ident">APAC_RB12</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB13"><code class="name">var <span class="ident">APAC_RB13</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB14"><code class="name">var <span class="ident">APAC_RB14</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB15"><code class="name">var <span class="ident">APAC_RB15</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB16"><code class="name">var <span class="ident">APAC_RB16</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB17"><code class="name">var <span class="ident">APAC_RB17</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB18"><code class="name">var <span class="ident">APAC_RB18</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB19"><code class="name">var <span class="ident">APAC_RB19</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB2"><code class="name">var <span class="ident">APAC_RB2</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB3"><code class="name">var <span class="ident">APAC_RB3</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB4"><code class="name">var <span class="ident">APAC_RB4</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB5"><code class="name">var <span class="ident">APAC_RB5</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB6"><code class="name">var <span class="ident">APAC_RB6</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB7"><code class="name">var <span class="ident">APAC_RB7</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB8"><code class="name">var <span class="ident">APAC_RB8</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.APAC_RB9"><code class="name">var <span class="ident">APAC_RB9</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB1"><code class="name">var <span class="ident">EMEA_RB1</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB10"><code class="name">var <span class="ident">EMEA_RB10</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB11"><code class="name">var <span class="ident">EMEA_RB11</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB12"><code class="name">var <span class="ident">EMEA_RB12</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB13"><code class="name">var <span class="ident">EMEA_RB13</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB14"><code class="name">var <span class="ident">EMEA_RB14</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB15"><code class="name">var <span class="ident">EMEA_RB15</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB16"><code class="name">var <span class="ident">EMEA_RB16</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB17"><code class="name">var <span class="ident">EMEA_RB17</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB18"><code class="name">var <span class="ident">EMEA_RB18</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB19"><code class="name">var <span class="ident">EMEA_RB19</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB2"><code class="name">var <span class="ident">EMEA_RB2</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB3"><code class="name">var <span class="ident">EMEA_RB3</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB4"><code class="name">var <span class="ident">EMEA_RB4</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB5"><code class="name">var <span class="ident">EMEA_RB5</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB6"><code class="name">var <span class="ident">EMEA_RB6</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB7"><code class="name">var <span class="ident">EMEA_RB7</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB8"><code class="name">var <span class="ident">EMEA_RB8</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.EMEA_RB9"><code class="name">var <span class="ident">EMEA_RB9</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.MEAS_RB10"><code class="name">var <span class="ident">MEAS_RB10</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.MEAS_RB11"><code class="name">var <span class="ident">MEAS_RB11</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.MEAS_RB12"><code class="name">var <span class="ident">MEAS_RB12</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.MEAS_RB15"><code class="name">var <span class="ident">MEAS_RB15</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="idpmodem.constants.GeoBeam.beam"><code class="name flex">
+<span>def <span class="ident">beam</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def beam(self):
+    return self.name.split(&#39;_&#39;)[1]</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.id"><code class="name flex">
+<span>def <span class="ident">id</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def id(self):
+    return self.value</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.constants.GeoBeam.satellite"><code class="name flex">
+<span>def <span class="ident">satellite</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def satellite(self):
+    return self.name.split(&#39;_&#39;)[0]</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.GnssMode"><code class="flex name class">
+<span>class <span class="ident">GnssMode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GnssMode(IdpEnum):
+    GPS = 0
+    GLONASS = 1
+    BEIDOU = 2
+    GALILEO = 3
+    GPS_GLONASS = 10
+    GPS_BEIDOU = 11
+    GLONASS_BEIDOU = 12
+    GPS_GALILEO = 13
+    GLONASS_GALILEO = 14
+    BEIDOU_GALILEO = 15</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.GnssMode.BEIDOU"><code class="name">var <span class="ident">BEIDOU</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.BEIDOU_GALILEO"><code class="name">var <span class="ident">BEIDOU_GALILEO</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.GALILEO"><code class="name">var <span class="ident">GALILEO</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.GLONASS"><code class="name">var <span class="ident">GLONASS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.GLONASS_BEIDOU"><code class="name">var <span class="ident">GLONASS_BEIDOU</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.GLONASS_GALILEO"><code class="name">var <span class="ident">GLONASS_GALILEO</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.GPS"><code class="name">var <span class="ident">GPS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.GPS_BEIDOU"><code class="name">var <span class="ident">GPS_BEIDOU</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.GPS_GALILEO"><code class="name">var <span class="ident">GPS_GALILEO</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.GnssMode.GPS_GLONASS"><code class="name">var <span class="ident">GPS_GLONASS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.IdpEnum"><code class="flex name class">
+<span>class <span class="ident">IdpEnum</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IdpEnum(IntEnum):
+    @classmethod
+    def is_valid(cls, value: int) -&gt; bool:
+        &#34;&#34;&#34;True if the value exists in the enumeration.&#34;&#34;&#34;
+        return value in [v.value for v in cls.__members__.values()]</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.AtErrorCode" href="#idpmodem.constants.AtErrorCode">AtErrorCode</a></li>
+<li><a title="idpmodem.constants.EventTraceClass" href="#idpmodem.constants.EventTraceClass">EventTraceClass</a></li>
+<li><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></li>
+<li><a title="idpmodem.constants.GeoBeam" href="#idpmodem.constants.GeoBeam">GeoBeam</a></li>
+<li><a title="idpmodem.constants.GnssMode" href="#idpmodem.constants.GnssMode">GnssMode</a></li>
+<li><a title="idpmodem.constants.PowerMode" href="#idpmodem.constants.PowerMode">PowerMode</a></li>
+<li><a title="idpmodem.constants.TransmitterStatus" href="#idpmodem.constants.TransmitterStatus">TransmitterStatus</a></li>
+<li><a title="idpmodem.constants.WakeupPeriod" href="#idpmodem.constants.WakeupPeriod">WakeupPeriod</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="idpmodem.constants.IdpEnum.is_valid"><code class="name flex">
+<span>def <span class="ident">is_valid</span></span>(<span>value: int) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>True if the value exists in the enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def is_valid(cls, value: int) -&gt; bool:
+    &#34;&#34;&#34;True if the value exists in the enumeration.&#34;&#34;&#34;
+    return value in [v.value for v in cls.__members__.values()]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.MessagePriority"><code class="flex name class">
+<span>class <span class="ident">MessagePriority</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MessagePriority(IntEnum):
+    NONE = 0
+    HIGH = 1
+    MEDH = 2
+    MEDL = 3
+    LOW = 4</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.MessagePriority.HIGH"><code class="name">var <span class="ident">HIGH</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessagePriority.LOW"><code class="name">var <span class="ident">LOW</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessagePriority.MEDH"><code class="name">var <span class="ident">MEDH</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessagePriority.MEDL"><code class="name">var <span class="ident">MEDL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessagePriority.NONE"><code class="name">var <span class="ident">NONE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.MessageState"><code class="flex name class">
+<span>class <span class="ident">MessageState</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MessageState(IntEnum):
+    UNAVAILABLE = 0
+    RX_PENDING = 1
+    RX_COMPLETE = 2
+    RX_RETRIEVED = 3
+    TX_READY = 4
+    TX_SENDING = 5
+    TX_COMPLETE = 6
+    TX_FAILED = 7
+    TX_CANCELLED = 8</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.MessageState.RX_COMPLETE"><code class="name">var <span class="ident">RX_COMPLETE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessageState.RX_PENDING"><code class="name">var <span class="ident">RX_PENDING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessageState.RX_RETRIEVED"><code class="name">var <span class="ident">RX_RETRIEVED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessageState.TX_CANCELLED"><code class="name">var <span class="ident">TX_CANCELLED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessageState.TX_COMPLETE"><code class="name">var <span class="ident">TX_COMPLETE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessageState.TX_FAILED"><code class="name">var <span class="ident">TX_FAILED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessageState.TX_READY"><code class="name">var <span class="ident">TX_READY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessageState.TX_SENDING"><code class="name">var <span class="ident">TX_SENDING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.MessageState.UNAVAILABLE"><code class="name">var <span class="ident">UNAVAILABLE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.PowerMode"><code class="flex name class">
+<span>class <span class="ident">PowerMode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PowerMode(IdpEnum):
+    MOBILE_POWERED = 0
+    FIXED_POWERED = 1
+    MOBILE_BATTERY = 2
+    FIXED_BATTERY = 3
+    MOBILE_MINIMAL = 4
+    MOBILE_PARKED = 5
+
+    def gnss_refresh_hours(self):
+        &#34;&#34;&#34;The minimum GNSS refresh interval [hours].&#34;&#34;&#34;
+        if self.value == 0:
+            return 3
+        if self.value == 1:
+            return 24
+        if self.value == 2:
+            return 6
+        if self.value == 3:
+            return 14 * 24
+        if self.value == 4:
+            return 12
+        if self.value == 5:
+            return 24
+    
+    def transmit_lifetime_seconds(self):
+        &#34;&#34;&#34;The maximum duration of a message in the transmit queue [seconds].&#34;&#34;&#34;
+        if self.value in [0, 1]:
+            return 3 * 3600
+        return  3 * 60
+    
+    def beam_search_interval_seconds(self):
+        &#34;&#34;&#34;The minimum time between background beam searches [seconds].&#34;&#34;&#34;
+        if self.value in [0, 2, 4]:
+            return 20 * 60
+        return 60 * 60
+
+    def short_term_blockage_seconds(self):
+        &#34;&#34;&#34;The time in blockage before initiating a beam search [seconds].&#34;&#34;&#34;
+        if self.value in [0, 1]:
+            return 5 * 60
+        if self.value in [2, 3, 4]:
+            return 20 * 60
+        return 15 * 60
+    
+    def beam_search_maximum_seconds(self):
+        &#34;&#34;&#34;The maximum backoff interval between searches when blocked [seconds].
+        &#34;&#34;&#34;
+        if self.value in [0, 1]:
+            return 0
+        return 1600 * 60</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.PowerMode.FIXED_BATTERY"><code class="name">var <span class="ident">FIXED_BATTERY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.PowerMode.FIXED_POWERED"><code class="name">var <span class="ident">FIXED_POWERED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.PowerMode.MOBILE_BATTERY"><code class="name">var <span class="ident">MOBILE_BATTERY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.PowerMode.MOBILE_MINIMAL"><code class="name">var <span class="ident">MOBILE_MINIMAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.PowerMode.MOBILE_PARKED"><code class="name">var <span class="ident">MOBILE_PARKED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.PowerMode.MOBILE_POWERED"><code class="name">var <span class="ident">MOBILE_POWERED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="idpmodem.constants.PowerMode.beam_search_interval_seconds"><code class="name flex">
+<span>def <span class="ident">beam_search_interval_seconds</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The minimum time between background beam searches [seconds].</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def beam_search_interval_seconds(self):
+    &#34;&#34;&#34;The minimum time between background beam searches [seconds].&#34;&#34;&#34;
+    if self.value in [0, 2, 4]:
+        return 20 * 60
+    return 60 * 60</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.constants.PowerMode.beam_search_maximum_seconds"><code class="name flex">
+<span>def <span class="ident">beam_search_maximum_seconds</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The maximum backoff interval between searches when blocked [seconds].</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def beam_search_maximum_seconds(self):
+    &#34;&#34;&#34;The maximum backoff interval between searches when blocked [seconds].
+    &#34;&#34;&#34;
+    if self.value in [0, 1]:
+        return 0
+    return 1600 * 60</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.constants.PowerMode.gnss_refresh_hours"><code class="name flex">
+<span>def <span class="ident">gnss_refresh_hours</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The minimum GNSS refresh interval [hours].</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def gnss_refresh_hours(self):
+    &#34;&#34;&#34;The minimum GNSS refresh interval [hours].&#34;&#34;&#34;
+    if self.value == 0:
+        return 3
+    if self.value == 1:
+        return 24
+    if self.value == 2:
+        return 6
+    if self.value == 3:
+        return 14 * 24
+    if self.value == 4:
+        return 12
+    if self.value == 5:
+        return 24</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.constants.PowerMode.short_term_blockage_seconds"><code class="name flex">
+<span>def <span class="ident">short_term_blockage_seconds</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The time in blockage before initiating a beam search [seconds].</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def short_term_blockage_seconds(self):
+    &#34;&#34;&#34;The time in blockage before initiating a beam search [seconds].&#34;&#34;&#34;
+    if self.value in [0, 1]:
+        return 5 * 60
+    if self.value in [2, 3, 4]:
+        return 20 * 60
+    return 15 * 60</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.constants.PowerMode.transmit_lifetime_seconds"><code class="name flex">
+<span>def <span class="ident">transmit_lifetime_seconds</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The maximum duration of a message in the transmit queue [seconds].</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transmit_lifetime_seconds(self):
+    &#34;&#34;&#34;The maximum duration of a message in the transmit queue [seconds].&#34;&#34;&#34;
+    if self.value in [0, 1]:
+        return 3 * 3600
+    return  3 * 60</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState"><code class="flex name class">
+<span>class <span class="ident">SatlliteControlState</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SatlliteControlState(IntEnum):
+    STOPPED = 0
+    GNSS_WAIT = 1
+    SEARCH_START = 2
+    BEAM_SEARCH = 3
+    BEAM_FOUND = 4
+    BEAM_ACQUIRED = 5
+    BEAM_SWITCH = 6
+    REGISTERING = 7
+    RECEIVE_ONLY = 8
+    BB_DOWNLOAD = 9
+    ACTIVE = 10
+    BLOCKED = 11
+    CONFIRM_PREVIOUS_BEAM = 12
+    CONFIRM_REQUESTED_BEAM = 13
+    CONNECT_CONFIRMED_BEAM = 14</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.SatlliteControlState.ACTIVE"><code class="name">var <span class="ident">ACTIVE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.BB_DOWNLOAD"><code class="name">var <span class="ident">BB_DOWNLOAD</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.BEAM_ACQUIRED"><code class="name">var <span class="ident">BEAM_ACQUIRED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.BEAM_FOUND"><code class="name">var <span class="ident">BEAM_FOUND</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.BEAM_SEARCH"><code class="name">var <span class="ident">BEAM_SEARCH</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.BEAM_SWITCH"><code class="name">var <span class="ident">BEAM_SWITCH</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.BLOCKED"><code class="name">var <span class="ident">BLOCKED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.CONFIRM_PREVIOUS_BEAM"><code class="name">var <span class="ident">CONFIRM_PREVIOUS_BEAM</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.CONFIRM_REQUESTED_BEAM"><code class="name">var <span class="ident">CONFIRM_REQUESTED_BEAM</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.CONNECT_CONFIRMED_BEAM"><code class="name">var <span class="ident">CONNECT_CONFIRMED_BEAM</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.GNSS_WAIT"><code class="name">var <span class="ident">GNSS_WAIT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.RECEIVE_ONLY"><code class="name">var <span class="ident">RECEIVE_ONLY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.REGISTERING"><code class="name">var <span class="ident">REGISTERING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.SEARCH_START"><code class="name">var <span class="ident">SEARCH_START</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SatlliteControlState.STOPPED"><code class="name">var <span class="ident">STOPPED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.SignalLevelRegional"><code class="flex name class">
+<span>class <span class="ident">SignalLevelRegional</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Qualitative descriptors for SNR/CN0 values for a IDP Regional Beam.</p>
+<p>BARS_n: <em>n</em> is a scale from 0..5 to be used as greaterThan threshold
+NONE, MARGINAL, GOOD: a scale to be used as greaterOrEqual threshold</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SignalLevelRegional(Enum):
+    &#34;&#34;&#34;Qualitative descriptors for SNR/CN0 values for a IDP Regional Beam.
+    
+    BARS_n: *n* is a scale from 0..5 to be used as greaterThan threshold
+    NONE, MARGINAL, GOOD: a scale to be used as greaterOrEqual threshold
+
+    &#34;&#34;&#34;
+    BARS_0 = 0
+    BARS_1 = 37.0
+    BARS_2 = 39.0
+    BARS_3 = 41.0
+    BARS_4 = 43.0
+    BARS_5 = 45.5
+    INVALID = 55.0</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.SignalLevelRegional.BARS_0"><code class="name">var <span class="ident">BARS_0</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalLevelRegional.BARS_1"><code class="name">var <span class="ident">BARS_1</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalLevelRegional.BARS_2"><code class="name">var <span class="ident">BARS_2</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalLevelRegional.BARS_3"><code class="name">var <span class="ident">BARS_3</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalLevelRegional.BARS_4"><code class="name">var <span class="ident">BARS_4</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalLevelRegional.BARS_5"><code class="name">var <span class="ident">BARS_5</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalLevelRegional.INVALID"><code class="name">var <span class="ident">INVALID</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.SignalQuality"><code class="flex name class">
+<span>class <span class="ident">SignalQuality</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SignalQuality(IntEnum):
+    NONE = 0
+    WEAK = 1
+    LOW = 2
+    MID = 3
+    GOOD = 4
+    STRONG = 5
+    WARNING = 6</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.SignalQuality.GOOD"><code class="name">var <span class="ident">GOOD</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalQuality.LOW"><code class="name">var <span class="ident">LOW</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalQuality.MID"><code class="name">var <span class="ident">MID</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalQuality.NONE"><code class="name">var <span class="ident">NONE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalQuality.STRONG"><code class="name">var <span class="ident">STRONG</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalQuality.WARNING"><code class="name">var <span class="ident">WARNING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.SignalQuality.WEAK"><code class="name">var <span class="ident">WEAK</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.TransmitterStatus"><code class="flex name class">
+<span>class <span class="ident">TransmitterStatus</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TransmitterStatus(IdpEnum):
+    RX_ONLY_NOT_REGISTERED = 4
+    OK = 5
+    SUSPENDED = 6
+    MUTED = 7
+    BLOCKED = 8</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.TransmitterStatus.BLOCKED"><code class="name">var <span class="ident">BLOCKED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.TransmitterStatus.MUTED"><code class="name">var <span class="ident">MUTED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.TransmitterStatus.OK"><code class="name">var <span class="ident">OK</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.TransmitterStatus.RX_ONLY_NOT_REGISTERED"><code class="name">var <span class="ident">RX_ONLY_NOT_REGISTERED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.TransmitterStatus.SUSPENDED"><code class="name">var <span class="ident">SUSPENDED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod"><code class="flex name class">
+<span>class <span class="ident">WakeupPeriod</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WakeupPeriod(IdpEnum):
+    SECONDS_5 = 0
+    SECONDS_30 = 1
+    MINUTES_1 = 2
+    MINUTES_3 = 3
+    MINUTES_10 = 4
+    MINUTES_30 = 5
+    MINUTES_60 = 6
+    MINUTES_2 = 7
+    MINUTES_5 = 8
+    MINUTES_15 = 9
+    MINUTES_20 = 10
+
+    def seconds(self):
+        value = int(self.name.split(&#39;_&#39;))[1]
+        if self.name.startswith(&#39;MINUTES&#39;):
+            return value * 60
+        return value</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></li>
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_1"><code class="name">var <span class="ident">MINUTES_1</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_10"><code class="name">var <span class="ident">MINUTES_10</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_15"><code class="name">var <span class="ident">MINUTES_15</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_2"><code class="name">var <span class="ident">MINUTES_2</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_20"><code class="name">var <span class="ident">MINUTES_20</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_3"><code class="name">var <span class="ident">MINUTES_3</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_30"><code class="name">var <span class="ident">MINUTES_30</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_5"><code class="name">var <span class="ident">MINUTES_5</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.MINUTES_60"><code class="name">var <span class="ident">MINUTES_60</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.SECONDS_30"><code class="name">var <span class="ident">SECONDS_30</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.WakeupPeriod.SECONDS_5"><code class="name">var <span class="ident">SECONDS_5</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="idpmodem.constants.WakeupPeriod.seconds"><code class="name flex">
+<span>def <span class="ident">seconds</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def seconds(self):
+    value = int(self.name.split(&#39;_&#39;))[1]
+    if self.name.startswith(&#39;MINUTES&#39;):
+        return value * 60
+    return value</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></b></code>:
+<ul class="hlist">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="idpmodem" href="index.html">idpmodem</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="idpmodem.constants.AtErrorCode" href="#idpmodem.constants.AtErrorCode">AtErrorCode</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.AtErrorCode.DUPLICATE_MESSAGE_NAME" href="#idpmodem.constants.AtErrorCode.DUPLICATE_MESSAGE_NAME">DUPLICATE_MESSAGE_NAME</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.ERROR" href="#idpmodem.constants.AtErrorCode.ERROR">ERROR</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.GNSS_TIMEOUT" href="#idpmodem.constants.AtErrorCode.GNSS_TIMEOUT">GNSS_TIMEOUT</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.INVALID_COMMAND_PARAMETERS" href="#idpmodem.constants.AtErrorCode.INVALID_COMMAND_PARAMETERS">INVALID_COMMAND_PARAMETERS</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.INVALID_CRC" href="#idpmodem.constants.AtErrorCode.INVALID_CRC">INVALID_CRC</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE" href="#idpmodem.constants.AtErrorCode.MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE">MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.MESSAGE_UNAVAILABLE" href="#idpmodem.constants.AtErrorCode.MESSAGE_UNAVAILABLE">MESSAGE_UNAVAILABLE</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.OK" href="#idpmodem.constants.AtErrorCode.OK">OK</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.QUEUE_INSUFFICIENT_RESOURCES" href="#idpmodem.constants.AtErrorCode.QUEUE_INSUFFICIENT_RESOURCES">QUEUE_INSUFFICIENT_RESOURCES</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.READ_ONLY_PARAMETER" href="#idpmodem.constants.AtErrorCode.READ_ONLY_PARAMETER">READ_ONLY_PARAMETER</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.RESERVED_104" href="#idpmodem.constants.AtErrorCode.RESERVED_104">RESERVED_104</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.RESERVED_110" href="#idpmodem.constants.AtErrorCode.RESERVED_110">RESERVED_110</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.RESERVED_111" href="#idpmodem.constants.AtErrorCode.RESERVED_111">RESERVED_111</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.SYSTEM_ERROR" href="#idpmodem.constants.AtErrorCode.SYSTEM_ERROR">SYSTEM_ERROR</a></code></li>
+<li><code><a title="idpmodem.constants.AtErrorCode.UNKNOWN_COMMAND" href="#idpmodem.constants.AtErrorCode.UNKNOWN_COMMAND">UNKNOWN_COMMAND</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.BeamSearchState" href="#idpmodem.constants.BeamSearchState">BeamSearchState</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.BeamSearchState.DELAY_TRAFFIC_SEARCH" href="#idpmodem.constants.BeamSearchState.DELAY_TRAFFIC_SEARCH">DELAY_TRAFFIC_SEARCH</a></code></li>
+<li><code><a title="idpmodem.constants.BeamSearchState.IDLE" href="#idpmodem.constants.BeamSearchState.IDLE">IDLE</a></code></li>
+<li><code><a title="idpmodem.constants.BeamSearchState.RESERVED" href="#idpmodem.constants.BeamSearchState.RESERVED">RESERVED</a></code></li>
+<li><code><a title="idpmodem.constants.BeamSearchState.SEARCH_ANY_TRAFFIC" href="#idpmodem.constants.BeamSearchState.SEARCH_ANY_TRAFFIC">SEARCH_ANY_TRAFFIC</a></code></li>
+<li><code><a title="idpmodem.constants.BeamSearchState.SEARCH_BULLETIN_BOARD" href="#idpmodem.constants.BeamSearchState.SEARCH_BULLETIN_BOARD">SEARCH_BULLETIN_BOARD</a></code></li>
+<li><code><a title="idpmodem.constants.BeamSearchState.SEARCH_LAST_TRAFFIC" href="#idpmodem.constants.BeamSearchState.SEARCH_LAST_TRAFFIC">SEARCH_LAST_TRAFFIC</a></code></li>
+<li><code><a title="idpmodem.constants.BeamSearchState.SEARCH_NEW_TRAFFIC" href="#idpmodem.constants.BeamSearchState.SEARCH_NEW_TRAFFIC">SEARCH_NEW_TRAFFIC</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.DataFormat" href="#idpmodem.constants.DataFormat">DataFormat</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.DataFormat.BASE64" href="#idpmodem.constants.DataFormat.BASE64">BASE64</a></code></li>
+<li><code><a title="idpmodem.constants.DataFormat.HEX" href="#idpmodem.constants.DataFormat.HEX">HEX</a></code></li>
+<li><code><a title="idpmodem.constants.DataFormat.TEXT" href="#idpmodem.constants.DataFormat.TEXT">TEXT</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.EventNotification" href="#idpmodem.constants.EventNotification">EventNotification</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.EventNotification.EVENT_TRACE_CACHED" href="#idpmodem.constants.EventNotification.EVENT_TRACE_CACHED">EVENT_TRACE_CACHED</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.GNSS_FIX_NEW" href="#idpmodem.constants.EventNotification.GNSS_FIX_NEW">GNSS_FIX_NEW</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.GNSS_FIX_TIMEOUT" href="#idpmodem.constants.EventNotification.GNSS_FIX_TIMEOUT">GNSS_FIX_TIMEOUT</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.JAMMING_ANTENNA_CHANGE" href="#idpmodem.constants.EventNotification.JAMMING_ANTENNA_CHANGE">JAMMING_ANTENNA_CHANGE</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.MESSAGE_MO_COMPLETE" href="#idpmodem.constants.EventNotification.MESSAGE_MO_COMPLETE">MESSAGE_MO_COMPLETE</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.MESSAGE_MT_RECEIVED" href="#idpmodem.constants.EventNotification.MESSAGE_MT_RECEIVED">MESSAGE_MT_RECEIVED</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.MODEM_RESET_COMPLETE" href="#idpmodem.constants.EventNotification.MODEM_RESET_COMPLETE">MODEM_RESET_COMPLETE</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.MODEM_RESET_PENDING" href="#idpmodem.constants.EventNotification.MODEM_RESET_PENDING">MODEM_RESET_PENDING</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.NETWORK_PING_ACKNOWLEDGED" href="#idpmodem.constants.EventNotification.NETWORK_PING_ACKNOWLEDGED">NETWORK_PING_ACKNOWLEDGED</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.NETWORK_REGISTERED" href="#idpmodem.constants.EventNotification.NETWORK_REGISTERED">NETWORK_REGISTERED</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.UTC_TIME_SYNC" href="#idpmodem.constants.EventNotification.UTC_TIME_SYNC">UTC_TIME_SYNC</a></code></li>
+<li><code><a title="idpmodem.constants.EventNotification.WAKEUP_PERIOD_CHANGE" href="#idpmodem.constants.EventNotification.WAKEUP_PERIOD_CHANGE">WAKEUP_PERIOD_CHANGE</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.EventTrace" href="#idpmodem.constants.EventTrace">EventTrace</a></code></h4>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.EventTraceClass" href="#idpmodem.constants.EventTraceClass">EventTraceClass</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.EventTraceClass.GNSS" href="#idpmodem.constants.EventTraceClass.GNSS">GNSS</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceClass.HARDWARE_FAULT" href="#idpmodem.constants.EventTraceClass.HARDWARE_FAULT">HARDWARE_FAULT</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceClass.MESSAGE" href="#idpmodem.constants.EventTraceClass.MESSAGE">MESSAGE</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceClass.SATELLITE" href="#idpmodem.constants.EventTraceClass.SATELLITE">SATELLITE</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceClass.SYSTEM" href="#idpmodem.constants.EventTraceClass.SYSTEM">SYSTEM</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.EventTraceGnss" href="#idpmodem.constants.EventTraceGnss">EventTraceGnss</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.EventTraceGnss.DOPPLER" href="#idpmodem.constants.EventTraceGnss.DOPPLER">DOPPLER</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceGnss.FIX_STATS" href="#idpmodem.constants.EventTraceGnss.FIX_STATS">FIX_STATS</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.EventTraceMessage" href="#idpmodem.constants.EventTraceMessage">EventTraceMessage</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.EventTraceMessage.RECEIVE_STATS" href="#idpmodem.constants.EventTraceMessage.RECEIVE_STATS">RECEIVE_STATS</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceMessage.TRANSMIT_STATS" href="#idpmodem.constants.EventTraceMessage.TRANSMIT_STATS">TRANSMIT_STATS</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceMessage.TRANSMIT_UTILITY" href="#idpmodem.constants.EventTraceMessage.TRANSMIT_UTILITY">TRANSMIT_UTILITY</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.EventTraceSatellite" href="#idpmodem.constants.EventTraceSatellite">EventTraceSatellite</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.constants.EventTraceSatellite.BEAM_CONNECT" href="#idpmodem.constants.EventTraceSatellite.BEAM_CONNECT">BEAM_CONNECT</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.BEAM_SEARCH_RESULT" href="#idpmodem.constants.EventTraceSatellite.BEAM_SEARCH_RESULT">BEAM_SEARCH_RESULT</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.EVENT_LOG" href="#idpmodem.constants.EventTraceSatellite.EVENT_LOG">EVENT_LOG</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.GEO_ADJUST" href="#idpmodem.constants.EventTraceSatellite.GEO_ADJUST">GEO_ADJUST</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.RX_METRICS_DAY" href="#idpmodem.constants.EventTraceSatellite.RX_METRICS_DAY">RX_METRICS_DAY</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.RX_METRICS_HOUR" href="#idpmodem.constants.EventTraceSatellite.RX_METRICS_HOUR">RX_METRICS_HOUR</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.RX_METRICS_MINUTE" href="#idpmodem.constants.EventTraceSatellite.RX_METRICS_MINUTE">RX_METRICS_MINUTE</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.RX_METRICS_SUBFRAME" href="#idpmodem.constants.EventTraceSatellite.RX_METRICS_SUBFRAME">RX_METRICS_SUBFRAME</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.RX_STATUS" href="#idpmodem.constants.EventTraceSatellite.RX_STATUS">RX_STATUS</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.TX_METRICS_DAY" href="#idpmodem.constants.EventTraceSatellite.TX_METRICS_DAY">TX_METRICS_DAY</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.TX_METRICS_HOUR" href="#idpmodem.constants.EventTraceSatellite.TX_METRICS_HOUR">TX_METRICS_HOUR</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.TX_METRICS_MINUTE" href="#idpmodem.constants.EventTraceSatellite.TX_METRICS_MINUTE">TX_METRICS_MINUTE</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.TX_METRICS_SUBFRAME" href="#idpmodem.constants.EventTraceSatellite.TX_METRICS_SUBFRAME">TX_METRICS_SUBFRAME</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSatellite.TX_STATUS" href="#idpmodem.constants.EventTraceSatellite.TX_STATUS">TX_STATUS</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.EventTraceSubclass" href="#idpmodem.constants.EventTraceSubclass">EventTraceSubclass</a></code></h4>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.EventTraceSystem" href="#idpmodem.constants.EventTraceSystem">EventTraceSystem</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.EventTraceSystem.LOW_POWER" href="#idpmodem.constants.EventTraceSystem.LOW_POWER">LOW_POWER</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSystem.RESET" href="#idpmodem.constants.EventTraceSystem.RESET">RESET</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSystem.SATCOM_STATS" href="#idpmodem.constants.EventTraceSystem.SATCOM_STATS">SATCOM_STATS</a></code></li>
+<li><code><a title="idpmodem.constants.EventTraceSystem.SYSTEM_STATS" href="#idpmodem.constants.EventTraceSystem.SYSTEM_STATS">SYSTEM_STATS</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.GeoBeam" href="#idpmodem.constants.GeoBeam">GeoBeam</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB1" href="#idpmodem.constants.GeoBeam.AMER_RB1">AMER_RB1</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB10" href="#idpmodem.constants.GeoBeam.AMER_RB10">AMER_RB10</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB11" href="#idpmodem.constants.GeoBeam.AMER_RB11">AMER_RB11</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB12" href="#idpmodem.constants.GeoBeam.AMER_RB12">AMER_RB12</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB13" href="#idpmodem.constants.GeoBeam.AMER_RB13">AMER_RB13</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB14" href="#idpmodem.constants.GeoBeam.AMER_RB14">AMER_RB14</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB15" href="#idpmodem.constants.GeoBeam.AMER_RB15">AMER_RB15</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB16" href="#idpmodem.constants.GeoBeam.AMER_RB16">AMER_RB16</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB17" href="#idpmodem.constants.GeoBeam.AMER_RB17">AMER_RB17</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB18" href="#idpmodem.constants.GeoBeam.AMER_RB18">AMER_RB18</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB19" href="#idpmodem.constants.GeoBeam.AMER_RB19">AMER_RB19</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB2" href="#idpmodem.constants.GeoBeam.AMER_RB2">AMER_RB2</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB3" href="#idpmodem.constants.GeoBeam.AMER_RB3">AMER_RB3</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB4" href="#idpmodem.constants.GeoBeam.AMER_RB4">AMER_RB4</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB5" href="#idpmodem.constants.GeoBeam.AMER_RB5">AMER_RB5</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB6" href="#idpmodem.constants.GeoBeam.AMER_RB6">AMER_RB6</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB7" href="#idpmodem.constants.GeoBeam.AMER_RB7">AMER_RB7</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB8" href="#idpmodem.constants.GeoBeam.AMER_RB8">AMER_RB8</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AMER_RB9" href="#idpmodem.constants.GeoBeam.AMER_RB9">AMER_RB9</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.AORW_SC" href="#idpmodem.constants.GeoBeam.AORW_SC">AORW_SC</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB1" href="#idpmodem.constants.GeoBeam.APAC_RB1">APAC_RB1</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB10" href="#idpmodem.constants.GeoBeam.APAC_RB10">APAC_RB10</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB11" href="#idpmodem.constants.GeoBeam.APAC_RB11">APAC_RB11</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB12" href="#idpmodem.constants.GeoBeam.APAC_RB12">APAC_RB12</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB13" href="#idpmodem.constants.GeoBeam.APAC_RB13">APAC_RB13</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB14" href="#idpmodem.constants.GeoBeam.APAC_RB14">APAC_RB14</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB15" href="#idpmodem.constants.GeoBeam.APAC_RB15">APAC_RB15</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB16" href="#idpmodem.constants.GeoBeam.APAC_RB16">APAC_RB16</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB17" href="#idpmodem.constants.GeoBeam.APAC_RB17">APAC_RB17</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB18" href="#idpmodem.constants.GeoBeam.APAC_RB18">APAC_RB18</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB19" href="#idpmodem.constants.GeoBeam.APAC_RB19">APAC_RB19</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB2" href="#idpmodem.constants.GeoBeam.APAC_RB2">APAC_RB2</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB3" href="#idpmodem.constants.GeoBeam.APAC_RB3">APAC_RB3</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB4" href="#idpmodem.constants.GeoBeam.APAC_RB4">APAC_RB4</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB5" href="#idpmodem.constants.GeoBeam.APAC_RB5">APAC_RB5</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB6" href="#idpmodem.constants.GeoBeam.APAC_RB6">APAC_RB6</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB7" href="#idpmodem.constants.GeoBeam.APAC_RB7">APAC_RB7</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB8" href="#idpmodem.constants.GeoBeam.APAC_RB8">APAC_RB8</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.APAC_RB9" href="#idpmodem.constants.GeoBeam.APAC_RB9">APAC_RB9</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB1" href="#idpmodem.constants.GeoBeam.EMEA_RB1">EMEA_RB1</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB10" href="#idpmodem.constants.GeoBeam.EMEA_RB10">EMEA_RB10</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB11" href="#idpmodem.constants.GeoBeam.EMEA_RB11">EMEA_RB11</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB12" href="#idpmodem.constants.GeoBeam.EMEA_RB12">EMEA_RB12</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB13" href="#idpmodem.constants.GeoBeam.EMEA_RB13">EMEA_RB13</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB14" href="#idpmodem.constants.GeoBeam.EMEA_RB14">EMEA_RB14</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB15" href="#idpmodem.constants.GeoBeam.EMEA_RB15">EMEA_RB15</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB16" href="#idpmodem.constants.GeoBeam.EMEA_RB16">EMEA_RB16</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB17" href="#idpmodem.constants.GeoBeam.EMEA_RB17">EMEA_RB17</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB18" href="#idpmodem.constants.GeoBeam.EMEA_RB18">EMEA_RB18</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB19" href="#idpmodem.constants.GeoBeam.EMEA_RB19">EMEA_RB19</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB2" href="#idpmodem.constants.GeoBeam.EMEA_RB2">EMEA_RB2</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB3" href="#idpmodem.constants.GeoBeam.EMEA_RB3">EMEA_RB3</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB4" href="#idpmodem.constants.GeoBeam.EMEA_RB4">EMEA_RB4</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB5" href="#idpmodem.constants.GeoBeam.EMEA_RB5">EMEA_RB5</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB6" href="#idpmodem.constants.GeoBeam.EMEA_RB6">EMEA_RB6</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB7" href="#idpmodem.constants.GeoBeam.EMEA_RB7">EMEA_RB7</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB8" href="#idpmodem.constants.GeoBeam.EMEA_RB8">EMEA_RB8</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.EMEA_RB9" href="#idpmodem.constants.GeoBeam.EMEA_RB9">EMEA_RB9</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.MEAS_RB10" href="#idpmodem.constants.GeoBeam.MEAS_RB10">MEAS_RB10</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.MEAS_RB11" href="#idpmodem.constants.GeoBeam.MEAS_RB11">MEAS_RB11</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.MEAS_RB12" href="#idpmodem.constants.GeoBeam.MEAS_RB12">MEAS_RB12</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.MEAS_RB15" href="#idpmodem.constants.GeoBeam.MEAS_RB15">MEAS_RB15</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.beam" href="#idpmodem.constants.GeoBeam.beam">beam</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.id" href="#idpmodem.constants.GeoBeam.id">id</a></code></li>
+<li><code><a title="idpmodem.constants.GeoBeam.satellite" href="#idpmodem.constants.GeoBeam.satellite">satellite</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.GnssMode" href="#idpmodem.constants.GnssMode">GnssMode</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.constants.GnssMode.BEIDOU" href="#idpmodem.constants.GnssMode.BEIDOU">BEIDOU</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.BEIDOU_GALILEO" href="#idpmodem.constants.GnssMode.BEIDOU_GALILEO">BEIDOU_GALILEO</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.GALILEO" href="#idpmodem.constants.GnssMode.GALILEO">GALILEO</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.GLONASS" href="#idpmodem.constants.GnssMode.GLONASS">GLONASS</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.GLONASS_BEIDOU" href="#idpmodem.constants.GnssMode.GLONASS_BEIDOU">GLONASS_BEIDOU</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.GLONASS_GALILEO" href="#idpmodem.constants.GnssMode.GLONASS_GALILEO">GLONASS_GALILEO</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.GPS" href="#idpmodem.constants.GnssMode.GPS">GPS</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.GPS_BEIDOU" href="#idpmodem.constants.GnssMode.GPS_BEIDOU">GPS_BEIDOU</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.GPS_GALILEO" href="#idpmodem.constants.GnssMode.GPS_GALILEO">GPS_GALILEO</a></code></li>
+<li><code><a title="idpmodem.constants.GnssMode.GPS_GLONASS" href="#idpmodem.constants.GnssMode.GPS_GLONASS">GPS_GLONASS</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.MessagePriority" href="#idpmodem.constants.MessagePriority">MessagePriority</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.MessagePriority.HIGH" href="#idpmodem.constants.MessagePriority.HIGH">HIGH</a></code></li>
+<li><code><a title="idpmodem.constants.MessagePriority.LOW" href="#idpmodem.constants.MessagePriority.LOW">LOW</a></code></li>
+<li><code><a title="idpmodem.constants.MessagePriority.MEDH" href="#idpmodem.constants.MessagePriority.MEDH">MEDH</a></code></li>
+<li><code><a title="idpmodem.constants.MessagePriority.MEDL" href="#idpmodem.constants.MessagePriority.MEDL">MEDL</a></code></li>
+<li><code><a title="idpmodem.constants.MessagePriority.NONE" href="#idpmodem.constants.MessagePriority.NONE">NONE</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.MessageState" href="#idpmodem.constants.MessageState">MessageState</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.constants.MessageState.RX_COMPLETE" href="#idpmodem.constants.MessageState.RX_COMPLETE">RX_COMPLETE</a></code></li>
+<li><code><a title="idpmodem.constants.MessageState.RX_PENDING" href="#idpmodem.constants.MessageState.RX_PENDING">RX_PENDING</a></code></li>
+<li><code><a title="idpmodem.constants.MessageState.RX_RETRIEVED" href="#idpmodem.constants.MessageState.RX_RETRIEVED">RX_RETRIEVED</a></code></li>
+<li><code><a title="idpmodem.constants.MessageState.TX_CANCELLED" href="#idpmodem.constants.MessageState.TX_CANCELLED">TX_CANCELLED</a></code></li>
+<li><code><a title="idpmodem.constants.MessageState.TX_COMPLETE" href="#idpmodem.constants.MessageState.TX_COMPLETE">TX_COMPLETE</a></code></li>
+<li><code><a title="idpmodem.constants.MessageState.TX_FAILED" href="#idpmodem.constants.MessageState.TX_FAILED">TX_FAILED</a></code></li>
+<li><code><a title="idpmodem.constants.MessageState.TX_READY" href="#idpmodem.constants.MessageState.TX_READY">TX_READY</a></code></li>
+<li><code><a title="idpmodem.constants.MessageState.TX_SENDING" href="#idpmodem.constants.MessageState.TX_SENDING">TX_SENDING</a></code></li>
+<li><code><a title="idpmodem.constants.MessageState.UNAVAILABLE" href="#idpmodem.constants.MessageState.UNAVAILABLE">UNAVAILABLE</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.PowerMode" href="#idpmodem.constants.PowerMode">PowerMode</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.PowerMode.FIXED_BATTERY" href="#idpmodem.constants.PowerMode.FIXED_BATTERY">FIXED_BATTERY</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.FIXED_POWERED" href="#idpmodem.constants.PowerMode.FIXED_POWERED">FIXED_POWERED</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.MOBILE_BATTERY" href="#idpmodem.constants.PowerMode.MOBILE_BATTERY">MOBILE_BATTERY</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.MOBILE_MINIMAL" href="#idpmodem.constants.PowerMode.MOBILE_MINIMAL">MOBILE_MINIMAL</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.MOBILE_PARKED" href="#idpmodem.constants.PowerMode.MOBILE_PARKED">MOBILE_PARKED</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.MOBILE_POWERED" href="#idpmodem.constants.PowerMode.MOBILE_POWERED">MOBILE_POWERED</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.beam_search_interval_seconds" href="#idpmodem.constants.PowerMode.beam_search_interval_seconds">beam_search_interval_seconds</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.beam_search_maximum_seconds" href="#idpmodem.constants.PowerMode.beam_search_maximum_seconds">beam_search_maximum_seconds</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.gnss_refresh_hours" href="#idpmodem.constants.PowerMode.gnss_refresh_hours">gnss_refresh_hours</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.short_term_blockage_seconds" href="#idpmodem.constants.PowerMode.short_term_blockage_seconds">short_term_blockage_seconds</a></code></li>
+<li><code><a title="idpmodem.constants.PowerMode.transmit_lifetime_seconds" href="#idpmodem.constants.PowerMode.transmit_lifetime_seconds">transmit_lifetime_seconds</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.SatlliteControlState" href="#idpmodem.constants.SatlliteControlState">SatlliteControlState</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.SatlliteControlState.ACTIVE" href="#idpmodem.constants.SatlliteControlState.ACTIVE">ACTIVE</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.BB_DOWNLOAD" href="#idpmodem.constants.SatlliteControlState.BB_DOWNLOAD">BB_DOWNLOAD</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.BEAM_ACQUIRED" href="#idpmodem.constants.SatlliteControlState.BEAM_ACQUIRED">BEAM_ACQUIRED</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.BEAM_FOUND" href="#idpmodem.constants.SatlliteControlState.BEAM_FOUND">BEAM_FOUND</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.BEAM_SEARCH" href="#idpmodem.constants.SatlliteControlState.BEAM_SEARCH">BEAM_SEARCH</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.BEAM_SWITCH" href="#idpmodem.constants.SatlliteControlState.BEAM_SWITCH">BEAM_SWITCH</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.BLOCKED" href="#idpmodem.constants.SatlliteControlState.BLOCKED">BLOCKED</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.CONFIRM_PREVIOUS_BEAM" href="#idpmodem.constants.SatlliteControlState.CONFIRM_PREVIOUS_BEAM">CONFIRM_PREVIOUS_BEAM</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.CONFIRM_REQUESTED_BEAM" href="#idpmodem.constants.SatlliteControlState.CONFIRM_REQUESTED_BEAM">CONFIRM_REQUESTED_BEAM</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.CONNECT_CONFIRMED_BEAM" href="#idpmodem.constants.SatlliteControlState.CONNECT_CONFIRMED_BEAM">CONNECT_CONFIRMED_BEAM</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.GNSS_WAIT" href="#idpmodem.constants.SatlliteControlState.GNSS_WAIT">GNSS_WAIT</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.RECEIVE_ONLY" href="#idpmodem.constants.SatlliteControlState.RECEIVE_ONLY">RECEIVE_ONLY</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.REGISTERING" href="#idpmodem.constants.SatlliteControlState.REGISTERING">REGISTERING</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.SEARCH_START" href="#idpmodem.constants.SatlliteControlState.SEARCH_START">SEARCH_START</a></code></li>
+<li><code><a title="idpmodem.constants.SatlliteControlState.STOPPED" href="#idpmodem.constants.SatlliteControlState.STOPPED">STOPPED</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.SignalLevelRegional" href="#idpmodem.constants.SignalLevelRegional">SignalLevelRegional</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.constants.SignalLevelRegional.BARS_0" href="#idpmodem.constants.SignalLevelRegional.BARS_0">BARS_0</a></code></li>
+<li><code><a title="idpmodem.constants.SignalLevelRegional.BARS_1" href="#idpmodem.constants.SignalLevelRegional.BARS_1">BARS_1</a></code></li>
+<li><code><a title="idpmodem.constants.SignalLevelRegional.BARS_2" href="#idpmodem.constants.SignalLevelRegional.BARS_2">BARS_2</a></code></li>
+<li><code><a title="idpmodem.constants.SignalLevelRegional.BARS_3" href="#idpmodem.constants.SignalLevelRegional.BARS_3">BARS_3</a></code></li>
+<li><code><a title="idpmodem.constants.SignalLevelRegional.BARS_4" href="#idpmodem.constants.SignalLevelRegional.BARS_4">BARS_4</a></code></li>
+<li><code><a title="idpmodem.constants.SignalLevelRegional.BARS_5" href="#idpmodem.constants.SignalLevelRegional.BARS_5">BARS_5</a></code></li>
+<li><code><a title="idpmodem.constants.SignalLevelRegional.INVALID" href="#idpmodem.constants.SignalLevelRegional.INVALID">INVALID</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.SignalQuality" href="#idpmodem.constants.SignalQuality">SignalQuality</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.constants.SignalQuality.GOOD" href="#idpmodem.constants.SignalQuality.GOOD">GOOD</a></code></li>
+<li><code><a title="idpmodem.constants.SignalQuality.LOW" href="#idpmodem.constants.SignalQuality.LOW">LOW</a></code></li>
+<li><code><a title="idpmodem.constants.SignalQuality.MID" href="#idpmodem.constants.SignalQuality.MID">MID</a></code></li>
+<li><code><a title="idpmodem.constants.SignalQuality.NONE" href="#idpmodem.constants.SignalQuality.NONE">NONE</a></code></li>
+<li><code><a title="idpmodem.constants.SignalQuality.STRONG" href="#idpmodem.constants.SignalQuality.STRONG">STRONG</a></code></li>
+<li><code><a title="idpmodem.constants.SignalQuality.WARNING" href="#idpmodem.constants.SignalQuality.WARNING">WARNING</a></code></li>
+<li><code><a title="idpmodem.constants.SignalQuality.WEAK" href="#idpmodem.constants.SignalQuality.WEAK">WEAK</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.TransmitterStatus" href="#idpmodem.constants.TransmitterStatus">TransmitterStatus</a></code></h4>
+<ul class="">
+<li><code><a title="idpmodem.constants.TransmitterStatus.BLOCKED" href="#idpmodem.constants.TransmitterStatus.BLOCKED">BLOCKED</a></code></li>
+<li><code><a title="idpmodem.constants.TransmitterStatus.MUTED" href="#idpmodem.constants.TransmitterStatus.MUTED">MUTED</a></code></li>
+<li><code><a title="idpmodem.constants.TransmitterStatus.OK" href="#idpmodem.constants.TransmitterStatus.OK">OK</a></code></li>
+<li><code><a title="idpmodem.constants.TransmitterStatus.RX_ONLY_NOT_REGISTERED" href="#idpmodem.constants.TransmitterStatus.RX_ONLY_NOT_REGISTERED">RX_ONLY_NOT_REGISTERED</a></code></li>
+<li><code><a title="idpmodem.constants.TransmitterStatus.SUSPENDED" href="#idpmodem.constants.TransmitterStatus.SUSPENDED">SUSPENDED</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.WakeupPeriod" href="#idpmodem.constants.WakeupPeriod">WakeupPeriod</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_1" href="#idpmodem.constants.WakeupPeriod.MINUTES_1">MINUTES_1</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_10" href="#idpmodem.constants.WakeupPeriod.MINUTES_10">MINUTES_10</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_15" href="#idpmodem.constants.WakeupPeriod.MINUTES_15">MINUTES_15</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_2" href="#idpmodem.constants.WakeupPeriod.MINUTES_2">MINUTES_2</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_20" href="#idpmodem.constants.WakeupPeriod.MINUTES_20">MINUTES_20</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_3" href="#idpmodem.constants.WakeupPeriod.MINUTES_3">MINUTES_3</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_30" href="#idpmodem.constants.WakeupPeriod.MINUTES_30">MINUTES_30</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_5" href="#idpmodem.constants.WakeupPeriod.MINUTES_5">MINUTES_5</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.MINUTES_60" href="#idpmodem.constants.WakeupPeriod.MINUTES_60">MINUTES_60</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.SECONDS_30" href="#idpmodem.constants.WakeupPeriod.SECONDS_30">SECONDS_30</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.SECONDS_5" href="#idpmodem.constants.WakeupPeriod.SECONDS_5">SECONDS_5</a></code></li>
+<li><code><a title="idpmodem.constants.WakeupPeriod.seconds" href="#idpmodem.constants.WakeupPeriod.seconds">seconds</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

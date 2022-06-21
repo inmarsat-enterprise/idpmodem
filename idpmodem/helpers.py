@@ -1,4 +1,4 @@
-"""Helpers for operating a headless device for example Raspberry Pi.
+"""Helpers for working with serial ports and encoding conversions.
 
 """
 import binascii
