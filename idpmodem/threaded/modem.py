@@ -1,3 +1,4 @@
+"""A threaded IDP modem client with abstracted properties."""
 import logging
 import os
 import queue
@@ -5,13 +6,13 @@ from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from time import time
 
-from idpmodem.aterror import AtException, AtGnssTimeout, AtTimeout, AtCrcError
-from idpmodem.constants import (AT_ERROR_CODES, EVENT_TRACES, GEOBEAMS,
-                                POWER_MODES, WAKEUP_PERIODS, BeamSearchState,
-                                DataFormat, EventNotification, GnssMode,
-                                MessagePriority, MessageState,
-                                SatlliteControlState, SignalLevelRegional,
-                                SignalQuality, TransmitterStatus)
+from idpmodem.aterror import AtCrcError, AtException, AtGnssTimeout, AtTimeout
+from idpmodem.constants import (EVENT_TRACES, AtErrorCode, BeamSearchState,
+                                DataFormat, EventNotification, GeoBeam,
+                                GnssMode, MessagePriority, MessageState,
+                                PowerMode, SatlliteControlState,
+                                SignalLevelRegional, SignalQuality,
+                                TransmitterStatus, WakeupPeriod)
 from idpmodem.location import Location, location_from_nmea
 from idpmodem.s_registers import SRegisters
 from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
@@ -28,6 +29,15 @@ class ModemBusy(Exception):
 
 
 class AtConfiguration:
+    """Configuration settings of the modem.
+    
+    Attributes:
+        crc (bool): Using cyclic redundancy check for all transactions.
+        echo (bool): Echoing back commands
+        quiet (bool): Limiting responses
+        verbose (bool): Using text-based responses
+        
+    """
     def __init__(self) -> None:
         self.crc: bool = False
         self.echo: bool = True
@@ -185,8 +195,8 @@ class IdpModem:
                     raise AtException('Unhandled error getting last error code')
                 last_err_code = err_res[0]
                 detail = 'UNDEFINED'
-                if int(last_err_code) in AT_ERROR_CODES:
-                    detail = AT_ERROR_CODES[int(last_err_code)]
+                if AtErrorCode.is_valid(int(last_err_code)):
+                    detail = AtErrorCode(int(last_err_code)).name
                 res.append(f'{detail} ({last_err_code})')
                 _log.warning(f'AT error: {detail} for command {command}')
             return res
@@ -204,7 +214,8 @@ class IdpModem:
 
     def config_init(self, crc: bool = False) -> bool:
         """Initializes modem communications with Echo, Verbose. CRC optional."""
-        _log.debug(f'Initializing modem Echo|Verbose{"|CRC" if crc else ""}')
+        _log.debug(f'Initializing modem Echo|Verbose{"|CRC" if crc else ""}'
+                   f' (CRC={self.protocol.crc})')
         command = f'ATZ;E1;V1;Q0;%CRC={1 if crc else 0}'
         res_attempt_1 = self.atcommand(command)
         if res_attempt_1[0] != 'OK':
@@ -212,9 +223,10 @@ class IdpModem:
             # case 2: crc False but previously set; should now be F in factory
             if len(res_attempt_1) > 1:
                 at_error = res_attempt_1[1]
-                if 'INVALID_CRC' not in at_error:
+                if ('INVALID_CRC' not in at_error and
+                    'UNKNOWN_COMMAND' not in at_error):
                     _log.warning(f'Unexpected AT error {at_error}')
-            _log.debug(f'Re-attempting with protocol CRC={self.protocol.crc}')
+            _log.debug(f'Re-attempting (CRC={self.protocol.crc})')
             res_attempt_2 = self.atcommand(command)
             if res_attempt_2[0] != 'OK':
                 _log.error('Unable to initialize modem after second attempt')
@@ -223,6 +235,7 @@ class IdpModem:
                 return False
         # self.protocol.crc = crc   #: redundant should be set by attempt
         self._at_config.crc = crc
+        _log.debug('Initialization success')
         return True
 
     def config_restore_nvm(self) -> bool:
@@ -374,54 +387,46 @@ class IdpModem:
         return self._model
 
     @property
-    def power_mode(self) -> 'str|None':
+    def power_mode(self) -> 'PowerMode|None':
         """The modem power mode setting (enumerated) in `S50`."""
         if self._power_mode is None:
             response = self.atcommand('ATS50?')
             if response[0] != 'ERROR':
-                self._power_mode = int(response[0])
-        if self._power_mode in POWER_MODES:
-            return POWER_MODES[self._power_mode]
+                self._power_mode = PowerMode(int(response[0]))
+        return self._power_mode
     
     @power_mode.setter
-    def power_mode(self, value: 'str|int'):
+    def power_mode(self, value: 'str|int|PowerMode'):
         if isinstance(value, str):
-            if value not in POWER_MODES.values():
-                raise ValueError(f'Invalid power mode {value}')
-            for k, v in POWER_MODES.items():
-                if v == value:
-                    value = k
-                    break
-        if value not in POWER_MODES:
-            raise ValueError(f'Invalid power mode {value}')
+            if value not in PowerMode.__members__:
+                raise ValueError(f'Invalid PowerMode {value}')
+            value = PowerMode[value].value
+        if not PowerMode.is_valid(value):
+            raise ValueError(f'Invalid PowerMode {value}')
         response = self.atcommand(f'ATS50={value}')
         if response[0] == 'OK':
-            self._power_mode = value
+            self._power_mode = PowerMode(value)
     
     @property
-    def wakeup_period(self) -> 'str|None':
+    def wakeup_period(self) -> 'WakeupPeriod|None':
         """The modem wakeup period setting (enumerated) in `S51`."""
         if self._wakeup_period is None:
             response = self.atcommand('ATS51?')
             if response[0] != 'ERROR':
-                self._wakeup_period = int(response[0])
-        if self._wakeup_period in WAKEUP_PERIODS:
-            return WAKEUP_PERIODS[self._wakeup_period]
+                self._wakeup_period = WakeupPeriod(int(response[0]))
+        return self._wakeup_period
 
     @wakeup_period.setter
-    def wakeup_period(self, value: 'str|int'):
+    def wakeup_period(self, value: 'str|int|WakeupPeriod'):
         if isinstance(value, str):
-            if value not in WAKEUP_PERIODS.values():
-                raise ValueError(f'Invalid wakeup period {value}')
-            for k, v in WAKEUP_PERIODS.items():
-                if v == value:
-                    value = k
-                    break
-        if value not in WAKEUP_PERIODS:
-            raise ValueError(f'Invalid wakeup period {value}')
+            if value not in WakeupPeriod.__members__:
+                raise ValueError(f'Invalid WakeupPeriod {value}')
+            value = WakeupPeriod[value].value
+        if not WakeupPeriod.is_valid(value):
+            raise ValueError(f'Invalid WakeupPeriod {value}')
         response = self.atcommand(f'ATS51={value}')
         if response[0] == 'OK':
-            self._wakeup_period = value
+            self._wakeup_period = WakeupPeriod(value)
     
     @property
     def temperature(self) -> int:
@@ -837,14 +842,12 @@ class IdpModem:
                         ) -> 'str|dict':
         """Gets the cached event by class/subclass.
 
-        NOTE: Metadata feature is experimental.
-
         Args:
             event: tuple of (class, subclass)
             meta: Returns the raw text string if False (default)
         
         Returns:
-            String if raw is True or metadata dictionary including:
+            String if meta is True, else metadata dictionary including:
             - `data_count` (int)
             - `signed_bitmask` (str)
             - `mobile_id` (str)
@@ -884,7 +887,8 @@ class IdpModem:
             'class': int(eventdata[4]),
             'subclass': int(eventdata[5]),
             'priority': int(eventdata[6]),
-            'data': eventdata[7:]
+            'raw_data': eventdata[7:],
+            'data': {},
         }
         iso_time = datetime.utcfromtimestamp(event['timestamp']).isoformat()
         event['isotime'] = iso_time[:19] + 'Z'
@@ -893,9 +897,9 @@ class IdpModem:
             bitmask = '0' + bitmask
         for i, bit in enumerate(reversed(bitmask)):
             if bit == '1':
-                event['data'][i] = signed32(int(event['data'][i]))
+                event['raw_data'][i] = signed32(int(event['raw_data'][i]))
             else:
-                event['data'][i] = int(event['data'][i])
+                event['raw_data'][i] = int(event['raw_data'][i])
         # TODO lookup class/subclass definitions
         for trace_def in EVENT_TRACES:
             if trace_def.trace_class != trace_class:
@@ -903,7 +907,7 @@ class IdpModem:
             if trace_def.trace_subclass != trace_subclass:
                 continue
             try:
-                for i, value in enumerate(event['data']):
+                for i, value in enumerate(event['raw_data']):
                     tag, data_type = trace_def.data[i]
                     new_value = value
                     if 'flags' in tag and isinstance(data_type, dict):
@@ -919,7 +923,7 @@ class IdpModem:
                                 new_value = data_type(value)
                             except:
                                 pass   # new_value stays as value
-                    event['data'][i] = { tag: new_value }
+                    event['data'][tag] = new_value
             except Exception as err:
                 _log.exception(err)
         return event
@@ -1022,8 +1026,8 @@ class IdpModem:
         if self._geo_beam_id is None:
             self.satellite_status_get()
         if self._geo_beam_id is not None:
-            if self._geo_beam_id in GEOBEAMS:
-                return GEOBEAMS[self._geo_beam_id].split(' ')[0]
+            if GeoBeam.is_valid(self._geo_beam_id):
+                return GeoBeam(self._geo_beam_id).satellite()
             return f'UNDEFINED {self._geo_beam_id}'
     
     @property
@@ -1032,8 +1036,8 @@ class IdpModem:
         if self._geo_beam_id is None:
             self.satellite_status_get()
         if self._geo_beam_id is not None:
-            if self._geo_beam_id in GEOBEAMS:
-                return GEOBEAMS[self._geo_beam_id].split(' ')[1]
+            if GeoBeam.is_valid(self._geo_beam_id):
+                return GeoBeam(self._geo_beam_id).id()
             return f'GEO{self._geo_beam_id}'
         
     def satellite_status_get(self) -> dict:
