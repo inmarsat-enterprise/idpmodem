@@ -99,6 +99,7 @@ AT_ERROR_CODES = {
     112: 'ERR_ATTEMPT_TO_WRITE_READ_ONLY_PARAMETER'
 }
 
+
 WAKEUP_PERIODS = {
     0: 'SECONDS_5',
     1: 'SECONDS_30',
@@ -123,7 +124,103 @@ POWER_MODES = {
 }
 
 
-class GnssMode(IntEnum):
+class IdpEnum(IntEnum):
+    @classmethod
+    def is_valid(cls, value: int) -> bool:
+        """True if the value exists in the enumeration."""
+        return value in [v.value for v in cls.__members__.values()]
+
+
+class AtErrorCode(IdpEnum):
+    OK = 0
+    ERROR = 4
+    INVALID_CRC = 100
+    UNKNOWN_COMMAND = 101
+    INVALID_COMMAND_PARAMETERS = 102
+    MESSAGE_LENGTH_EXCEEDS_FORMAT_SIZE = 103
+    RESERVED_104 = 104
+    SYSTEM_ERROR = 105
+    QUEUE_INSUFFICIENT_RESOURCES = 106
+    DUPLICATE_MESSAGE_NAME = 107
+    GNSS_TIMEOUT = 108
+    MESSAGE_UNAVAILABLE = 109
+    RESERVED_110 = 110
+    RESERVED_111 = 111
+    READ_ONLY_PARAMETER = 112
+
+
+class PowerMode(IdpEnum):
+    MOBILE_POWERED = 0
+    FIXED_POWERED = 1
+    MOBILE_BATTERY = 2
+    FIXED_BATTERY = 3
+    MOBILE_MINIMAL = 4
+    MOBILE_PARKED = 5
+
+    def gnss_refresh_hours(self):
+        """The minimum GNSS refresh interval [hours]."""
+        if self.value == 0:
+            return 3
+        if self.value == 1:
+            return 24
+        if self.value == 2:
+            return 6
+        if self.value == 3:
+            return 14 * 24
+        if self.value == 4:
+            return 12
+        if self.value == 5:
+            return 24
+    
+    def transmit_lifetime_seconds(self):
+        """The maximum duration of a message in the transmit queue [seconds]."""
+        if self.value in [0, 1]:
+            return 3 * 3600
+        return  3 * 60
+    
+    def beam_search_interval_seconds(self):
+        """The minimum time between background beam searches [seconds]."""
+        if self.value in [0, 2, 4]:
+            return 20 * 60
+        return 60 * 60
+
+    def short_term_blockage_seconds(self):
+        """The time in blockage before initiating a beam search [seconds]."""
+        if self.value in [0, 1]:
+            return 5 * 60
+        if self.value in [2, 3, 4]:
+            return 20 * 60
+        return 15 * 60
+    
+    def beam_search_maximum_seconds(self):
+        """The maximum backoff interval between searches when blocked [seconds].
+        """
+        if self.value in [0, 1]:
+            return 0
+        return 1600 * 60
+
+
+class WakeupPeriod(IdpEnum):
+    SECONDS_5 = 0
+    SECONDS_30 = 1
+    MINUTES_1 = 2
+    MINUTES_3 = 3
+    MINUTES_10 = 4
+    MINUTES_30 = 5
+    MINUTES_60 = 6
+    MINUTES_2 = 7
+    MINUTES_5 = 8
+    MINUTES_15 = 9
+    MINUTES_20 = 10
+
+    def seconds(self):
+        value = int(self.name.split('_'))[1]
+        if self.name.startswith('MINUTES'):
+            return value * 60
+        return value
+
+
+class GnssMode(IdpEnum):
     GPS = 0
     GLONASS = 1
     BEIDOU = 2
@@ -190,7 +287,7 @@ class EventNotification(IntFlag):
     NETWORK_PING_ACKNOWLEDGED = 0b100000000000
 
 
-class TransmitterStatus(IntEnum):
+class TransmitterStatus(IdpEnum):
     RX_ONLY_NOT_REGISTERED = 4
     OK = 5
     SUSPENDED = 6
@@ -198,7 +295,7 @@ class TransmitterStatus(IntEnum):
     BLOCKED = 8
 
 
-class EventTraceClass(IntEnum):
+class EventTraceClass(IdpEnum):
     HARDWARE_FAULT = 1
     SYSTEM = 2
     SATELLITE = 3
@@ -206,7 +303,7 @@ class EventTraceClass(IntEnum):
     MESSAGE = 5
 
 
-class EventTraceSubclass(IntEnum):
+class EventTraceSubclass(IdpEnum):
     """Base class for trace subclasses"""
 
 
@@ -318,66 +415,140 @@ EVENT_TRACES = (
 
 
 GEOBEAMS = {
-  1: 'AMER RB1',
-  2: 'AMER RB2',
-  3: 'AMER RB3',
-  4: 'AMER RB4',
-  5: 'AMER RB5',
-  6: 'AMER RB6',
-  7: 'AMER RB7',
-  8: 'AMER RB8',
-  9: 'AMER RB9',
-  10: 'AMER RB10',
-  11: 'AMER RB11',
-  12: 'AMER RB12',
-  13: 'AMER RB13',
-  14: 'AMER RB14',
-  15: 'AMER RB15',
-  16: 'AMER RB16',
-  17: 'AMER RB17',
-  18: 'AMER RB18',
-  19: 'AMER RB19',
-  61: 'AORW SC',
-  21: 'EMEA RB1',
-  22: 'EMEA RB2',
-  23: 'EMEA RB3',
-  24: 'EMEA RB4',
-  25: 'EMEA RB5',
-  26: 'EMEA RB6',
-  27: 'EMEA RB7',
-  28: 'EMEA RB8',
-  29: 'EMEA RB9',
-  30: 'EMEA RB10',
-  31: 'EMEA RB11',
-  32: 'EMEA RB12',
-  33: 'EMEA RB13',
-  34: 'EMEA RB14',
-  35: 'EMEA RB15',
-  36: 'EMEA RB16',
-  37: 'EMEA RB17',
-  38: 'EMEA RB18',
-  39: 'EMEA RB19',
-  41: 'APAC RB1',
-  42: 'APAC RB2',
-  43: 'APAC RB3',
-  44: 'APAC RB4',
-  45: 'APAC RB5',
-  46: 'APAC RB6',
-  47: 'APAC RB7',
-  48: 'APAC RB8',
-  49: 'APAC RB9',
-  50: 'APAC RB10',
-  51: 'APAC RB11',
-  52: 'APAC RB12',
-  53: 'APAC RB13',
-  54: 'APAC RB14',
-  55: 'APAC RB15',
-  56: 'APAC RB16',
-  57: 'APAC RB17',
-  58: 'APAC RB18',
-  59: 'APAC RB19',
-  90: 'MEAS RB10',
-  91: 'MEAS RB11',
-  92: 'MEAS RB12',
-  93: 'MEAS RB15',
+    1: 'AMER RB1',
+    2: 'AMER RB2',
+    3: 'AMER RB3',
+    4: 'AMER RB4',
+    5: 'AMER RB5',
+    6: 'AMER RB6',
+    7: 'AMER RB7',
+    8: 'AMER RB8',
+    9: 'AMER RB9',
+    10: 'AMER RB10',
+    11: 'AMER RB11',
+    12: 'AMER RB12',
+    13: 'AMER RB13',
+    14: 'AMER RB14',
+    15: 'AMER RB15',
+    16: 'AMER RB16',
+    17: 'AMER RB17',
+    18: 'AMER RB18',
+    19: 'AMER RB19',
+    61: 'AORW SC',
+    21: 'EMEA RB1',
+    22: 'EMEA RB2',
+    23: 'EMEA RB3',
+    24: 'EMEA RB4',
+    25: 'EMEA RB5',
+    26: 'EMEA RB6',
+    27: 'EMEA RB7',
+    28: 'EMEA RB8',
+    29: 'EMEA RB9',
+    30: 'EMEA RB10',
+    31: 'EMEA RB11',
+    32: 'EMEA RB12',
+    33: 'EMEA RB13',
+    34: 'EMEA RB14',
+    35: 'EMEA RB15',
+    36: 'EMEA RB16',
+    37: 'EMEA RB17',
+    38: 'EMEA RB18',
+    39: 'EMEA RB19',
+    41: 'APAC RB1',
+    42: 'APAC RB2',
+    43: 'APAC RB3',
+    44: 'APAC RB4',
+    45: 'APAC RB5',
+    46: 'APAC RB6',
+    47: 'APAC RB7',
+    48: 'APAC RB8',
+    49: 'APAC RB9',
+    50: 'APAC RB10',
+    51: 'APAC RB11',
+    52: 'APAC RB12',
+    53: 'APAC RB13',
+    54: 'APAC RB14',
+    55: 'APAC RB15',
+    56: 'APAC RB16',
+    57: 'APAC RB17',
+    58: 'APAC RB18',
+    59: 'APAC RB19',
+    90: 'MEAS RB10',
+    91: 'MEAS RB11',
+    92: 'MEAS RB12',
+    93: 'MEAS RB15',
 }
+
+
+class GeoBeam(IdpEnum):
+    AMER_RB1 = 1
+    AMER_RB2 = 2
+    AMER_RB3 = 3
+    AMER_RB4 = 4
+    AMER_RB5 = 5
+    AMER_RB6 = 6
+    AMER_RB7 = 7
+    AMER_RB8 = 8
+    AMER_RB9 = 9
+    AMER_RB10 = 10
+    AMER_RB11 = 11
+    AMER_RB12 = 12
+    AMER_RB13 = 13
+    AMER_RB14 = 14
+    AMER_RB15 = 15
+    AMER_RB16 = 16
+    AMER_RB17 = 17
+    AMER_RB18 = 18
+    AMER_RB19 = 19
+    AORW_SC = 61
+    EMEA_RB1 = 21
+    EMEA_RB2 = 22
+    EMEA_RB3 = 23
+    EMEA_RB4 = 24
+    EMEA_RB5 = 25
+    EMEA_RB6 = 26
+    EMEA_RB7 = 27
+    EMEA_RB8 = 28
+    EMEA_RB9 = 29
+    EMEA_RB10 = 30
+    EMEA_RB11 = 31
+    EMEA_RB12 = 32
+    EMEA_RB13 = 33
+    EMEA_RB14 = 34
+    EMEA_RB15 = 35
+    EMEA_RB16 = 36
+    EMEA_RB17 = 37
+    EMEA_RB18 = 38
+    EMEA_RB19 = 39
+    APAC_RB1 = 41
+    APAC_RB2 = 42
+    APAC_RB3 = 43
+    APAC_RB4 = 44
+    APAC_RB5 = 45
+    APAC_RB6 = 46
+    APAC_RB7 = 47
+    APAC_RB8 = 48
+    APAC_RB9 = 49
+    APAC_RB10 = 50
+    APAC_RB11 = 51
+    APAC_RB12 = 52
+    APAC_RB13 = 53
+    APAC_RB14 = 54
+    APAC_RB15 = 55
+    APAC_RB16 = 56
+    APAC_RB17 = 57
+    APAC_RB18 = 58
+    APAC_RB19 = 59
+    MEAS_RB10 = 90
+    MEAS_RB11 = 91
+    MEAS_RB12 = 92
+    MEAS_RB15 = 93
+
+    def satellite(self):
+        return self.name.split('_')[0]
+
+    def beam(self):
+        return self.name.split('_')[1]
+    
+    def id(self):
+        return self.value
