@@ -481,6 +481,7 @@ GEOBEAMS = {
 
 
 class GeoBeam(IdpEnum):
+    GLOBAL_BB = 0
     AMER_RB1 = 1
     AMER_RB2 = 2
     AMER_RB3 = 3
