@@ -6,17 +6,18 @@ AT commands, decoding/abstracting typically used operations.
 Based on the PySerial threaded protocol factory, using a byte reader.
 
 """
-
 import logging
+import os
 import queue
 import threading
 from time import sleep, time
 
-from serial import Serial, SerialException
-from serial.threaded import LineReader, ReaderThread, Protocol
-
 from idpmodem.aterror import AtCrcError, AtTimeout
 from idpmodem.crcxmodem import apply_crc, validate_crc
+from serial import Serial, SerialException
+from serial.threaded import LineReader, Protocol, ReaderThread
+
+VERBOSE_DEBUG = str(os.getenv('VERBOSE_DEBUG', False)).lower() == 'true'
 
 
 _log = logging.getLogger(__name__)
@@ -179,14 +180,12 @@ class AtProtocol(LineReader):
     def _clean_response(self,
                         lines: 'list[str]',
                         filter: 'list[str]' = [],
-                        debug: bool = False,
                         ) -> 'list[str]':
         """Removes empty lines from response and returns a list.
         
         Args:
             lines: A list of reponse lines.
             filter: Optional list of strings/substrings to filter from response.
-            debug: If True, logs the command latency
         
         Returns:
             List with filtered and stripped lines
@@ -197,7 +196,7 @@ class AtProtocol(LineReader):
         """
         if filter and not isinstance(filter, list):
             raise ValueError('filter must be a list of strings')
-        if debug:
+        if VERBOSE_DEBUG:
             latency = round(self.response_time - self.command_time, 3)
             _log.debug(f'Command {self.pending_command}'
                        f' latency: {latency} seconds')
@@ -214,7 +213,6 @@ class AtProtocol(LineReader):
                 command: str,
                 filter: 'list[str]' = [],
                 timeout: int = 5,
-                debug: bool = False,
                 ) -> 'list[str]':
         """Send an AT command and wait for the response.
 
@@ -225,6 +223,7 @@ class AtProtocol(LineReader):
 
         Args:
             command: The AT command
+            filter: Optional list of strings/substrings to filter from response.
             timeout: Time to wait for response in seconds (default 5)
         
         Returns:
@@ -245,16 +244,23 @@ class AtProtocol(LineReader):
             timeout = 1 if timeout < 1 else timeout
             command = apply_crc(command) if self.crc else command
             self.pending_command = command
-            self.command_time = time()
             self.response_time = None
+            self.command_time = time()
+            if VERBOSE_DEBUG:
+                _log.debug(f'Sending command at {self.command_time}')
             self.write_line(command)
             lines = []
             while self.pending_command is not None:
                 try:
                     line: str = self.responses.get(timeout=timeout)
                     content = line.strip()
+                    if VERBOSE_DEBUG:
+                        _log.debug(f'Read: {content}')
                     if self.response_time is None:
                         self.response_time = time()
+                        if VERBOSE_DEBUG:
+                            _log.debug('Response received starting'
+                                       f' {self.response_time}')
                     if content == command:
                         pass   # ignore echo
                     elif content in ['OK', 'ERROR']:
@@ -268,8 +274,10 @@ class AtProtocol(LineReader):
                                 _log.debug('CRC enabled for next command')
                                 self.crc = True
                             if not self.crc:
-                                return self._clean_response(lines, filter, debug)
-                        # else wait for CRC or timeout
+                                return self._clean_response(lines, filter)
+                        else:
+                            _log.debug('shorten timeout after ERROR for CRC')
+                            timeout = 0.1
                     elif content.startswith('*'):
                         if not self.crc:
                             if not '%CRC=1' in self.pending_command:
@@ -278,14 +286,14 @@ class AtProtocol(LineReader):
                         crc = content.replace('*', '')
                         if not validate_crc(''.join(lines), crc):
                             raise AtCrcError(f'INVALID_CRC_RESPONSE')
-                        return self._clean_response(lines, filter, debug)
+                        return self._clean_response(lines, filter)
                     else:   #: including 'ERROR'
                         lines.append(line)
                         # keep parsing in case CRC follows
                 except queue.Empty:
                     if not self.response_time:
                         raise AtTimeout(f'TIMEOUT ({timeout}s)')
-                    return self._clean_response(lines, filter, debug)
+                    return self._clean_response(lines, filter)
 
 
 class ByteReaderThread(ReaderThread):
