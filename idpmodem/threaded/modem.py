@@ -51,7 +51,7 @@ class IdpModem:
     SERIAL_KWARGS = ['baudrate', 'timeout', 'write_timeout']
     BAUD_RATES = [1200, 2400, 4800, 9600, 19200]
     PROTOCOL_KWARGS = ['event_callback', 'at_timeout']
-    OTHER_KWARGS = ['error_detail', 'debug', 'stale_secs', 'wait_secs']
+    OTHER_KWARGS = ['error_detail', 'stale_secs', 'wait_secs']
     
     def __init__(self, serial_port: str, **kwargs):
         self.serial_kwargs = {
@@ -60,7 +60,6 @@ class IdpModem:
         }
         self.protocol_kwargs = {}
         self.error_detail = bool(kwargs.pop('error_detail', True))
-        self.debug = bool(kwargs.pop('debug', False))
         for kwarg in kwargs:
             if kwarg in self.SERIAL_KWARGS:
                 self.serial_kwargs[kwarg] = kwargs[kwarg]
@@ -187,8 +186,7 @@ class IdpModem:
         try:
             res: list = self.protocol.command(command,
                                               filter=filter,
-                                              timeout=timeout,
-                                              debug=self.debug)
+                                              timeout=timeout)
             if self.error_detail and res and res[0] == 'ERROR':
                 err_res = self.protocol.command('ATS80?')
                 if not err_res or err_res[0] == 'ERROR':
@@ -967,14 +965,14 @@ class IdpModem:
         
         Trace Class 3, Subclass 1, Data 22
         """
-        self.satellite_status_get()
+        self._satellite_status_get()
         return SatlliteControlState(self._ctrl_state)
     
     @property
     def network_status(self) -> 'str|None':
         """The network status derived from control state."""
         if self._ctrl_state is None:
-            self.satellite_status_get()
+            self._satellite_status_get()
         return SatlliteControlState(self._ctrl_state).name
 
     @property
@@ -985,38 +983,39 @@ class IdpModem:
     @property
     def beamsearch_state(self) -> 'int|None':
         """The beam search state (Trace Class 3, Subclass 1, Data 23)"""
-        self.satellite_status_get()
+        self._satellite_status_get()
         return BeamSearchState(self._beamsearch_state)
     
     @property
     def beamsearch(self) -> 'str|None':
         """The beam search state description."""
         if self._beamsearch_state is None:
-            self.satellite_status_get()
+            self._satellite_status_get()
         return BeamSearchState(self._beamsearch_state).name
 
     @property
     def snr(self) -> 'float|None':
         """The average main beam Carrier-to-Noise (C/N0)."""
-        self.satellite_status_get()
+        self._satellite_status_get()
         return self._snr
             
     @property
     def signal_quality(self) -> SignalQuality:
         """Qualitative interpretation of the SNR."""
         signal_quality = SignalQuality.NONE
-        if self.snr:
-            if self.snr > SignalLevelRegional.INVALID.value:
+        snr = self.snr
+        if snr:
+            if snr > SignalLevelRegional.INVALID.value:
                 signal_quality = SignalQuality.WARNING
-            elif self.snr > SignalLevelRegional.BARS_5.value:
+            elif snr > SignalLevelRegional.BARS_5.value:
                 signal_quality = SignalQuality.STRONG
-            elif self.snr > SignalLevelRegional.BARS_4.value:
+            elif snr > SignalLevelRegional.BARS_4.value:
                 signal_quality = SignalQuality.GOOD
-            elif self.snr > SignalLevelRegional.BARS_3.value:
+            elif snr > SignalLevelRegional.BARS_3.value:
                 signal_quality = SignalQuality.MID
-            elif self.snr > SignalLevelRegional.BARS_2.value:
+            elif snr > SignalLevelRegional.BARS_2.value:
                 signal_quality = SignalQuality.LOW
-            elif self.snr > SignalLevelRegional.BARS_1.value:
+            elif snr > SignalLevelRegional.BARS_1.value:
                 signal_quality = SignalQuality.WEAK
         return signal_quality
     
@@ -1024,7 +1023,7 @@ class IdpModem:
     def satellite(self) -> 'str|None':
         """The current active satellite name."""
         if self._geo_beam_id is None:
-            self.satellite_status_get()
+            self._satellite_status_get()
         if self._geo_beam_id is not None:
             if GeoBeam.is_valid(self._geo_beam_id):
                 return GeoBeam(self._geo_beam_id).satellite()
@@ -1034,12 +1033,38 @@ class IdpModem:
     def beam_id(self) -> 'str|None':
         """The current active regional beam ID of the active satellite."""
         if self._geo_beam_id is None:
-            self.satellite_status_get()
+            self._satellite_status_get()
         if self._geo_beam_id is not None:
             if GeoBeam.is_valid(self._geo_beam_id):
                 return GeoBeam(self._geo_beam_id).id()
             return f'GEO{self._geo_beam_id}'
         
+    def _satellite_status_get(self) -> None:
+        if 'sat_status' in self._holdoffs:
+            sat_status_age = int(time()) - self._holdoffs['sat_status']
+            if sat_status_age < SAT_STATUS_HOLDOFF:
+                _log.debug(f'Using cached status ({sat_status_age} s)')
+                return
+        else:
+            sat_status_age = None
+        _log.debug(f'Querying satellite status (cache {sat_status_age} s)')
+        self._holdoffs['sat_status'] = int(time())
+        # Trace events:
+        #   Class 3 Subclass 1 C/N, Satellite Control State, Beam Search State
+        #   Class 3 Subclass 5 Geo Beam ID
+        command = ('ATS90=3 S91=1 S92=1 S116? S122? S123?'
+                   ' S90=3 S91=5 S92=1 S102?')
+        response = self.atcommand(command)
+        if response[0] == 'ERROR':
+            self._handle_at_error(response)
+        self._snr = round(int(response[0]) / 100.0, 2)
+        self._ctrl_state = int(response[1])
+        self._beamsearch_state = int(response[2])
+        try:   #: returns ERROR if no satellite has been acquired
+            self._geo_beam_id = int(response[3])
+        except:
+            self._geo_beam_id = 0
+
     def satellite_status_get(self) -> dict:
         """Gets various satellite acquisition metrics.
         
@@ -1054,24 +1079,6 @@ class IdpModem:
             - `snr` (float)
         
         """
-        if ('sat_status' in self._holdoffs and
-            int(time()) - self._holdoffs['sat_status'] < SAT_STATUS_HOLDOFF):
-            _log.debug('Ignoring repeat satellite status query')
-            return
-        _log.debug('Querying satellite status')
-        self._holdoffs['sat_status'] = int(time())
-        # Trace events:
-        #   Class 3 Subclass 1 C/N, Satellite Control State, Beam Search State
-        #   Class 3 Subclass 5 Geo Beam ID
-        command = ('ATS90=3 S91=1 S92=1 S116? S122? S123?'
-                   ' S90=3 S91=5 S92=1 S102?')
-        response = self.atcommand(command)
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        self._snr = round(int(response[0]) / 100.0, 2)
-        self._ctrl_state = int(response[1])
-        self._beamsearch_state = int(response[2])
-        self._geo_beam_id = int(response[3])
         return {
             'satellite': self.satellite,
             'beam_id': self.beam_id,
