@@ -71,3 +71,8 @@ def bytearray_to_hex_str(arr: bytearray) -> str:
 def bytearray_to_b64_str(arr: bytearray) -> str:
     """Converts a bytearray to a base64 string."""
     return binascii.b2a_base64(bytearray(arr)).strip().decode()
+
+
+def printable_crlf(line: str) -> str:
+    """Returns a line with CR and LF replaced."""
+    return line.replace('\r', '\\r').replace('\n', '\\n')

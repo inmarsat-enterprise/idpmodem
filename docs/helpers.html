@@ -99,7 +99,12 @@ def bytearray_to_hex_str(arr: bytearray) -&gt; str:
 
 def bytearray_to_b64_str(arr: bytearray) -&gt; str:
     &#34;&#34;&#34;Converts a bytearray to a base64 string.&#34;&#34;&#34;
-    return binascii.b2a_base64(bytearray(arr)).strip().decode()</code></pre>
+    return binascii.b2a_base64(bytearray(arr)).strip().decode()
+
+
+def printable_crlf(line: str) -&gt; str:
+    &#34;&#34;&#34;Returns a line with CR and LF replaced.&#34;&#34;&#34;
+    return line.replace(&#39;\r&#39;, &#39;\\r&#39;).replace(&#39;\n&#39;, &#39;\\n&#39;)</code></pre>
 </details>
 </section>
 <section>
@@ -170,6 +175,20 @@ def bytearray_to_b64_str(arr: bytearray) -&gt; str:
     &#34;&#34;&#34;Returns True if the string consists exclusively of hexadecimal chars.&#34;&#34;&#34;
     hex_chars = &#39;0123456789abcdefABCDEF&#39;
     return all(c in hex_chars for c in s)</code></pre>
+</details>
+</dd>
+<dt id="idpmodem.helpers.printable_crlf"><code class="name flex">
+<span>def <span class="ident">printable_crlf</span></span>(<span>line: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a line with CR and LF replaced.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def printable_crlf(line: str) -&gt; str:
+    &#34;&#34;&#34;Returns a line with CR and LF replaced.&#34;&#34;&#34;
+    return line.replace(&#39;\r&#39;, &#39;\\r&#39;).replace(&#39;\n&#39;, &#39;\\n&#39;)</code></pre>
 </details>
 </dd>
 <dt id="idpmodem.helpers.validate_serial_port"><code class="name flex">
@@ -254,6 +273,7 @@ Labels known FTDI and Prolific serial/USB drivers.</p>
 <li><code><a title="idpmodem.helpers.bytearray_to_hex_str" href="#idpmodem.helpers.bytearray_to_hex_str">bytearray_to_hex_str</a></code></li>
 <li><code><a title="idpmodem.helpers.bytearray_to_str" href="#idpmodem.helpers.bytearray_to_str">bytearray_to_str</a></code></li>
 <li><code><a title="idpmodem.helpers.is_hex_string" href="#idpmodem.helpers.is_hex_string">is_hex_string</a></code></li>
+<li><code><a title="idpmodem.helpers.printable_crlf" href="#idpmodem.helpers.printable_crlf">printable_crlf</a></code></li>
 <li><code><a title="idpmodem.helpers.validate_serial_port" href="#idpmodem.helpers.validate_serial_port">validate_serial_port</a></code></li>
 </ul>
 </li>
