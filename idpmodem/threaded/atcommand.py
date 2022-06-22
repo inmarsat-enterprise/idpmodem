@@ -276,8 +276,9 @@ class AtProtocol(LineReader):
                             if not self.crc:
                                 return self._clean_response(lines, filter)
                         else:
-                            _log.debug('shorten timeout after ERROR for CRC')
                             timeout = 0.1
+                            if VERBOSE_DEBUG:
+                                _log.debug(f'{timeout}s after ERROR allows CRC')
                     elif content.startswith('*'):
                         if not self.crc:
                             if not '%CRC=1' in self.pending_command:
