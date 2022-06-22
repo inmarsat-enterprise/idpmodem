@@ -56,6 +56,12 @@ def test_gnss_fail(modem_configured):
     assert location is None
 
 
+def test_control_state(modem_configured):
+    modem: IdpModem = modem_configured
+    cs = modem.control_state
+    assert isinstance(cs.value, int)
+
+
 def test_properties(modem_connected, mocker):
     modem: IdpModem = modem_connected
     modem.config_init(crc=False)
