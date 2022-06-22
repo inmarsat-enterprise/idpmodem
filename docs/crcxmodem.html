@@ -38,7 +38,11 @@ Thanks to: https://stackoverflow.com/questions/25239423/crc-ccitt-16-bit-python-
 
 &#34;&#34;&#34;
 import logging
+import os
 
+from idpmodem.helpers import printable_crlf
+
+VERBOSE_DEBUG = str(os.getenv(&#39;VERBOSE_DEBUG&#39;, False)).lower() == &#39;true&#39;
 
 _log = logging.getLogger(__name__)
 __version__ = &#34;1.1.0&#34;
@@ -150,7 +154,9 @@ def validate_crc(response: str, candidate: str) -&gt; bool:
     expected = f&#39;{crc(response):04X}&#39;
     if expected == candidate.replace(&#39;*&#39;, &#39;&#39;):
         return True
-    _log.debug(f&#39;{response} CRC expected *{expected} got *{candidate}&#39;)
+    if VERBOSE_DEBUG:
+        _log.debug(f&#39;{printable_crlf(response)}&#39;
+                   f&#39; expected *{expected} got *{candidate}&#39;)
     return False
 
 
@@ -324,7 +330,9 @@ Calculates and applies a CCITT-16 checksum for an AT command.</p>
     expected = f&#39;{crc(response):04X}&#39;
     if expected == candidate.replace(&#39;*&#39;, &#39;&#39;):
         return True
-    _log.debug(f&#39;{response} CRC expected *{expected} got *{candidate}&#39;)
+    if VERBOSE_DEBUG:
+        _log.debug(f&#39;{printable_crlf(response)}&#39;
+                   f&#39; expected *{expected} got *{candidate}&#39;)
     return False</code></pre>
 </details>
 </dd>

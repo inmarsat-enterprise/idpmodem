@@ -7,7 +7,11 @@ Thanks to: https://stackoverflow.com/questions/25239423/crc-ccitt-16-bit-python-
 
 """
 import logging
+import os
 
+from idpmodem.helpers import printable_crlf
+
+VERBOSE_DEBUG = str(os.getenv('VERBOSE_DEBUG', False)).lower() == 'true'
 
 _log = logging.getLogger(__name__)
 __version__ = "1.1.0"
@@ -119,7 +123,9 @@ def validate_crc(response: str, candidate: str) -> bool:
     expected = f'{crc(response):04X}'
     if expected == candidate.replace('*', ''):
         return True
-    _log.debug(f'{response} CRC expected *{expected} got *{candidate}')
+    if VERBOSE_DEBUG:
+        _log.debug(f'{printable_crlf(response)}'
+                   f' expected *{expected} got *{candidate}')
     return False
 
 
