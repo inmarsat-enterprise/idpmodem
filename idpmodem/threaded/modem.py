@@ -13,6 +13,7 @@ from idpmodem.constants import (EVENT_TRACES, AtErrorCode, BeamSearchState,
                                 PowerMode, SatlliteControlState,
                                 SignalLevelRegional, SignalQuality,
                                 TransmitterStatus, WakeupPeriod)
+from idpmodem.helpers import printable_crlf
 from idpmodem.location import Location, location_from_nmea
 from idpmodem.s_registers import SRegisters
 from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
@@ -20,6 +21,7 @@ from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
 GNSS_STALE_SECS = int(os.getenv('GNSS_STALE_SECS', 1))
 GNSS_WAIT_SECS = int(os.getenv('GNSS_WAIT_SECS', 35))
 SAT_STATUS_HOLDOFF = 5
+MODEM_REBOOT_HOLDOFF = os.getenv('MODEM_REBOOT_HOLDOFF')
 
 _log = logging.getLogger(__name__)
 
@@ -101,6 +103,12 @@ class IdpModem:
                                             **self.protocol_kwargs)
         self.main_thread.start()
         self.transport, self.protocol = self.main_thread.connect()
+        assert isinstance(self.protocol, AtProtocol)
+        self.serial_port.reset_input_buffer()
+        self.serial_port.reset_output_buffer()
+        if MODEM_REBOOT_HOLDOFF:
+            MODEM_REBOOT_HOLDOFF = int(MODEM_REBOOT_HOLDOFF)
+            self.protocol.event_callback = self._unsolicited
 
     def disconnect(self):
         """Disconnects from the modem."""
@@ -152,6 +160,18 @@ class IdpModem:
         """Indicates if CRC error checking is enabled on the modem."""
         return self.protocol.crc if self.protocol is not None else None
 
+    def _unsolicited(self, data: str) -> None:
+        if self.commands.full():
+            raise ModemBusy('Unsolicited data received during AT command'
+                            f'processing: {printable_crlf(data)}')
+        if MODEM_REBOOT_HOLDOFF:
+            BOOT_INDICATORS = ['boot loader', 'Copyright (c)', '*** Reset',
+                'starting appl firmware', '.....']
+            if any(indicator in data for indicator in BOOT_INDICATORS):
+                _log.warning('Reboot indicator found - holding off commands'
+                            f' {MODEM_REBOOT_HOLDOFF}s')
+                self._holdoffs['reboot'] = int(time())
+
     def atcommand(self,
                   command: str,
                   filter: 'list[str]' = [],
@@ -182,6 +202,9 @@ class IdpModem:
             if not await_previous:
                 raise ModemBusy
             pass
+        if 'reboot' in self._holdoffs and isinstance(MODEM_REBOOT_HOLDOFF, int):
+            while int(time()) - self._holdoffs['reboot'] < MODEM_REBOOT_HOLDOFF:
+                pass
         self.commands.put(command)
         try:
             res: list = self.protocol.command(command,
@@ -981,7 +1004,7 @@ class IdpModem:
         return self.control_state == 10
 
     @property
-    def beamsearch_state(self) -> 'int|None':
+    def beamsearch_state(self) -> 'BeamSearchState|None':
         """The beam search state (Trace Class 3, Subclass 1, Data 23)"""
         self._satellite_status_get()
         return BeamSearchState(self._beamsearch_state)
