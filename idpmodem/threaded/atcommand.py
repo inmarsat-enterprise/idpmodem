@@ -11,9 +11,11 @@ import os
 import queue
 import threading
 from time import sleep, time
+from typing import Callable
 
 from idpmodem.aterror import AtCrcError, AtTimeout
 from idpmodem.crcxmodem import apply_crc, validate_crc
+from idpmodem.helpers import printable_crlf
 from serial import Serial, SerialException
 from serial.threaded import LineReader, Protocol, ReaderThread
 
@@ -49,7 +51,7 @@ class AtProtocol(LineReader):
     DEFAULT_TIMEOUT = 5
 
     def __init__(self,
-                 event_callback: callable = None,
+                 event_callback: Callable = None,
                  at_timeout: int = 5):
         """Initialize with CRC and optional callback
 
@@ -173,9 +175,7 @@ class AtProtocol(LineReader):
             if self.event_callback is not None:
                 self.event_callback(unsolicited)
             else: 
-                unsolicited = unsolicited.replace('\r', '<cr>')
-                unsolicited = unsolicited.replace('\n', '<lf>')
-                _log.warning(f'Unhandled event: {unsolicited}')
+                _log.warning(f'Unhandled event: {printable_crlf(unsolicited)}')
 
     def _clean_response(self,
                         lines: 'list[str]',
@@ -247,7 +247,7 @@ class AtProtocol(LineReader):
             self.response_time = None
             self.command_time = time()
             if VERBOSE_DEBUG:
-                _log.debug(f'Sending command at {self.command_time}')
+                _log.debug(f'Sending {command} at {self.command_time}')
             self.write_line(command)
             lines = []
             while self.pending_command is not None:
@@ -255,7 +255,7 @@ class AtProtocol(LineReader):
                     line: str = self.responses.get(timeout=timeout)
                     content = line.strip()
                     if VERBOSE_DEBUG:
-                        _log.debug(f'Read: {content}')
+                        _log.debug(f'Read: {printable_crlf(line)}')
                     if self.response_time is None:
                         self.response_time = time()
                         if VERBOSE_DEBUG:
