@@ -224,3 +224,20 @@ def test_initialization():
     modem.protocol.crc = True
     rereinit = modem.config_init(crc=True)
     assert rereinit
+
+
+unsolicited_data = None
+
+def unsolicited_callback(data: str):
+    global unsolicited_data
+    unsolicited_data += data
+
+
+def test_unsolicited():
+    global unsolicited_data
+    modem = IdpModem(SERIAL_PORT)
+    modem.connect()
+    modem.protocol.event_callback = unsolicited_callback
+    while unsolicited_data is None:
+        pass
+    assert isinstance(unsolicited_data, str)
