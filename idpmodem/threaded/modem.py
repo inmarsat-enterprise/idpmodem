@@ -71,6 +71,10 @@ class IdpModem:
         self.main_thread = None
         self.transport = None
         self.protocol: AtProtocol = None
+        try:
+            self._reboot_holdoff = int(MODEM_REBOOT_HOLDOFF)
+        except:
+            self._reboot_holdoff = None
         self.commands = queue.Queue(1)
         self._at_config = AtConfiguration()
         self._mobile_id: str = None
@@ -90,10 +94,6 @@ class IdpModem:
         self._holdoffs: dict = {}   # used to ignore frequent repeat commands
         self._statistics: dict = {}
         self.s_registers = SRegisters()
-        # self.tx_queue = queue.Queue()
-        # self.tx_complete_callback: callable = None
-        # self.rx_queue = queue.Queue()
-        # self.rx_received_callback: callable = None
     
     def connect(self):
         """Connects to a modem using a serial and protocol instance."""
@@ -106,8 +106,7 @@ class IdpModem:
         assert isinstance(self.protocol, AtProtocol)
         self.serial_port.reset_input_buffer()
         self.serial_port.reset_output_buffer()
-        if MODEM_REBOOT_HOLDOFF:
-            MODEM_REBOOT_HOLDOFF = int(MODEM_REBOOT_HOLDOFF)
+        if self._reboot_holdoff is not None:
             self.protocol.event_callback = self._unsolicited
 
     def disconnect(self):
@@ -164,12 +163,12 @@ class IdpModem:
         if self.commands.full():
             raise ModemBusy('Unsolicited data received during AT command'
                             f'processing: {printable_crlf(data)}')
-        if MODEM_REBOOT_HOLDOFF:
+        if self._reboot_holdoff:
             BOOT_INDICATORS = ['boot loader', 'Copyright (c)', '*** Reset',
                 'starting appl firmware', '.....']
             if any(indicator in data for indicator in BOOT_INDICATORS):
                 _log.warning('Reboot indicator found - holding off commands'
-                            f' {MODEM_REBOOT_HOLDOFF}s')
+                            f' {self._reboot_holdoff}s')
                 self._holdoffs['reboot'] = int(time())
 
     def atcommand(self,
@@ -202,8 +201,8 @@ class IdpModem:
             if not await_previous:
                 raise ModemBusy
             pass
-        if 'reboot' in self._holdoffs and isinstance(MODEM_REBOOT_HOLDOFF, int):
-            while int(time()) - self._holdoffs['reboot'] < MODEM_REBOOT_HOLDOFF:
+        if 'reboot' in self._holdoffs and isinstance(self._reboot_holdoff, int):
+            while int(time()) - self._holdoffs['reboot'] < self._reboot_holdoff:
                 pass
         self.commands.put(command)
         try:
