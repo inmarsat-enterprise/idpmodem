@@ -4,6 +4,7 @@ import os
 import queue
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
+from math import ceil
 from time import time
 
 from idpmodem.aterror import AtCrcError, AtException, AtGnssTimeout, AtTimeout
@@ -610,14 +611,15 @@ class IdpModem:
             data_format = DataFormat.BASE64
         elif not isinstance(data, str):
             raise ValueError('Invalid data must be bytes, bytearray or string')
-        elif not isinstance(sin, int) or sin not in range(16, 256):
+        if not isinstance(sin, int) or sin not in range(16, 256):
             raise ValueError('Invalid SIN must be 16..255')
         if isinstance(min, int) and min not in range(0, 256):
             raise ValueError('Invalid MIN must be 0..255')
         min = f'.{min}' if min is not None else ''
         data = f'"{data}"' if data_format == DataFormat.TEXT else data
         command = f'AT%MGRT="{name}",{priority},{sin}{min},{data_format},{data}'
-        response = self.atcommand(command)
+        max_timeout = ceil(6400 / (self.baudrate / 8)) + 1
+        response = self.atcommand(command, timeout=max_timeout)
         if response[0] == 'ERROR':
             self._handle_at_error(response)
         return name
@@ -629,8 +631,8 @@ class IdpModem:
         are returned.  Returns False is the request failed.
 
         Args:
-            name: The unique message name in the modem queue. If none is
-                provided, all available message states in transmit queue will be
+            name: The unique message name in the modem queue. If name is
+                None, all available message states in transmit queue will be
                 returned.
 
         Returns:
@@ -749,8 +751,10 @@ class IdpModem:
         """
         if not meta and data_format != DataFormat.BASE64:
             data_format = DataFormat.BASE64
+        max_timeout = ceil(10000 / (self.baudrate / 8)) + 1
         response = self.atcommand(f'AT%MGFG="{name}",{data_format}',
-                                  filter=['%MGFG:'])
+                                  filter=['%MGFG:'],
+                                  timeout=max_timeout)
         if response[0] == 'ERROR':
             _log.error(f'Error retrieving message {name}')
             self._handle_at_error(response)
