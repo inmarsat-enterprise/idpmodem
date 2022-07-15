@@ -33,7 +33,7 @@ DATA_TYPES = {
     'string': 'StringField',
     'data': 'DataField',
     'enum': 'EnumField',
-    'array': 'ArrayField',   # TODO: support for array type
+    'array': 'ArrayField',
 }
 XML_NAMESPACE = {
     'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
@@ -841,9 +841,8 @@ class EnumField(FieldCodec):
 
     def xml(self) -> ET.Element:
         """Gets the XML structure of the EnumField."""
+        # Size has to come after Items for Inmarsat parser (!?)
         xmlfield = self._base_xml()
-        size = ET.SubElement(xmlfield, 'Size')
-        size.text = str(self.size)
         items = ET.SubElement(xmlfield, 'Items')
         for string in self.items:
             item = ET.SubElement(items, 'string')
@@ -851,6 +850,8 @@ class EnumField(FieldCodec):
         if self.default:
             default = ET.SubElement(xmlfield, 'Default')
             default.text = str(self.default)
+        size = ET.SubElement(xmlfield, 'Size')
+        size.text = str(self.size)
         return xmlfield
 
 
@@ -1626,9 +1627,8 @@ class ArrayField(FieldCodec):
 
     def xml(self) -> ET.Element:
         """The XML representation of the ArrayField."""
+        # Size has to come after Fields for Inmarsat parser (!?)
         xmlfield = self._base_xml()
-        size = ET.SubElement(xmlfield, 'Size')
-        size.text = str(self.size)
         if self.fixed:
             default = ET.SubElement(xmlfield, 'Fixed')
             default.text = 'true'
@@ -1636,6 +1636,8 @@ class ArrayField(FieldCodec):
         for field in self.fields:
             # assert isinstance(field, FieldCodec)
             fields.append(field.xml())
+        size = ET.SubElement(xmlfield, 'Size')
+        size.text = str(self.size)
         return xmlfield
 
 
