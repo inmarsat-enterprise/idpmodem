@@ -149,6 +149,13 @@ def test_message_send_text(modem_configured, mocker):
     assert isinstance(res, str)
 
 
+def test_message_send_large(modem_configured):
+    modem: IdpModem = modem_configured
+    TEST_DATA = bytes(b'A'*6400)
+    res = modem.message_mo_send(TEST_DATA)
+    assert isinstance(res, str)
+
+
 def test_s_registers(modem_configured):
     modem: IdpModem = modem_configured
     modem._s_registers_read()

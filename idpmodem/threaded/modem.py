@@ -618,7 +618,7 @@ class IdpModem:
         min = f'.{min}' if min is not None else ''
         data = f'"{data}"' if data_format == DataFormat.TEXT else data
         command = f'AT%MGRT="{name}",{priority},{sin}{min},{data_format},{data}'
-        max_timeout = ceil(6400 / (self.baudrate / 8)) + 1
+        max_timeout = ceil(6400 / (self.baudrate / 8)) * 2
         response = self.atcommand(command, timeout=max_timeout)
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -751,7 +751,7 @@ class IdpModem:
         """
         if not meta and data_format != DataFormat.BASE64:
             data_format = DataFormat.BASE64
-        max_timeout = ceil(10000 / (self.baudrate / 8)) + 1
+        max_timeout = ceil(10000 / (self.baudrate / 8)) * 2
         response = self.atcommand(f'AT%MGFG="{name}",{data_format}',
                                   filter=['%MGFG:'],
                                   timeout=max_timeout)
