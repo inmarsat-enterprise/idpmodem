@@ -1,9 +1,11 @@
 import logging
+import os
 import xml.etree.ElementTree as ET
 from copy import deepcopy
 
 import pytest
 from idpmodem.codecs.common_mdf import *
+from idpmodem.codecs.common_mdf import _indent
 from idpmodem.constants import DataFormat
 
 logging.basicConfig()
@@ -26,7 +28,7 @@ def bool_field():
 
 
 @pytest.fixture
-def data_field():
+def data_field_data():
     """Returns a DataField with no value."""
     def _data_field(size: int = 1,
                     data_type: str = 'data',
@@ -46,6 +48,50 @@ def data_field():
 
 
 @pytest.fixture
+def data_field_float():
+    """Returns a DataField float with no value."""
+    def _data_field(size: int = 4,
+                    data_type: str = 'float',
+                    precision: int = None,
+                    optional: bool = False,
+                    fixed: bool = False,
+                    default: bytes = None,
+                    value: float = None):
+        return DataField(name='dataFixture',
+                        size=size,
+                        data_type=data_type,
+                        precision=precision,
+                        optional=optional,
+                        fixed=fixed,
+                        default=default,
+                        value=value,
+                        description='A float test field.')
+    return _data_field
+
+
+@pytest.fixture
+def data_field_double():
+    """Returns a DataField double float with no value."""
+    def _data_field(size: int = 8,
+                    data_type: str = 'double',
+                    precision: int = None,
+                    optional: bool = False,
+                    fixed: bool = False,
+                    default: bytes = None,
+                    value: float = None):
+        return DataField(name='dataFixture',
+                        size=size,
+                        data_type=data_type,
+                        precision=precision,
+                        optional=optional,
+                        fixed=fixed,
+                        default=default,
+                        value=value,
+                        description='A double float test field.')
+    return _data_field
+
+
+@pytest.fixture
 def enum_field():
     """Returns a EnumField with no value."""
     fixture_items = ['item1', 'item2', 'item3']
@@ -58,6 +104,7 @@ def enum_field():
                         size=size,
                         description=description)
     return _enum_field
+
 
 @pytest.fixture
 def int_field():
@@ -105,7 +152,7 @@ def string_field():
 
 
 @pytest.fixture
-def array_fields_property_example():
+def array_element_fields_example():
     fields = Fields()
     fields.add(StringField(name='propertyName', size=50))
     fields.add(UnsignedIntField(name='propertyValue',
@@ -115,8 +162,8 @@ def array_fields_property_example():
 
 
 @pytest.fixture
-def array_field(array_fields_property_example):
-    """Returns a ArrayField defaulting to array_fields_property_example."""
+def array_field(array_element_fields_example):
+    """Returns a ArrayField defaulting to array_element_fields_example."""
     def _array_field(name: str = 'arrayFixture',
                      size: int = 1,
                      fields: Fields = None,
@@ -127,7 +174,7 @@ def array_field(array_fields_property_example):
         return ArrayField(name=name,
                         description=description,
                         size=size,
-                        fields=fields or array_fields_property_example,
+                        fields=fields or array_element_fields_example,
                         optional=optional,
                         fixed=fixed,
                         elements=elements)
@@ -135,7 +182,7 @@ def array_field(array_fields_property_example):
 
 
 @pytest.fixture
-def return_message(array_fields_property_example) -> MessageCodec:
+def return_message(array_element_fields_example) -> MessageCodec:
     """Returns a ArrayField with no values."""
     fields = Fields()
     fields.add(BooleanField(name='testBool', value=True))
@@ -155,13 +202,16 @@ def return_message(array_fields_property_example) -> MessageCodec:
                         value='A quick brown fox'))
     fields.add(ArrayField(name='arrayExample',
                           size=50,
-                          fields=array_fields_property_example))
-    elementOne = fields['arrayExample'].new_element()
-    elementOne['propertyName'].value = 'aPropertyName'
-    elementOne['propertyValue'].value = 1
-    elementTwo = fields['arrayExample'].new_element()
-    elementTwo['propertyName'].value = 'anotherPropertyName'
-    elementTwo['propertyValue'].value = 42
+                          fields=array_element_fields_example))
+    array_field: ArrayField = fields['arrayExample']
+    element_one = array_element_fields_example
+    element_one['propertyName'].value = 'aPropertyName'
+    element_one['propertyValue'].value = 1
+    array_field.append(element_one)
+    element_two = array_element_fields_example
+    element_two['propertyName'].value = 'anotherPropertyName'
+    element_two['propertyValue'].value = 42
+    array_field.append(element_two)
     fields.add(DataField(name='testData',
                         size=4,
                         data_type='float',
@@ -183,7 +233,7 @@ def return_messages(return_message) -> Messages:
 
 @pytest.fixture
 def service(return_messages) -> ServiceCodec:
-    service = ServiceCodec(name='testService', sin=255)
+    service = ServiceCodec(name='testService', sin=255, description='A test service')
     service.messages_return = return_messages
     return service
 
@@ -218,9 +268,9 @@ def test_boolean_field(bool_field):
     assert(bool_dflt_false_valset.encode() == '1')
 
 
-def test_data_field(data_field):
+def test_data_field_data(data_field_data: DataField):
     MAX_BYTES = 128
-    test_field = data_field(size=MAX_BYTES)
+    test_field: DataField = data_field_data(size=MAX_BYTES)
     assert(not test_field.value)
     assert(not test_field.optional)
     assert(not test_field.default)
@@ -245,13 +295,37 @@ def test_data_field(data_field):
     #TODO: test cases for padding, truncation
 
 
+def test_data_field_float(data_field_float: DataField):
+    test_value = 1.234567
+    precision = 6
+    test_field: DataField = data_field_float(precision=precision,
+                                             value=test_value)
+    assert test_field.size == 4
+    assert test_field.fixed == True
+    assert len(test_field.value) == 4
+    assert test_field.precision == precision
+    assert test_field.converted_value == test_value
+
+
+def test_data_field_double(data_field_double: DataField):
+    test_value = 1.7976931348623158e+308
+    precision = None
+    test_field: DataField = data_field_double(precision=precision,
+                                              value=test_value)
+    assert test_field.size == 8
+    assert test_field.fixed
+    assert len(test_field.value) == 8
+    assert test_field.precision == precision
+    assert test_field.converted_value == test_value
+
+
 def test_string_field(string_field):
     from string import ascii_lowercase as char_iterator
     MAX_SIZE = 155
     FIXED_SIZE = 6
     FIXED_STR_LONG = 'abcdefghi'
     FIXED_STR_SHORT = 'a'
-    test_field = string_field(size=MAX_SIZE)
+    test_field: StringField = string_field(size=MAX_SIZE)
     assert(not test_field.value)
     assert(not test_field.optional)
     assert(not test_field.default)
@@ -274,7 +348,7 @@ def test_string_field(string_field):
     test_field = string_field(size=FIXED_SIZE)
     test_field.value = FIXED_STR_LONG
     assert(test_field.value == FIXED_STR_LONG[:FIXED_SIZE])
-    test_field.fixed=True
+    test_field.fixed = True
     test_field.value = FIXED_STR_SHORT
     assert(test_field.value == FIXED_STR_SHORT)
     binstr = ''.join(format(ord(c), '08b') for c in FIXED_STR_SHORT)
@@ -287,16 +361,17 @@ def test_string_field(string_field):
     assert(test_field.value == v)
 
 
-def test_array_field(array_field, array_fields_property_example):
-    MAX_SIZE = 2
-    test_field = array_field(size=1, fields=array_fields_property_example)
+def test_array_field(array_field, array_element_fields_example):
+    MAX_SIZE = 10
+    test_field: ArrayField = array_field(size=MAX_SIZE,
+                                         fields=array_element_fields_example)
     assert(not test_field.fixed)
     assert(not test_field.optional)
     with pytest.raises(ValueError):
         test_field.encode()
     for i in range(0, MAX_SIZE):
-        element = array_fields_property_example
-        element['propertyName'] = 'testProp{}'.format(i)
+        element = array_element_fields_example
+        element['propertyName'] = f'testProp{i}'
         element['propertyValue'] = i
         test_field.append(element)
         ref = deepcopy(test_field)
@@ -307,22 +382,39 @@ def test_array_field(array_field, array_fields_property_example):
         assert(test_field == ref)
 
 
+def test_optimal_bits():
+    with pytest.raises(ValueError):
+        optimal_bits(1)
+    with pytest.raises(ValueError):
+        optimal_bits((1))
+    with pytest.raises(ValueError):
+        optimal_bits((1, 0))
+    test_range_1 = (0, 1)
+    assert optimal_bits(test_range_1) == 1
+    test_range_2 = (0, 2)
+    assert optimal_bits(test_range_2) == 2
+    test_range_3 = (-90 * 60 * 1000, 90 * 60 * 1000)
+    assert optimal_bits(test_range_3) == 24
+    test_range_4 = (-180 * 60 * 1000, 180 * 60 * 1000)
+    assert optimal_bits(test_range_4) == 25
+
+
 def test_enum_field():
     test_items = ['item1', 'item2', 'item3']
     size = 2
     defaults = [None, 'item1', 1]
-    for default in defaults:
+    for test_default in defaults:
         test_field = EnumField(name='validEnum',
-                                items=test_items,
-                                size=size,
-                                default=default)
+                               items=test_items,
+                               size=size,
+                               default=test_default)
         assert(test_field.items == test_items)
-        if default is None:
+        if test_default is None:
             assert(test_field.value is None)
-        elif isinstance(default, str):
-            assert(test_field.value == default)
+        elif isinstance(test_default, str):
+            assert(test_field.value == test_default)
         else:
-            assert(test_field.value == test_items[default])
+            assert(test_field.value == test_items[test_default])
     assert(test_field.encode() == '01')  #:assumes last default is 1
     with pytest.raises(ValueError):
         test_field = EnumField(name='testEnum', items=None, size=None)
@@ -392,11 +484,10 @@ def test_bool_xml(bool_field):
 
 
 def test_enum_xml(enum_field):
-    test_field = enum_field()
-    xml = test_field.xml()
+    test_field: EnumField = enum_field()
+    xml: ET.Element = test_field.xml()
     assert(xml.attrib['{http://www.w3.org/2001/XMLSchema-instance}type'] == 'EnumField')
     assert(xml.find('Name').text == test_field.name)
-    assert(xml.find('Size').text == str(test_field.size))
     assert(xml.find('Description').text == test_field.description)
     items = xml.find('Items')
     i = 0
@@ -404,11 +495,37 @@ def test_enum_xml(enum_field):
         string = item.text
         assert(string == test_field.items[i])
         i += 1
+    assert(xml.find('Size').text == str(test_field.size))
+    # Ensure Size follows Items for Inmarsat API V1
+    tree = ET.ElementTree(xml)
+    root = tree.getroot()
+    enum_str: str = ET.tostring(root).decode('utf8')
+    assert enum_str.find('<Items>') < enum_str.find('<Size>')
+
+
+def test_indent():
+    root = ET.fromstring('<A><B>..</B><C><D>...</D></C></A>')
+    spaces = 2
+    _indent(root, spaces=spaces)
+    output = ET.tostring(root).decode('utf-8')
+    test_filename = './temp/indent.xml'
+    with open(test_filename, 'w') as f:
+        f.write(output)
+    with open(test_filename, 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            if any(x in line for x in ['<A>', '</A>']):
+                assert line.startswith('<')
+            elif any(x in line for x in ['<B>', '</B>', '<C>', '</C>']):
+                assert line.startswith(' ' * spaces + '<')
+            elif any(x in line for x in ['<D>', '</D>']):
+                assert line.startswith(' ' * spaces * 2 + '<')
+    os.remove(test_filename)
+
 
 def test_array_xml(array_field):
-    test_field = array_field()
+    test_field: ArrayField = array_field()
     xml = test_field.xml()
-    # ET.dump(xml)
     assert(xml.attrib['{http://www.w3.org/2001/XMLSchema-instance}type'] == 'ArrayField')
     assert(xml.find('Name').text == test_field.name)
     assert(xml.find('Size').text == str(test_field.size))
@@ -418,40 +535,33 @@ def test_array_xml(array_field):
     for field in fields.findall('Field'):
         assert(field.find('Name').text == test_field.fields[i].name)
         i += 1
+    # Ensure Size follows Fields for Inmarsat API V1
+    tree = ET.ElementTree(xml)
+    root = tree.getroot()
+    enum_str: str = ET.tostring(root).decode('utf8')
+    assert enum_str.find('<Fields>') < enum_str.find('<Size>')
 
 
 def test_return_message_xml(return_message):
-    rm = return_message
-    ET.dump(rm.xml())
+    rm: MessageCodec = return_message
+    xml = rm.xml()
+    assert xml.find('Name').text == rm.name
+    assert int(xml.find('MIN').text) == rm.min
+    assert xml.find('Fields')
 
 
-def test_mdf_xml(message_definitions):
-    xml = message_definitions.xml(indent=True)
-    print(xml)
+def test_mdf_xml(message_definitions: MessageDefinitions):
+    test_filename = './temp/mdf.xml'
+    message_definitions.mdf_export(test_filename, pretty=True)
+    assert True   # manual validation
 
 
 def test_rm_codec(return_message):
-    msg = return_message
+    msg: MessageCodec = return_message
     msg_copy = deepcopy(return_message)
     encoded = msg.encode(data_format=DataFormat.HEX)
-    # print('Encoded:\n{}'.format(encoded))
     hex_message = (format(encoded['sin'], '02X') +
                    format(encoded['min'], '02X') +
                    encoded['data'])
     msg.decode(bytes.fromhex(hex_message))
-    # print('Pre-decode:\n{}'.format(vars(msg_copy)))
-    # print('Post-decode:\n{}'.format(vars(msg)))
     assert(msg_copy == msg)
-
-
-def test_mixed_message(return_message):
-    msg: MessageCodec = return_message
-    for field in msg.fields:
-        assert isinstance(field, FieldCodec)
-        if 'array' in field.name and hasattr(field, 'elements'):
-            for ei, element in enumerate(field.elements):
-                for fi, field in enumerate(element):
-                    assert isinstance(field, FieldCodec)
-                    logger.info(f'Element {ei}:{fi} {field.name} = {field.value}')
-        else:
-            logger.info(f'{field.name}: {msg.fields[field.name]}')

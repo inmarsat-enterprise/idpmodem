@@ -6,15 +6,13 @@ Also supported on ORBCOMM IGWS.
 import logging
 import xml.etree.ElementTree as ET
 from binascii import b2a_base64
+from copy import deepcopy
 from math import ceil, log2
 from struct import pack, unpack
 from warnings import warn
-from xml.dom.minidom import parseString
-from copy import deepcopy
 
 from idpmodem.constants import DataFormat
 
-__version__ = '2.0.0'
 _log = logging.getLogger(__name__)
 
 
@@ -41,6 +39,7 @@ XML_NAMESPACE = {
 }
 SIN_RANGE = (16, 255)
 
+
 for ns in XML_NAMESPACE:
     ET.register_namespace(ns, XML_NAMESPACE[ns])
 
@@ -66,7 +65,7 @@ def optimal_bits(value_range: 'tuple[int, int]') -> int:
         raise ValueError('value_range must be of form (min, max)')
     total_range = value_range[1] - value_range[0]
     total_range += 1 if value_range[0] == 0 else 0
-    return max(1, ceil(log2(value_range[1] - value_range[0])))
+    return max(1, ceil(log2(total_range)))
 
 
 def _encode_field_length(length) -> str:
@@ -95,24 +94,26 @@ def _attribute_equivalence(reference: object,
     return True
 
 
-def _indent_xml(elem: ET.Element, level=0):
-    xmlstr = parseString(ET.tostring(elem)).toprettyxml(indent="  ")
-    # i = "\n" + level*"  "
-    # j = "\n" + (level-1)*"  "
-    # if len(elem):
-    #     if not elem.text or not elem.text.strip():
-    #         elem.text = i + "  "
-    #     if not elem.tail or not elem.tail.strip():
-    #         elem.tail = i
-    #     for subelem in elem:
-    #         _indent_xml(subelem, level+1)
-    #     if not elem.tail or not elem.tail.strip():
-    #         elem.tail = j
-    # else:
-    #     if level and (not elem.tail or not elem.tail.strip()):
-    #         elem.tail = j
-    # return elem
-    return xmlstr
+def _indent(elem: ET.Element, level: int = 0, spaces: int = 2) -> ET.Element:
+    i = '\n' + level * (' ' * spaces)
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + ' ' * spaces
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        sub_index = 0
+        for subelem in elem:
+            sub_index += 1
+            _indent(subelem, level + 1)
+            if sub_index == len(elem):
+                subelem.tail = i
+        # if not elem.tail or not elem.tail.strip():
+        #     elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
+    if level == 0:
+        elem.tail = None
 
 
 class BaseCodec:
@@ -471,8 +472,8 @@ class MessageCodec(BaseCodec):
             'data': data
         }
 
-    def xml(self, indent: bool = False) -> ET.Element:
-        """Returns the XML definition for a Message Definition File."""
+    def xml(self) -> ET.Element:
+        """Returns the Message XML definition for a Message Definition File."""
         xmessage = ET.Element('Message')
         name = ET.SubElement(xmessage, 'Name')
         name.text = self.name
@@ -481,7 +482,7 @@ class MessageCodec(BaseCodec):
         fields = ET.SubElement(xmessage, 'Fields')
         for field in self.fields:
             fields.append(field.xml())
-        return xmessage if not indent else _indent_xml(xmessage)
+        return xmessage
 
 
 class Messages(CodecList):
@@ -587,8 +588,8 @@ class ServiceCodec(BaseCodec):
                 raise ValueError(f'Message {message.name} is_forward is True')
         self._messages_return = messages
         
-    def xml(self, indent: bool = False) -> ET.Element:
-        """Gets the XML structure of the Service."""
+    def xml(self) -> ET.Element:
+        """Returns the Service XML definition for a Message Definition File."""
         if len(self.messages_forward) == 0 and len(self.messages_return) == 0:
             raise ValueError(f'No messages defined for service {self.sin}')
         xservice = ET.Element('Service')
@@ -607,7 +608,7 @@ class ServiceCodec(BaseCodec):
             return_messages = ET.SubElement(xservice, 'ReturnMessages')
             for m in self.messages_return:
                 return_messages.append(m.xml())
-        return xservice if not indent else _indent_xml(xservice)
+        return xservice
 
 
 class Services(CodecList):
@@ -705,6 +706,7 @@ class BooleanField(FieldCodec):
         return 1
 
     def xml(self) -> ET.Element:
+        """Returns the Boolean XML definition for a Message Definition File."""
         xmlfield = self._base_xml()
         if self.default:
             default = ET.SubElement(xmlfield, 'Default')
@@ -741,13 +743,28 @@ class EnumField(FieldCodec):
         if (not isinstance(items, list) or
             not all(isinstance(item, str) for item in items)):
             raise ValueError('Items must a list of strings')
-        if not isinstance(size, int) or size < 1:
-            raise ValueError('Size must be integer greater than 0 bits')
         self._items = items
+        min_size = optimal_bits((0, len(items) - 1))
+        if not isinstance(size, int) or size < min_size:
+            raise ValueError(f'Size must be integer greater than {min_size}')
         self._size = size
-        self._default = (default if default in range(0, len(self._items))
-                         else None)
-        self._value = value if value is not None else self._default
+        if default is not None:
+            if isinstance(default, str):
+                if default not in items:
+                    raise ValueError(f'{default} not found in items')
+                self._default = items.index(default)
+            elif isinstance(default, int):
+                if default not in range(0, len(items)):
+                    raise ValueError('Invalid default not in range of items')
+                self._default = default
+        else:
+            self._default = None
+        if value is not None:
+            if value not in items:
+                raise ValueError(f'{value} not in items')
+            self._value = value
+        else:
+            self._value = None
     
     def _validate_enum(self, v: 'int|str') -> 'int|None':
         if v is not None:
@@ -787,6 +804,8 @@ class EnumField(FieldCodec):
     @property
     def value(self) -> str:
         if self._value is None:
+            if self.default is not None:
+                return self.default
             return None
         return self.items[self._value]
     
@@ -840,8 +859,8 @@ class EnumField(FieldCodec):
         return self.bits
 
     def xml(self) -> ET.Element:
-        """Gets the XML structure of the EnumField."""
-        # Size has to come after Items for Inmarsat parser (!?)
+        """Returns the Enum XML definition for a Message Definition File."""
+        # Size must come after Items for Inmarsat V1 parser
         xmlfield = self._base_xml()
         items = ET.SubElement(xmlfield, 'Items')
         for string in self.items:
@@ -880,6 +899,8 @@ class UnsignedIntField(FieldCodec):
         """
         if data_type not in ['uint_8', 'uint_16', 'uint_32']:
             raise ValueError(f'Invalid unsignedint type {data_type}')
+        if not isinstance(size, int) or size < 1:
+            raise ValueError('Size must be int greater than zero')
         super().__init__(name=name,
                          data_type=data_type,
                          description=description,
@@ -961,7 +982,8 @@ class UnsignedIntField(FieldCodec):
         return self.bits
 
     def xml(self) -> ET.Element:
-        """Gets the XML structure of the UnsignedIntField."""
+        """Returns the UnsignedInt XML definition for a Message Definition File.
+        """
         xmlfield = self._base_xml()
         size = ET.SubElement(xmlfield, 'Size')
         size.text = str(self.size)
@@ -996,6 +1018,8 @@ class SignedIntField(FieldCodec):
         """
         if data_type not in ['int_8', 'int_16', 'int_32']:
             raise ValueError(f'Invalid unsignedint type {data_type}')
+        if not isinstance(size, int) or size < 1:
+            raise ValueError('Size must be int greater than zero')
         super().__init__(name=name,
                          data_type=data_type,
                          description=description,
@@ -1093,7 +1117,8 @@ class SignedIntField(FieldCodec):
         return self.bits
 
     def xml(self) -> ET.Element:
-        """Gets the XML structure of the SignedIntField."""
+        """Returns the SignedInt XML definition for a Message Definition File.
+        """
         xmlfield = self._base_xml()
         size = ET.SubElement(xmlfield, 'Size')
         size.text = str(self.size)
@@ -1175,6 +1200,10 @@ class StringField(FieldCodec):
     def fixed(self) -> bool:
         """Indicates whether the string length is fixed (padded/truncated)."""
         return self._fixed
+    
+    @fixed.setter
+    def fixed(self, value: bool):
+        self._fixed = value
 
     @property
     def bits(self) -> int:
@@ -1224,7 +1253,7 @@ class StringField(FieldCodec):
         return bit_index + length * 8
 
     def xml(self) -> ET.Element:
-        """Gets the XML structure of the StringField."""
+        """Returns the String XML definition for a Message Definition File."""
         xmlfield = self._base_xml()
         size = ET.SubElement(xmlfield, 'Size')
         size.text = str(self.size)
@@ -1260,6 +1289,7 @@ class DataField(FieldCodec):
             name: The field name must be unique within a Message.
             size: The maximum number of bytes to send over-the-air.
             data_type: The data type represented within the bytes.
+            precision: The number of decimal places for float/double.
             description: An optional description/purpose for the field.
             optional: Indicates if the field is optional in the Message.
             fixed: Indicates if the data bytes are a fixed `size`.
@@ -1274,12 +1304,14 @@ class DataField(FieldCodec):
                          description=description,
                          optional=optional)
         self._fixed = fixed
-        self._size = size
-        self._default = default
-        self._precision = precision
-        self._value = self._default
-        if value:
-            self.value = value
+        self._size = None
+        self._default = None
+        self._precision = None
+        self._value = None
+        self.precision = precision
+        self.size = size
+        self.default = default
+        self.value = value
     
     @property
     def size(self) -> int:
@@ -1294,12 +1326,12 @@ class DataField(FieldCodec):
             if value != 4:
                 warn('Adjusting float size to 4 bytes fixed')
             self._size = 4
-            self.fixed = True
+            self._fixed = True
         elif self.data_type == 'double':
             if value != 8:
                 warn('Adjusting double size to 8 bytes fixed')
             self._size = 8
-            self.fixed = True
+            self._fixed = True
         else:
             self._size = value
     
@@ -1323,7 +1355,7 @@ class DataField(FieldCodec):
         return v
 
     def _convert_to_float(self, v: bytes) -> 'float|None':
-        if not self.data_type in ('float', 'double'):
+        if self.data_type not in ('float', 'double') or v is None:
             return None
         convertor = '!f' if self.data_type == 'float' else '!d'
         converted = unpack(convertor, v)[0]
@@ -1340,12 +1372,25 @@ class DataField(FieldCodec):
     
     @default.setter
     def default(self, v: 'bytes|float'):
-        self._default = self._validate_data(v)
+        if v is None:
+            self._default = None
+        else:
+            self._default = self._validate_data(v)
 
     @property
     def precision(self) -> 'int|None':
         """The number of decimal places for `float` or `double` data types."""
         return self._precision
+    
+    @precision.setter
+    def precision(self, value: 'int|None'):
+        if self.data_type in ['float', 'double']:
+            if value is not None and not isinstance(value, int):
+                raise ValueError('Precision must be int or None'
+                                 ' for float/double data_type')
+        elif value is not None:
+            raise ValueError('Precision only valid for float/double data_type')
+        self._precision = value
 
     @property
     def converted_value(self) -> 'float|None':
@@ -1359,7 +1404,10 @@ class DataField(FieldCodec):
 
     @value.setter
     def value(self, v: 'bytes|float'):
-        self._value = self._validate_data(v)
+        if v is None:
+            self._value = None
+        else:
+            self._value = self._validate_data(v)
 
     @property
     def fixed(self) -> bool:
@@ -1412,7 +1460,7 @@ class DataField(FieldCodec):
         return self.bits
 
     def xml(self) -> ET.Element:
-        """The XML structure of the DataField."""
+        """Returns the Data XML definition for a Message Definition File."""
         xmlfield = self._base_xml()
         size = ET.SubElement(xmlfield, 'Size')
         size.text = str(self.size)
@@ -1528,7 +1576,7 @@ class ArrayField(FieldCodec):
         """The size of the array in bits."""
         bits = 0
         for field in self.fields:
-            # assert isinstance(field, FieldCodec)
+            assert isinstance(field, FieldCodec)
             bits += field.bits
         return bits
     
@@ -1539,9 +1587,9 @@ class ArrayField(FieldCodec):
 
     def _valid_element(self, element: Fields) -> bool:
         for i, field in enumerate(self.fields):
-            # assert isinstance(field, FieldCodec)
+            assert isinstance(field, FieldCodec)
             e_field = element[i]
-            # assert isinstance(e_field, FieldCodec)
+            assert isinstance(e_field, FieldCodec)
             if e_field.name != field.name:
                 raise ValueError(f'element field name {e_field.name}'
                                  f' does not match {field.name}')
@@ -1563,25 +1611,27 @@ class ArrayField(FieldCodec):
                                  f' does not match {field.size}')
         return True
 
-    def _append(self, element: Fields):
+    def append(self, element: Fields):
         """Adds the array element to the list of elements."""
         if not isinstance(element, Fields):
             raise ValueError('Invalid element definition must be Fields')
-        if self._valid_element(element):
-            for i, field in enumerate(element):
-                assert isinstance(field, FieldCodec)
-                if (hasattr(field, 'description') and
-                    field.description != self.fields[i].description):
-                    element[i].description = self.fields[i].description
-                if hasattr(field, 'value') and field.value is None:
-                    element[i].value = self.fields[i].default
-            self._elements.append(element)
+        if not self._valid_element(element):
+            raise ValueError('Invalid element definition'
+                             f' - requires {self.fields}')
+        for i, field in enumerate(element):
+            assert isinstance(field, FieldCodec)
+            if (hasattr(field, 'description') and
+                field.description != self.fields[i].description):
+                element[i].description = self.fields[i].description
+            if hasattr(field, 'value') and field.value is None:
+                element[i].value = self.fields[i].default
+        self._elements.append(element)
 
     def new_element(self) -> Fields:
         """Returns an empty element at the end of the elements list."""
         new_index = len(self._elements)
         new_fields = deepcopy(self.fields)
-        self._append(Fields(new_fields))
+        self.append(Fields(new_fields))
         return self.elements[new_index]
 
     def encode(self) -> str:
@@ -1626,15 +1676,15 @@ class ArrayField(FieldCodec):
         return bit_index
 
     def xml(self) -> ET.Element:
-        """The XML representation of the ArrayField."""
-        # Size has to come after Fields for Inmarsat parser (!?)
+        """Returns the Array XML definition for a Message Definition File."""
+        # Size must come after Fields for Inmarsat V1 parser
         xmlfield = self._base_xml()
         if self.fixed:
             default = ET.SubElement(xmlfield, 'Fixed')
             default.text = 'true'
         fields = ET.SubElement(xmlfield, 'Fields')
         for field in self.fields:
-            # assert isinstance(field, FieldCodec)
+            assert isinstance(field, FieldCodec)
             fields.append(field.xml())
         size = ET.SubElement(xmlfield, 'Size')
         size.text = str(self.size)
@@ -1654,35 +1704,48 @@ class MessageDefinitions:
                 raise ValueError('Invalid Services')
         self.services = services or Services()
     
-    def xml(self, indent: bool = False) -> ET.Element:
-        """Gets the XML structure of the complete message definitions.
-        
-        Args:
-            indent: If `True` each layer of the XML will indent 2 spaces.
-
-        """
+    def xml(self) -> ET.Element:
+        """Gets the XML structure of the complete message definitions."""
         xmsgdef = ET.Element('MessageDefinition',
                              attrib={'xmlns:xsd': XML_NAMESPACE['xsd']})
         services = ET.SubElement(xmsgdef, 'Services')
         for service in self.services:
-            # assert isinstance(service, ServiceCodec)
+            assert isinstance(service, ServiceCodec)
             services.append(service.xml())
-        return xmsgdef if not indent else _indent_xml(xmsgdef)
+        return xmsgdef
     
-    def mdf_export(self, filename: str, pretty: bool = False):
+    def mdf_export(self,
+                   filename: str,
+                   pretty: bool = False,
+                   indent: int = 0,
+                   include_service_description: bool = False,
+                   ) -> None:
         """Creates an XML file at the target location.
         
         Args:
             filename: The full path/filename to save to. `.idpmsg` is
                 recommended as a file extension.
-            pretty: If `True` will indent each layer of the XML by 2 spaces.
+            pretty: If True sets indent = 2 (legacy compatibility)
+            indent: If nonzero will indent each layer of the XML by n spaces.
+            include_service_description: By default removes Description from
+                Service for Inmarsat IDP Admin API V1 compatibility.
 
         """
-        tree = ET.ElementTree(self.xml())
-        root = tree.getroot()
+        if not include_service_description:
+            new_copy = deepcopy(self)
+            for service in new_copy.services:
+                assert isinstance(service, ServiceCodec)
+                if service.description is not None:
+                    service.description = None
+            tree = ET.ElementTree(new_copy.xml())
+        else:
+            tree = ET.ElementTree(self.xml())
         if pretty:
-            from xml.dom.minidom import parseString
-            xmlstr = parseString(ET.tostring(root)).toprettyxml(indent="  ")
+            indent = 2
+        if indent:
+            root = tree.getroot()
+            _indent(root, spaces=indent)
+            xmlstr = ET.tostring(root).decode()
             with open(filename, 'w') as f:
                 f.write(xmlstr)
         else:
