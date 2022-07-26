@@ -629,6 +629,7 @@ class IdpModem:
                         priority: int = MessagePriority.LOW,
                         sin: int = None,
                         min: int = None,
+                        timeout: int = None,
                         ) -> str:
         """Submits a mobile-originated message to send.
 
@@ -647,6 +648,8 @@ class IdpModem:
             sin: Optional first byte of payload used for codec, required if data
                 is string type.
             min: Optional second byte of payload used for codec
+            timeout: Optional timeout. If not provided will be calculated from
+                the baudrate for the maximum message size, *3
 
         Returns:
             Name of the message if successful, or the error string.
@@ -670,7 +673,7 @@ class IdpModem:
         data = f'"{data}"' if data_format == DataFormat.TEXT else data
         _log.debug(f'Submitting MO message with name {name}')
         command = f'AT%MGRT="{name}",{priority},{sin}{min},{data_format},{data}'
-        max_timeout = ceil(6400 / (self.baudrate / 8)) * 2
+        max_timeout = timeout or ceil(6400 / (self.baudrate / 8)) * 3
         response = self.atcommand(command, timeout=max_timeout)
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -780,6 +783,7 @@ class IdpModem:
                        name: str,
                        data_format: int = DataFormat.BASE64,
                        meta: bool = False,
+                       timeout: int = None,
                        ) -> 'bytes|dict':
         """Gets the payload of a specified mobile-terminated message.
         
@@ -790,6 +794,8 @@ class IdpModem:
             data_format: text=1, hex=2, base64=3 (default)
             meta: If False returns raw bytes, else returns formatted data
                 with metadata.
+            timeout: Optional timeout. If not specified, will be calculated
+                based on the baudrate for the maximum message size, *3
 
         Returns:
             The raw data bytes if meta is False, or a dictionary with:
@@ -807,7 +813,7 @@ class IdpModem:
         """
         if not meta and data_format != DataFormat.BASE64:
             data_format = DataFormat.BASE64
-        max_timeout = ceil(10000 / (self.baudrate / 8)) * 2
+        max_timeout = timeout or ceil(10000 / (self.baudrate / 8)) * 3
         _log.debug(f'Retrieving waiting MT message {name}')
         response = self.atcommand(f'AT%MGFG="{name}",{data_format}',
                                   filter=['%MGFG:'],
@@ -956,7 +962,8 @@ class IdpModem:
         if not (isinstance(event, tuple) and len(event) == 2):
             raise ValueError('event_get expects (class, subclass)')
         trace_class, trace_subclass = event
-        _log.debug(f'Retrieving trace event {event}')
+        _log.debug(f'Retrieving trace event class {trace_class}'
+                   f' subclass {trace_subclass}')
         response = self.atcommand(f'AT%EVNT={trace_class},{trace_subclass}',
                                   filter=['%EVNT:'])
         #: res %EVNT: <dataCount>,<signedBitmask>,<MTID>,<timestamp>,
@@ -1057,14 +1064,16 @@ class IdpModem:
         Trace Class 3, Subclass 1, Data 22
         """
         self._satellite_status_get()
-        return SatlliteControlState(self._ctrl_state)
+        if self._ctrl_state is not None:
+            return SatlliteControlState(self._ctrl_state)
     
     @property
     def network_status(self) -> 'str|None':
         """The network status derived from control state."""
         if self._ctrl_state is None:
             self._satellite_status_get()
-        return SatlliteControlState(self._ctrl_state).name
+        if self._ctrl_state is not None:
+            return SatlliteControlState(self._ctrl_state).name
 
     @property
     def registered(self) -> bool:
@@ -1075,14 +1084,16 @@ class IdpModem:
     def beamsearch_state(self) -> 'BeamSearchState|None':
         """The beam search state (Trace Class 3, Subclass 1, Data 23)"""
         self._satellite_status_get()
-        return BeamSearchState(self._beamsearch_state)
+        if self._beamsearch_state is not None:
+            return BeamSearchState(self._beamsearch_state)
     
     @property
     def beamsearch(self) -> 'str|None':
         """The beam search state description."""
         if self._beamsearch_state is None:
             self._satellite_status_get()
-        return BeamSearchState(self._beamsearch_state).name
+        if self._beamsearch_state is None:
+            return BeamSearchState(self._beamsearch_state).name
 
     @property
     def snr(self) -> 'float|None':
@@ -1095,7 +1106,7 @@ class IdpModem:
         """Qualitative interpretation of the SNR."""
         signal_quality = SignalQuality.NONE
         snr = self.snr
-        if snr:
+        if snr is not None:
             if snr > SignalLevelRegional.INVALID.value:
                 signal_quality = SignalQuality.WARNING
             elif snr > SignalLevelRegional.BARS_5.value:
