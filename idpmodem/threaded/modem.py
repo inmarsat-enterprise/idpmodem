@@ -23,6 +23,7 @@ GNSS_STALE_SECS = int(os.getenv('GNSS_STALE_SECS', 1))
 GNSS_WAIT_SECS = int(os.getenv('GNSS_WAIT_SECS', 35))
 SAT_STATUS_HOLDOFF = 5
 MODEM_REBOOT_HOLDOFF = os.getenv('MODEM_REBOOT_HOLDOFF')
+VERBOSE_DEBUG = str(os.getenv('VERBOSE_DEBUG', False)).lower() == 'true'
 
 _log = logging.getLogger(__name__)
 
@@ -211,6 +212,7 @@ class IdpModem:
                                               filter=filter,
                                               timeout=timeout)
             if self.error_detail and res and res[0] == 'ERROR':
+                _log.debug(f'Querying error code response to {command}')
                 err_res = self.protocol.command('ATS80?')
                 if not err_res or err_res[0] == 'ERROR':
                     raise AtException('Unhandled error getting last error code')
@@ -247,7 +249,7 @@ class IdpModem:
                 if ('INVALID_CRC' not in at_error and
                     'UNKNOWN_COMMAND' not in at_error):
                     _log.warning(f'Unexpected AT error {at_error}')
-            _log.debug(f'Re-attempting (CRC={self.protocol.crc})')
+            _log.debug(f'CRC mismatch, re-attempting (CRC={self.protocol.crc})')
             res_attempt_2 = self.atcommand(command)
             if res_attempt_2[0] != 'OK':
                 _log.error('Unable to initialize modem after second attempt')
@@ -323,6 +325,7 @@ class IdpModem:
             'S56',   #: GNSS Jamming Status
             'S57',   #: GNSS Jamming Indicator
         ]
+        _log.debug(f'Querying volatile S-register set: {register_list}')
         command = 'AT'
         for reg in register_list:
             command += f'{reg if command == "AT" else " " + reg}?'
@@ -365,6 +368,8 @@ class IdpModem:
     def mobile_id(self) -> 'str|None':
         """The unique Mobile ID (Inmarsat serial number)."""
         if self._mobile_id is None:
+            if VERBOSE_DEBUG:
+                _log.debug('Querying Mobile ID')
             response = self.atcommand('AT+GSN', filter=['+GSN:'])
             if response[0] != 'ERROR':
                 self._mobile_id = response[0]
@@ -374,6 +379,8 @@ class IdpModem:
     def versions(self) -> 'dict|None':
         """The hardware, firmware and AT versions."""
         if not self._versions:
+            if VERBOSE_DEBUG:
+                _log.debug('Querying modem versions')
             response = self.atcommand('AT+GMR', filter=['+GMR:'])
             if response[0] != 'ERROR':
                 self._versions = {}
@@ -391,6 +398,8 @@ class IdpModem:
     def manufacturer(self) -> str:
         """The modem manufacturer reported by `ATI0`."""
         if not self._manufacturer:
+            if VERBOSE_DEBUG:
+                _log.debug('Querying modem manufacturer')
             response = self.atcommand('ATI0')
             if response[0] == 'ERROR':
                 self._handle_at_error(response)
@@ -401,6 +410,8 @@ class IdpModem:
     def model(self) -> str:
         """The modem model reported by `ATI4`."""
         if not self._model:
+            if VERBOSE_DEBUG:
+                _log.debug('Querying modem model')
             response = self.atcommand('ATI4')
             if response[0] == 'ERROR':
                 self._handle_at_error(response)
@@ -411,6 +422,8 @@ class IdpModem:
     def power_mode(self) -> 'PowerMode|None':
         """The modem power mode setting (enumerated) in `S50`."""
         if self._power_mode is None:
+            if VERBOSE_DEBUG:
+                _log.debug('Querying modem power mode')
             response = self.atcommand('ATS50?')
             if response[0] != 'ERROR':
                 self._power_mode = PowerMode(int(response[0]))
@@ -424,6 +437,8 @@ class IdpModem:
             value = PowerMode[value].value
         if not PowerMode.is_valid(value):
             raise ValueError(f'Invalid PowerMode {value}')
+        if VERBOSE_DEBUG:
+            _log.debug(f'Setting modem power mode {PowerMode(value)}')
         response = self.atcommand(f'ATS50={value}')
         if response[0] == 'OK':
             self._power_mode = PowerMode(value)
@@ -432,6 +447,8 @@ class IdpModem:
     def wakeup_period(self) -> 'WakeupPeriod|None':
         """The modem wakeup period setting (enumerated) in `S51`."""
         if self._wakeup_period is None:
+            if VERBOSE_DEBUG:
+                _log.debug('Querying modem wakeup period')
             response = self.atcommand('ATS51?')
             if response[0] != 'ERROR':
                 self._wakeup_period = WakeupPeriod(int(response[0]))
@@ -445,6 +462,8 @@ class IdpModem:
             value = WakeupPeriod[value].value
         if not WakeupPeriod.is_valid(value):
             raise ValueError(f'Invalid WakeupPeriod {value}')
+        if VERBOSE_DEBUG:
+            _log.debug(f'Setting modem power mode {WakeupPeriod(value)}')
         response = self.atcommand(f'ATS51={value}')
         if response[0] == 'OK':
             self._wakeup_period = WakeupPeriod(value)
@@ -452,6 +471,8 @@ class IdpModem:
     @property
     def temperature(self) -> int:
         """Temperature in degrees Celsius (`S85`)."""
+        if VERBOSE_DEBUG:
+            _log.debug('Querying modem temperature')
         response = self.atcommand('ATS85?')
         if response[0] != 'ERROR':
             return int(float(response[0]) / 10)
@@ -459,6 +480,8 @@ class IdpModem:
     @property
     def gnss_refresh_interval(self) -> int:
         """GNSS refresh interval in seconds (`S55`)."""
+        if VERBOSE_DEBUG:
+            _log.debug('Querying GNSS refresh interval')
         response = self.atcommand(f'ATS55?')
         if response[0] != 'ERROR':
             return int(response[0])
@@ -482,6 +505,7 @@ class IdpModem:
         """
         if interval < 0 or interval > 30:
             raise ValueError('GNSS continuous interval must be in range 0..30')
+        _log.debug(f'Configuring GNSS continuous mode {interval} seconds')
         response = self.atcommand(f'AT%TRK={interval}{",1" if doppler else ""}')
         if response[0] == 'ERROR':
             return False
@@ -522,6 +546,7 @@ class IdpModem:
             sentences += f'"{sentence}"'
         timeout = wait_secs + BUFFER_SECONDS
         request_time = time()
+        _log.debug(f'Querying GNSS NMEA sentences {sentences}')
         response = self.atcommand(f'AT%GPS={stale_secs}'
                                         f',{wait_secs},{sentences}',
                                         timeout=timeout,
@@ -554,6 +579,8 @@ class IdpModem:
     @property
     def gnss_jamming(self) -> bool:
         """The GNSS jamming detection status (`S56`)."""
+        if VERBOSE_DEBUG:
+            _log.debug('Querying GNSS jamming indicator')
         response = self.atcommand('ATS56?')
         if response[0] != 'ERROR':
             return ((int(response[0]) & 0b100) >> 2 == 1) 
@@ -561,12 +588,16 @@ class IdpModem:
     @property
     def gnss_mode(self) -> GnssMode:
         """The GNSS operating mode setting (`S39`)."""
+        if VERBOSE_DEBUG:
+            _log.debug('Querying GNSS mode')
         response = self.atcommand('ATS39?')
         if response[0] != 'ERROR':
             return GnssMode(int(response[0]))
 
     @gnss_mode.setter
     def gnss_mode(self, mode: GnssMode):
+        if VERBOSE_DEBUG:
+            _log.debug(f'Setting GNSS mode {mode}')
         response = self.atcommand(f'ATS39={mode.value}')
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -617,6 +648,7 @@ class IdpModem:
             raise ValueError('Invalid MIN must be 0..255')
         min = f'.{min}' if min is not None else ''
         data = f'"{data}"' if data_format == DataFormat.TEXT else data
+        _log.debug(f'Submitting MO message with name {name}')
         command = f'AT%MGRT="{name}",{priority},{sin}{min},{data_format},{data}'
         max_timeout = ceil(6400 / (self.baudrate / 8)) * 2
         response = self.atcommand(command, timeout=max_timeout)
@@ -646,6 +678,7 @@ class IdpModem:
         """
         states = []
         name = f'="{name}"' if name is not None else ''
+        _log.debug(f'Querying MO message states {name if name else ""}')
         response = self.atcommand(f'AT%MGRS{name}', filter=['%MGRS:'])
         # %MGRS: "<name>",<msg_no>,<priority>,<sin>,<state>,<size>,<sent_bytes>
         if response[0] != 'ERROR':
@@ -664,6 +697,7 @@ class IdpModem:
     
     def message_mo_cancel(self, name: str) -> bool:
         """Cancels a mobile-originated message in the Tx ready state."""
+        _log.debug(f'Attempting to cancel message {name}')
         response = self.atcommand(f'AT%MGRC="{name}"')
         if response[0] == 'ERROR':
             return False
@@ -681,6 +715,7 @@ class IdpModem:
             return -1
         message_count = len(list_response)
         for msg in list_response:
+            _log.debug(f'Attempting to delete MO message {msg}')
             del_response = self.atcommand(f'AT%MGRD={msg}C')
             if del_response[0] == 'ERROR':
                 _log.error(f'Error clearing messages from transmit queue')
@@ -702,6 +737,7 @@ class IdpModem:
 
         """
         waiting = []
+        _log.debug('Querying for waiting MT messages')
         response = self.atcommand('AT%MGFN', filter=['%MGFN:'])
         #: %MGFN: "name",number,priority,sin,state,length,bytes_received
         if response[0] != 'ERROR':
@@ -752,6 +788,7 @@ class IdpModem:
         if not meta and data_format != DataFormat.BASE64:
             data_format = DataFormat.BASE64
         max_timeout = ceil(10000 / (self.baudrate / 8)) * 2
+        _log.debug(f'Retrieving waiting MT message {name}')
         response = self.atcommand(f'AT%MGFG="{name}",{data_format}',
                                   filter=['%MGFG:'],
                                   timeout=max_timeout)
@@ -799,6 +836,7 @@ class IdpModem:
             True if the operation succeeded
 
         """
+        _log.debug(f'Attempting to delete MT message {name}')
         response = self.atcommand(f'AT%MGFM="{name}"')
         if response[0] == 'ERROR':
             err = f' ({response[1]})' if self.error_detail else ''
@@ -808,6 +846,7 @@ class IdpModem:
     @property
     def transmitter_status(self) -> TransmitterStatus:
         """The transmitter status reported by `S54`"""
+        _log.debug('Querying transmitter status')
         response = self.atcommand('ATS54?')
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -819,6 +858,7 @@ class IdpModem:
         Returns:
             `{ 'monitored': [(<class,subclass>)], 'cached': [<class,subclass)] }` 
         """
+        _log.debug('Querying monitored/cached trace events')
         response = self.atcommand('AT%EVMON', filter=['%EVMON:'])
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -851,6 +891,7 @@ class IdpModem:
             if command != 'AT%EVMON=':
                 command += ','
             command += f'{trace_class}.{trace_subclass}'
+        _log.debug(f'Setting trace event monitoring for {events}')
         response = self.atcommand(command)
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -895,6 +936,7 @@ class IdpModem:
         if not (isinstance(event, tuple) and len(event) == 2):
             raise ValueError('event_get expects (class, subclass)')
         trace_class, trace_subclass = event
+        _log.debug(f'Retrieving trace event {event}')
         response = self.atcommand(f'AT%EVNT={trace_class},{trace_subclass}',
                                   filter=['%EVNT:'])
         #: res %EVNT: <dataCount>,<signedBitmask>,<MTID>,<timestamp>,
@@ -963,6 +1005,7 @@ class IdpModem:
     @property
     def event_notification_monitor(self) -> 'list[EventNotification]':
         """The list of events monitored to assert the notification pin (`S88`)."""
+        _log.debug('Querying event notification config')
         response = self.atcommand('ATS88?')
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -973,6 +1016,7 @@ class IdpModem:
         bitmask = 0
         for event in event_list:
             bitmask = bitmask | event
+        _log.debug(f'Setting event notifications: {event_list}')
         response = self.atcommand(f'ATS88={bitmask}')
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -980,6 +1024,7 @@ class IdpModem:
     @property
     def event_notifications(self) -> 'list[EventNotification]':
         """The list of active events reported in `S89`."""
+        _log.debug('Querying active event notifications')
         response = self.atcommand('ATS89?')
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -1117,7 +1162,7 @@ class IdpModem:
 
     def shutdown(self) -> bool:
         """Tell the modem to prepare for power-down."""
-        _log.warning('Attempting to shut down')
+        _log.warning('Attempting to shut down modem')
         response = self.atcommand('AT%OFF')
         if response[0] == 'ERROR':
             self._handle_at_error(response)
@@ -1158,6 +1203,7 @@ class IdpModem:
             if command != 'AT':
                 command += ' '
             command += f'{reg}?'
+        _log.debug('Querying all S-register values')
         response = self.atcommand(command)
         if response[0] == 'ERROR':
             _log.error('Could not read S-registers')

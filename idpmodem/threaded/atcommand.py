@@ -278,11 +278,11 @@ class AtProtocol(LineReader):
                         else:
                             timeout = 0.1
                             if VERBOSE_DEBUG:
-                                _log.debug(f'{timeout}s after ERROR allows CRC')
+                                _log.debug(f'Timeout {timeout}s after ERROR'
+                                           ' allows CRC')
                     elif content.startswith('*'):
                         if not self.crc:
-                            if not '%CRC=1' in self.pending_command:
-                                _log.debug('Found CRC enabled')
+                            _log.debug('Now using CRC detected in response')
                             self.crc = True
                         crc = content.replace('*', '')
                         if not validate_crc(''.join(lines), crc):
