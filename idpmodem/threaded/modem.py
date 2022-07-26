@@ -50,7 +50,27 @@ class AtConfiguration:
 
 
 class IdpModem:
-    """A protocol factory abstracting AT commands for an IDP modem."""
+    """Abstracts AT commands to relevant functions for an IDP modem.
+    
+    Attributes:
+        connected (bool): Indicates if connected to a modem on serial.
+        baudrate (int): The baudrate of the modem.
+        crc (bool): Indicates if CRC error checking is enabled.
+        mobile_id (str): The unique modem ID.
+        versions (dict): The versions reported by the modem.
+        manufacturer (str): The modem manufacturer.
+        model (str): The modem model.
+        power_mode (IntEnum):
+        wakeup_period (IntEnum):
+        temperature (float):
+        gnss_refresh_interval (int):
+        location (object):
+        control_state (IntEnum):
+        beam_search_state (IntEnum):
+        network_status (IntEnum):
+        registered (bool):
+        
+    """
     
     SERIAL_KWARGS = ['baudrate', 'timeout', 'write_timeout']
     BAUD_RATES = [1200, 2400, 4800, 9600, 19200]
