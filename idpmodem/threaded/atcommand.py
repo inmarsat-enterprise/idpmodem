@@ -264,6 +264,8 @@ class AtProtocol(LineReader):
                             _log.debug('Response received starting'
                                        f' {self.response_time}')
                     if content == command:
+                        if VERBOSE_DEBUG:
+                            _log.debug('Echo detected - continuing')
                         pass   # ignore echo
                     elif content in ['OK', 'ERROR']:
                         lines.append(line)
@@ -296,7 +298,6 @@ class AtProtocol(LineReader):
                 except queue.Empty:
                     if not self.response_time:
                         raise AtTimeout(f'TIMEOUT ({timeout}s)')
-                    return self._clean_response(lines, filter)
 
 
 class ByteReaderThread(ReaderThread):
