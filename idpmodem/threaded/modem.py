@@ -231,11 +231,14 @@ class IdpModem:
             res: list = self.protocol.command(command,
                                               filter=filter,
                                               timeout=timeout)
+            if VERBOSE_DEBUG:
+                _log.debug(f'Response: {res}')
             if self.error_detail and res and res[0] == 'ERROR':
                 _log.debug(f'Querying error code response to {command}')
                 err_res = self.protocol.command('ATS80?')
                 if not err_res or err_res[0] == 'ERROR':
-                    raise AtException('Unhandled error getting last error code')
+                    raise AtException('Unhandled error getting last error code'
+                                      f' ({err_res})')
                 last_err_code = err_res[0]
                 detail = 'UNDEFINED'
                 if AtErrorCode.is_valid(int(last_err_code)):

@@ -196,10 +196,6 @@ class AtProtocol(LineReader):
         """
         if filter and not isinstance(filter, list):
             raise ValueError('filter must be a list of strings')
-        if VERBOSE_DEBUG:
-            latency = round(self.response_time - self.command_time, 3)
-            _log.debug(f'Command {self.pending_command}'
-                       f' latency: {latency} seconds')
         for l in range(len(lines)):
             lines[l] = lines[l].strip()
             if isinstance(filter, list) and len(filter) > 0:
@@ -207,7 +203,13 @@ class AtProtocol(LineReader):
                     if lines[l].startswith(s):
                         s += ':' if lines[l].startswith(f'{s}:') else ''
                         lines[l] = lines[l].replace(s, '').strip()
-        return [x for x in lines if x != '']
+        response = [x for x in lines if x != '']
+        if VERBOSE_DEBUG:
+            latency = round(self.response_time - self.command_time, 3)
+            _log.debug(f'Command {self.pending_command}'
+                       f' latency: {latency} seconds'
+                       f' Returning: {response}')
+        return response
 
     def command(self,
                 command: str,
