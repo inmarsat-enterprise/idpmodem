@@ -1,5 +1,6 @@
 import os
 import logging
+from time import time
 
 import pytest
 from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
@@ -32,8 +33,11 @@ def test_basic(modem):
 
 def test_timeout(modem):
     protocol: AtProtocol = modem.protocol
+    timeout = 2
+    start_time = time()
     with pytest.raises(AtTimeout) as err:
-        res = protocol.command('AT')
+        res = protocol.command('AT', timeout=timeout)
+    assert int(time() - start_time) == timeout
 
 
 def test_filter_ok(modem):

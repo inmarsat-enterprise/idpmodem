@@ -279,11 +279,10 @@ class AtProtocol(LineReader):
                                 self.crc = True
                             if not self.crc:
                                 return self._clean_response(lines, filter)
-                        else:
-                            timeout = 0.1
+                        else:   #: content == 'ERROR'
+                            timeout += 0.1
                             if VERBOSE_DEBUG:
-                                _log.debug(f'Timeout {timeout}s after ERROR'
-                                           ' allows CRC')
+                                _log.debug(f'Wait after ERROR for possible CRC')
                     elif content.startswith('*'):
                         if not self.crc:
                             _log.debug('Now using CRC detected in response')
@@ -296,8 +295,8 @@ class AtProtocol(LineReader):
                         lines.append(line)
                         # keep parsing in case CRC follows
                 except queue.Empty:
-                    if not self.response_time:
-                        raise AtTimeout(f'TIMEOUT ({timeout}s)')
+                    if time() - self.command_time >= timeout:
+                        raise AtTimeout(f'TIMEOUT ({int(timeout)}s)')
 
 
 class ByteReaderThread(ReaderThread):
