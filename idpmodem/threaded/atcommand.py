@@ -19,6 +19,9 @@ from idpmodem.helpers import printable_crlf
 from serial import Serial, SerialException
 from serial.threaded import LineReader, Protocol, ReaderThread
 
+BUFFER_CLEAR_WAIT = float(os.getenv('BUFFER_CLEAR_WAIT', 0.1))
+BYTE_READER_WAIT = float(os.getenv('BYTE_READER_WAIT', 0.001))
+SERIAL_QUEUE_WAIT = float(os.getenv('SERIAL_QUEUE_WAIT', 0.1))
 VERBOSE_DEBUG = str(os.getenv('VERBOSE_DEBUG', False)).lower() == 'true'
 
 
@@ -143,6 +146,11 @@ class AtProtocol(LineReader):
         send = text + self.TERMINATOR
         self.transport.write(send.encode(self.ENCODING, self.UNICODE_HANDLING))
     
+    # def clear_buffers(self):
+    #     """Clears the read/write buffers"""
+    #     self.transport.reset_input_buffer()
+    #     self.transport.reset_output_buffer()
+
     def stop(self):
         """Stop the event processing thread and abort pending commands."""
         self.alive = False
@@ -238,10 +246,12 @@ class AtProtocol(LineReader):
         """
         with self._lock:  # ensure that just one thread is sending commands at once
             try:
-                oldbuffer: str = self.responses.get(timeout=0.05)
+                oldbuffer: str = self.responses.get(timeout=BUFFER_CLEAR_WAIT)
                 oldbuffer = oldbuffer.replace('\r', '\\r').replace('\n', '\\n')
                 _log.warning(f'Cleared old buffer: {oldbuffer}')
             except queue.Empty:
+                if VERBOSE_DEBUG:
+                    _log.debug('Buffer clear - ready to transmit command')
                 pass
             timeout = 1 if timeout < 1 else timeout
             command = apply_crc(command) if self.crc else command
@@ -297,6 +307,9 @@ class AtProtocol(LineReader):
                 except queue.Empty:
                     if time() - self.command_time >= timeout:
                         raise AtTimeout(f'TIMEOUT ({int(timeout)}s)')
+                    if VERBOSE_DEBUG:
+                        _log.debug(f'Serial queue empty - retry until timeout')
+                    sleep(SERIAL_QUEUE_WAIT)
 
 
 class ByteReaderThread(ReaderThread):
@@ -336,7 +349,7 @@ class ByteReaderThread(ReaderThread):
                 if self.serial.in_waiting > 0:
                     data = self.serial.read()
                     self.protocol.data_received(data)
-                sleep(0.001)
+                sleep(BYTE_READER_WAIT)
             except SerialException as err:
                 # probably some I/O problem such as disconnected USB serial
                 # adapters -> exit
