@@ -1202,6 +1202,7 @@ class IdpModem:
             self._handle_at_error(response)
         return True
 
+    @property
     def utc_time(self) -> str:
         """Gets current UTC time of the modem in ISO8601 format."""
         _log.debug('Querying system time')
