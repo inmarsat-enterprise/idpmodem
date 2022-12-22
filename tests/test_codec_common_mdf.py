@@ -1,11 +1,11 @@
 import logging
-import os
+import base64
+import math
 import xml.etree.ElementTree as ET
 from copy import deepcopy
 
 import pytest
 from idpmodem.codecs.common_mdf import *
-from idpmodem.codecs.common_mdf import _indent
 from idpmodem.constants import DataFormat
 
 logging.basicConfig()
@@ -13,7 +13,7 @@ logger = logging.getLogger()
 
 
 @pytest.fixture
-def bool_field():
+def bool_field() -> BooleanField:
     """Returns a BooleanField."""
     def _bool_field(name: str = 'boolFixture',
                     optional: bool = False,
@@ -28,7 +28,7 @@ def bool_field():
 
 
 @pytest.fixture
-def data_field_data():
+def data_field_data() -> DataField:
     """Returns a DataField with no value."""
     def _data_field(size: int = 1,
                     data_type: str = 'data',
@@ -48,7 +48,7 @@ def data_field_data():
 
 
 @pytest.fixture
-def data_field_float():
+def data_field_float() -> DataField:
     """Returns a DataField float with no value."""
     def _data_field(size: int = 4,
                     data_type: str = 'float',
@@ -70,7 +70,7 @@ def data_field_float():
 
 
 @pytest.fixture
-def data_field_double():
+def data_field_double() -> DataField:
     """Returns a DataField double float with no value."""
     def _data_field(size: int = 8,
                     data_type: str = 'double',
@@ -92,7 +92,7 @@ def data_field_double():
 
 
 @pytest.fixture
-def enum_field():
+def enum_field() -> EnumField:
     """Returns a EnumField with no value."""
     fixture_items = ['item1', 'item2', 'item3']
     def _enum_field(name: str = 'enumFixture',
@@ -107,7 +107,7 @@ def enum_field():
 
 
 @pytest.fixture
-def int_field():
+def int_field() -> SignedIntField:
     def _int_field(name: str = 'signedintField',
                    size: int = 16,
                    data_type: str = 'int_16',
@@ -120,7 +120,7 @@ def int_field():
 
 
 @pytest.fixture
-def uint_field():
+def uint_field() -> UnsignedIntField:
     def _uint_field(name: str = 'signedintField',
                    size: int = 16,
                    data_type: str = 'int_16',
@@ -133,7 +133,7 @@ def uint_field():
 
 
 @pytest.fixture
-def string_field():
+def string_field() -> StringField:
     """Returns a fixed StringField 10 characters long."""
     def _string_field(name: str = 'stringFixture',
                       size: int = 200,
@@ -152,7 +152,7 @@ def string_field():
 
 
 @pytest.fixture
-def array_element_fields_example():
+def array_element_fields_example() -> Fields:
     fields = Fields()
     fields.add(StringField(name='propertyName', size=50))
     fields.add(UnsignedIntField(name='propertyValue',
@@ -162,7 +162,7 @@ def array_element_fields_example():
 
 
 @pytest.fixture
-def array_field(array_element_fields_example):
+def array_field(array_element_fields_example) -> ArrayField:
     """Returns a ArrayField defaulting to array_element_fields_example."""
     def _array_field(name: str = 'arrayFixture',
                      size: int = 1,
@@ -225,6 +225,20 @@ def return_message(array_element_fields_example) -> MessageCodec:
 
 
 @pytest.fixture
+def return_message_optional_field() -> MessageCodec:
+    """"""
+    fields = Fields()
+    fields.add(StringField(name='optionalString',
+                        size=100,
+                        optional=True))
+    message = MessageCodec(name='returnMessageFixture',
+                        sin=255,
+                        min=1,
+                        fields=fields)
+    return message
+
+
+@pytest.fixture
 def return_messages(return_message) -> Messages:
     return_messages = Messages(sin=255, is_forward=False)
     return_messages.add(return_message)
@@ -253,7 +267,7 @@ def message_definitions(services) -> MessageDefinitions:
 
 
 def test_boolean_field(bool_field):
-    test_field = bool_field()
+    test_field: BooleanField = bool_field()
     assert(not test_field.value)
     assert(not test_field.optional)
     assert(not test_field.default)
@@ -262,9 +276,9 @@ def test_boolean_field(bool_field):
     assert(not test_field.value)
     with pytest.raises(ValueError):
         test_field.value = 1
-    bool_dflt_true = bool_field(default=True)
+    bool_dflt_true: BooleanField = bool_field(default=True)
     assert(bool_dflt_true.encode() == '1')
-    bool_dflt_false_valset = bool_field(value=True)
+    bool_dflt_false_valset: BooleanField = bool_field(value=True)
     assert(bool_dflt_false_valset.encode() == '1')
 
 
@@ -359,6 +373,25 @@ def test_string_field(string_field):
     v = test_field.value
     test_field.decode(enc)
     assert(test_field.value == v)
+
+
+def test_encode_optional(return_message_optional_field):
+    TEST_STR = 'optional'
+    SIN_MIN = 2 * 8
+    OPT = 1
+    L = 8 if len(TEST_STR) < 128 else 16
+    ASCII = len(TEST_STR) * 8
+    rm: MessageCodec = return_message_optional_field
+    rm.fields['optionalString'].value = TEST_STR
+    PRESENT_BYTES = math.ceil((SIN_MIN + OPT + L + ASCII) / 8)
+    assert rm.ota_size == PRESENT_BYTES
+    present = rm.encode()
+    assert len(base64.b64decode(present['data'])) == PRESENT_BYTES - 2
+    rm.fields['optionalString'].value = None
+    NOTPRESENT_BYTES = math.ceil((SIN_MIN + OPT) / 8)
+    assert rm.ota_size == NOTPRESENT_BYTES
+    notpresent = rm.encode()
+    assert len(base64.b64decode(notpresent['data'])) == NOTPRESENT_BYTES - 2
 
 
 def test_array_field(array_field, array_element_fields_example):
@@ -501,26 +534,6 @@ def test_enum_xml(enum_field):
     root = tree.getroot()
     enum_str: str = ET.tostring(root).decode('utf8')
     assert enum_str.find('<Items>') < enum_str.find('<Size>')
-
-
-def test_indent():
-    root = ET.fromstring('<A><B>..</B><C><D>...</D></C></A>')
-    spaces = 2
-    _indent(root, spaces=spaces)
-    output = ET.tostring(root).decode('utf-8')
-    test_filename = './temp/indent.xml'
-    with open(test_filename, 'w') as f:
-        f.write(output)
-    with open(test_filename, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            if any(x in line for x in ['<A>', '</A>']):
-                assert line.startswith('<')
-            elif any(x in line for x in ['<B>', '</B>', '<C>', '</C>']):
-                assert line.startswith(' ' * spaces + '<')
-            elif any(x in line for x in ['<D>', '</D>']):
-                assert line.startswith(' ' * spaces * 2 + '<')
-    os.remove(test_filename)
 
 
 def test_array_xml(array_field):
