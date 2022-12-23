@@ -120,7 +120,8 @@ class EnumField(FieldCodec):
     @property
     def bits(self) -> int:
         """The size of the field in bits."""
-        return self.size + (1 if self.optional else 0)
+        bits = self.size if self._value is not None else 0
+        return bits + (1 if self.optional else 0)
     
     def encode(self) -> str:
         """Returns the binary string of the field value."""

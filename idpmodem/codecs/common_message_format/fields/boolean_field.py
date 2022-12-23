@@ -49,7 +49,8 @@ class BooleanField(FieldCodec):
 
     @property
     def bits(self):
-        return 1 + (1 if self.optional else 0)
+        bits = 0 if self._value is None else 1
+        return bits + (1 if self.optional else 0)
     
     def encode(self) -> str:
         """Returns the binary string of the field value."""

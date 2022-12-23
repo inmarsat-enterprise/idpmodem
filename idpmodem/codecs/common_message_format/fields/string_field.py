@@ -85,12 +85,14 @@ class StringField(FieldCodec):
     @property
     def bits(self) -> int:
         """The size of the field in bits."""
-        if self.fixed:
-            return self.size * 8 + (1 if self.optional else 0)
-        if self.value is None:
-            return 1 if self.optional else 0
-        L = 8 if len(self._value) < 127 else 16
-        return L + len(self.value) * 8 + (1 if self.optional else 0)
+        if self._value is None:
+            bits = 0
+        elif self.fixed:
+            bits = self.size * 8
+        else:
+            L = 8 if len(self._value) < 127 else 16
+            bits = L + len(self._value) * 8
+        return bits + (1 if self.optional else 0)
     
     def encode(self) -> str:
         """Returns the binary string of the field value."""

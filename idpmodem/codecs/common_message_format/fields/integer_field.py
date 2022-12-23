@@ -85,13 +85,14 @@ class UnsignedIntField(FieldCodec):
     @property
     def bits(self):
         """The size of the field in bits."""
-        return self.size
+        bits = self.size if self._value is not None else 0
+        return bits + (1 if self.optional else 0)
     
     def encode(self) -> str:
         """Returns the binary string of the field value."""
         if self.value is None:
             raise ValueError(f'No value defined in UnsignedIntField {self.name}')
-        _format = f'0{self.bits}b'
+        _format = f'0{self.size}b'
         return format(self.value, _format)
 
     def decode(self, binary_str: str) -> int:
@@ -103,8 +104,8 @@ class UnsignedIntField(FieldCodec):
         Returns:
             The bit offset after parsing
         """
-        self.value = int(binary_str[:self.bits], 2)
-        return self.bits
+        self.value = int(binary_str[:self.size], 2)
+        return self.size
 
     def xml(self) -> ET.Element:
         """Returns the UnsignedInt XML definition for a Message Definition File.
@@ -202,13 +203,14 @@ class SignedIntField(FieldCodec):
     @property
     def bits(self):
         """The size of the field in bits."""
-        return self.size + (1 if self.optional else 0)
+        bits = self.size if self._value is not None else 0
+        return bits + (1 if self.optional else 0)
     
     def encode(self) -> str:
         """Returns the binary string of the field value."""
         if self.value is None:
             raise ValueError(f'No value defined in UnsignedIntField {self.name}')
-        _format = f'0{self.bits}b'
+        _format = f'0{self.size}b'
         if self.value < 0:
             invertedbin = format(self.value * -1, _format)
             twocomplementbin = ''
@@ -230,11 +232,11 @@ class SignedIntField(FieldCodec):
         Returns:
             The bit offset after parsing
         """
-        value = int(binary_str[:self.bits], 2)
-        if (value & (1 << (self.bits - 1))) != 0:   #:sign bit set e.g. 8bit: 128-255
-            value = value - (1 << self.bits)        #:compute negative value
+        value = int(binary_str[:self.size], 2)
+        if (value & (1 << (self.size - 1))) != 0:   #:sign bit set e.g. 8bit: 128-255
+            value = value - (1 << self.size)        #:compute negative value
         self.value = value
-        return self.bits
+        return self.size
 
     def xml(self) -> ET.Element:
         """Returns the SignedInt XML definition for a Message Definition File.
