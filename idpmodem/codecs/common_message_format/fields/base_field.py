@@ -50,15 +50,6 @@ class FieldCodec(BaseCodec):
         """Must be subclassed."""
         raise NotImplementedError('Subclass must define bits')
 
-    # def __eq__(self, other: object) -> bool:
-    #     """Must be subclassed.
-        
-    #     Args:
-    #         other: The other thing being compared to this.
-
-    #     """
-    #     raise NotImplementedError('Subclass must define equivalence')
-
     def __repr__(self) -> str:
         rep = {}
         for name in dir(self):
