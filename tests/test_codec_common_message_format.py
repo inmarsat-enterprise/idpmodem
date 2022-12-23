@@ -683,13 +683,18 @@ class TextMo(MessageCodec):
 
 def test_optional_location():
     test_loc = {"latitude": 45.3365, "longitude": -75.90388, "resolution": 6, "altitude": 0.0, "speed": 0.0, "heading": 0.0, "timestamp": 1671797954, "satellites": 5, "fix_type": 1, "pdop": 3.0, "hdop": 3.0, "vdop": 3.0}
-    test_parms = {
-        'text': 'hello',
-        'location': Location(**test_loc),
-    }
+    MIN_TEST = 0
     for i in range(2):
-        if i == 1:
+        test_parms = {
+            'destination': 1,
+            'text': 'hello',
+            'help_code': 1,
+            'location': Location(**test_loc),
+        }
+        if i == MIN_TEST:   # only text
             test_parms.pop('location')
+            test_parms.pop('help_code')
+            test_parms.pop('destination')
         test_msg = TextMo(**test_parms)
         # assert test_msg.ota_size == 20
         payload_hex = test_msg.encode(data_format=DataFormat.HEX)['data']
@@ -697,15 +702,15 @@ def test_optional_location():
         bin_encoded = ''.join([f'{b:08b}' for b in encoded])
         bin_payload = bin_encoded[16:]
         expected = {
-            'destination': '0',
+            'destination': '1' + '0' * 31 + '1',
             'text': '1'+'000001010110100001100101011011000110110001101111',
-            'helpCode': '0',
+            'helpCode': '1' + '0001',
             'timestamp': '1'+'1100011101001011001110011000010',
             'latitude': '1'+'001010011000000110111110',
             'longitude': '1'+'1101110101000001000001000',
         }
-        if i == 1:
-            for f in ['timestamp', 'latitude', 'longitude']:
+        if i == MIN_TEST:
+            for f in ['destination', 'helpCode', 'timestamp', 'latitude', 'longitude']:
                 expected[f] = '0'
         bin_fields = {}
         idx = 0
