@@ -127,7 +127,7 @@ class EnumField(FieldCodec):
         """Returns the binary string of the field value."""
         if self.value is None:
             raise ValueError(f'No value configured in EnumField {self.name}')
-        _format = f'0{self.bits}b'
+        _format = f'0{self.size}b'
         binstr = format(self.items.index(self.value), _format)
         return binstr
 
@@ -140,8 +140,8 @@ class EnumField(FieldCodec):
         Returns:
             The bit offset after parsing
         """
-        self.value = binary_str[:self.bits]
-        return self.bits
+        self.value = int(binary_str[:self.size], 2)
+        return self.size
 
     def xml(self) -> ET.Element:
         """Returns the Enum XML definition for a Message Definition File."""
