@@ -1,5 +1,6 @@
 import logging
 import base64
+import json
 import os
 import math
 import xml.etree.ElementTree as ET
@@ -10,6 +11,7 @@ from idpmodem.codecs.common_message_format import *
 from idpmodem.codecs.common_message_format.fields.helpers import optimal_bits
 from idpmodem.codecs.common_message_format.message_definitions import _indent
 from idpmodem.constants import DataFormat
+from idpmodem.location import Location
 
 logging.basicConfig()
 logger = logging.getLogger()
@@ -601,3 +603,116 @@ def test_rm_codec(return_message):
                    encoded['data'])
     msg.decode(bytes.fromhex(hex_message))
     assert(msg_copy == msg)
+
+
+HELP_CODES = ['FIRE', 'MEDICAL']
+class TextMo(MessageCodec):
+    """A Mobile-Originated text message sent device-to-cloud."""
+    def __init__(self, **kwargs):
+        name = 'textMobileOriginated'
+        msg_desc = ('Sends a text or message code, with optional location'
+                    ' and destination address.')
+        super().__init__(name=name,
+                         description=msg_desc,
+                         sin=255,
+                         min=4)
+        dest_desc = 'An address code intended to map to a unique user'
+        self.fields.add(UnsignedIntField(name='destination',
+                                         size=32,
+                                         data_type='uint_32',
+                                         optional=True,
+                                         description=dest_desc))
+        self.fields.add(StringField(name='text', size=255, optional=True))
+        self.fields.add(EnumField(name='helpCode',
+                                  items=HELP_CODES,
+                                  size=4,   # allow up to 16 help codes
+                                  optional=True))
+        ts_desc = json.dumps({
+            'description': 'Seconds since 1970-01-01T00:00:00Z',
+            'units': 'seconds'
+        })
+        self.fields.add(UnsignedIntField(name='timestamp',
+                                         size=31,
+                                         data_type='uint_32',
+                                         optional=True,
+                                         description=ts_desc))
+        lat_desc = json.dumps({'units': 'degrees*60000'})
+        self.fields.add(SignedIntField(name='latitude',
+                                       size=24,
+                                       data_type='int_32',
+                                       optional=True,
+                                       description=lat_desc))
+        lng_desc = json.dumps({'units': 'degrees*60000'})
+        self.fields.add(SignedIntField(name='longitude',
+                                       size=25,
+                                       data_type='int_32',
+                                       optional=True,
+                                       description=lng_desc))
+        encoding = True if kwargs else False
+        valid = False
+        for kwarg in kwargs:
+            if kwarg == 'text' and kwargs['text'] is not None:
+                self.fields['text'].value = kwargs['text']
+                valid = True
+            elif kwarg == 'help_code' and kwargs['help_code'] is not None:
+                help_code = kwargs['help_code']
+                if help_code not in range(0, len(HELP_CODES)):
+                    raise ValueError(f'Index {help_code} not in HELP_CODES')
+                self.fields['helpCode'].value = help_code
+                valid = True
+            elif kwarg == 'location':
+                location = kwargs['location']
+                if isinstance(location, Location) and location.timestamp > 0:
+                    lat = int(location.latitude * 60000)
+                    lng = int(location.longitude * 60000)
+                    self.fields['timestamp'].value = location.timestamp
+                    self.fields['latitude'].value = lat
+                    self.fields['longitude'].value = lng
+                else:
+                    logger.warning(f'Invalid location supplied, ignoring')
+            elif kwarg == 'destination':
+                dest = kwargs['destination']
+                if not isinstance(dest, int) or dest not in range(0, 2**32):
+                    raise ValueError(f'Invalid destination {dest}')
+                self.fields['destination'].value = dest
+            else:
+                logger.warning(f'Ignoring unknown kwarg: {kwarg}')
+        if encoding and not valid:
+            raise ValueError(f'Missing at least one of text or help_code')
+
+
+def test_optional_location():
+    test_loc = {"latitude": 45.3365, "longitude": -75.90388, "resolution": 6, "altitude": 0.0, "speed": 0.0, "heading": 0.0, "timestamp": 1671797954, "satellites": 5, "fix_type": 1, "pdop": 3.0, "hdop": 3.0, "vdop": 3.0}
+    test_parms = {
+        'text': 'hello',
+        'location': Location(**test_loc),
+    }
+    for i in range(2):
+        if i == 1:
+            test_parms.pop('location')
+        test_msg = TextMo(**test_parms)
+        # assert test_msg.ota_size == 20
+        payload_hex = test_msg.encode(data_format=DataFormat.HEX)['data']
+        encoded = bytes.fromhex(f'{test_msg.sin:02x}{test_msg.min:02x}{payload_hex}')
+        bin_encoded = ''.join([f'{b:08b}' for b in encoded])
+        bin_payload = bin_encoded[16:]
+        expected = {
+            'destination': '0',
+            'text': '1'+'000001010110100001100101011011000110110001101111',
+            'helpCode': '0',
+            'timestamp': '1'+'1100011101001011001110011000010',
+            'latitude': '1'+'001010011000000110111110',
+            'longitude': '1'+'1101110101000001000001000',
+        }
+        if i == 1:
+            for f in ['timestamp', 'latitude', 'longitude']:
+                expected[f] = '0'
+        bin_fields = {}
+        idx = 0
+        for field in test_msg.fields:
+            bin_fields[field.name] = bin_payload[idx:idx + field.bits]
+            assert bin_fields[field.name] == expected[field.name]
+            idx += field.bits
+        comp_msg = TextMo()
+        comp_msg.decode(encoded)
+        assert comp_msg == test_msg
