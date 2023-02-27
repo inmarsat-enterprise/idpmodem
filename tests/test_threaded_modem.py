@@ -1,11 +1,15 @@
 import json
+import logging
 import os
+from datetime import datetime
+from time import sleep
+
 import pytest
 import pytest_mock
 
-from idpmodem.threaded.modem import IdpModem
-from idpmodem.aterror import AtTimeout
 from idpmodem.constants import *
+from idpmodem.location import Location
+from idpmodem.threaded.modem import IdpModem
 
 SERIAL_PORT = os.getenv('SERIAL_PORT', '/dev/ttyUSB0')
 TEST_NMEA = [
@@ -17,6 +21,15 @@ TEST_NMEA = [
 ]
 
 
+_log = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def modem_mock() -> IdpModem:
+    modem = IdpModem(None)
+    yield modem
+
+
 @pytest.fixture
 def modem_connected() -> IdpModem:
     modem = IdpModem(SERIAL_PORT)
@@ -25,94 +38,9 @@ def modem_connected() -> IdpModem:
     modem.disconnect()
 
 
-@pytest.fixture
-def modem_configured(modem_connected) -> IdpModem:
-    modem: IdpModem = modem_connected
-    modem.config_init()
-    return modem
-
-
-def test_timeout(modem_connected):
-    modem: IdpModem = modem_connected
-    with pytest.raises(AtTimeout):
-        modem.config_init()
-    assert not modem.commands.full()
-
-
-def test_no_connection(modem_connected):
-    modem: IdpModem = modem_connected
-    assert not modem.connected
-    assert not modem.commands.full()
-
-
-def test_connection(modem_connected):
-    modem: IdpModem = modem_connected
-    assert modem.connected
-
-
-def test_gnss_fail(modem_configured):
-    modem: IdpModem = modem_configured
-    location = modem.location
-    assert location is None
-
-
-def test_control_state(modem_configured):
-    modem: IdpModem = modem_configured
-    cs = modem.control_state
-    assert isinstance(cs.value, int)
-
-
-def test_properties(modem_connected, mocker):
-    modem: IdpModem = modem_connected
-    modem.config_init(crc=False)
-    mocker.patch('idpmodem.threaded.modem.IdpModem.gnss_nmea_get',
-                 return_value=TEST_NMEA)
-    properties = []
-    for k, v in IdpModem.__dict__.items():
-        if isinstance(v, property):
-            properties.append(k)
-    properties_to_test = {
-        'connected': modem.connected,
-        'baudrate': modem.baudrate,
-        'crc': modem.crc,
-        'mobile_id': modem.mobile_id,
-        'versions': modem.versions,
-        'power_mode': modem.power_mode,
-        'wakeup_period': modem.wakeup_period,
-        'gnss_refresh_interval': modem.gnss_refresh_interval,
-        'location': modem.location,
-        'control_state': modem.control_state,
-        'network_status': modem.network_status,
-        'registered': modem.registered,
-        'beamsearch_state': modem.beamsearch_state,
-        'beamsearch': modem.beamsearch,
-        'snr': modem.snr,
-        'signal_quality': modem.signal_quality,
-        'satellite': modem.satellite,
-        'beam_id': modem.beam_id,
-        'temperature': modem.temperature,
-        'gnss_jamming': modem.gnss_jamming,
-        'gnss_mode': modem.gnss_mode,
-        'transmitter_status': modem.transmitter_status,
-        'trace_event_monitor': modem.trace_event_monitor,
-        'trace_events_cached': modem.trace_events_cached,
-        'event_notification_monitor': modem.event_notification_monitor,
-        'event_notifications': modem.event_notifications,
-        'manufacturer': modem.manufacturer,
-        'model': modem.model,
-    }
-    properties_missed = [x for x in properties if x not in properties_to_test]
-    assert len(properties_missed) == 0
-    assert isinstance(modem.mobile_id, str)
-    assert isinstance(modem.versions, dict)
-
-
-def test_gnss_nmea_get(modem_configured, mocker):
-    modem: IdpModem = modem_configured
-    mocker.patch('idpmodem.threaded.modem.IdpModem.gnss_nmea_get',
-                 return_value=TEST_NMEA)
-    nmea = modem.gnss_nmea_get()
-    assert nmea == TEST_NMEA
+def test_modem_init(modem_connected: IdpModem):
+    assert modem_connected.connected is True
+    assert modem_connected.config_init() is True
 
 
 def test_baudrate():
@@ -130,121 +58,313 @@ def test_baudrate():
     modem.disconnect()
 
 
-def test_message_send_bytes(modem_configured, mocker):
-    modem: IdpModem = modem_configured
+def test_no_connection():
+    modem = IdpModem(None)
+    assert modem.connected is False
+
+
+def test_connection(modem_connected: IdpModem):
+    assert modem_connected.connected
+
+
+def test_mobile_id(modem_mock: IdpModem, mocker):
+    TEST_ID = '00000000SKYEE3D'
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=[TEST_ID, 'OK'])
+    assert modem_mock.mobile_id == TEST_ID
+
+
+def test_versions(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['1,2,3', 'OK'])
+    assert modem_mock.versions == {'firmware': '1', 'hardware': '2', 'at': '3'}
+
+
+def test_manufacturer(modem_mock: IdpModem, mocker):
+    TEST_MFR = 'Acme Company Ltd'
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=[TEST_MFR, 'OK'])
+    assert modem_mock.manufacturer == TEST_MFR
+
+
+def test_model(modem_mock: IdpModem, mocker):
+    TEST_MODEL = 'IDP100'
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=[TEST_MODEL, 'OK'])
+    assert modem_mock.model == TEST_MODEL
+
+
+def test_power_mode(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0', 'OK'])
+    assert modem_mock.power_mode == PowerMode(0)
+
+
+def test_set_power_mode(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['OK'])
+    modem_mock.power_mode = PowerMode(1)
+    modem_mock.atcommand.assert_called_with('ATS50=1')
+
+
+def test_wakeup_period(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0', 'OK'])
+    assert modem_mock.wakeup_period == WakeupPeriod(0)
+
+
+def test_set_wakeup_period(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['OK'])
+    modem_mock.wakeup_period = WakeupPeriod(1)
+    modem_mock.atcommand.assert_called_with('ATS51=1')
+
+
+def test_temperature(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['350', 'OK'])
+    assert modem_mock.temperature == 35.0
+
+
+def test_gnss_refresh(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0', 'OK'])
+    assert modem_mock.gnss_refresh_interval == 0
+
+
+def test_set_gnss_refresh(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['OK'])
+    modem_mock.gnss_refresh_interval = 30
+    modem_mock.atcommand.assert_called_with('AT%TRK=30,1')
+
+
+def test_location(modem_mock: IdpModem, mocker):
+    TEST_NMEA.append('OK')
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=TEST_NMEA)
+    assert isinstance(modem_mock.location, Location)
+
+
+def test_gnss_timeout(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['ERROR', 'TIMEOUT (108)'])
+    assert modem_mock.location is None
+
+
+def test_gnss_jamming_no(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000000000', 'OK'])
+    assert modem_mock.gnss_jamming is False
+
+
+def test_gnss_jamming_yes(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000000004', 'OK'])
+    assert modem_mock.gnss_jamming is True
+
+
+def test_gnss_mode(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000000000', 'OK'])
+    assert modem_mock.gnss_mode == GnssMode(0)
+
+
+def test_gnss_mode_set(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['OK'])
+    modem_mock.gnss_mode = GnssMode(1)
+    modem_mock.atcommand.assert_called_with('ATS39=1')
+
+
+def test_transmitter_status(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000000005', 'OK'])
+    assert modem_mock.transmitter_status == TransmitterStatus(5)
+
+
+def test_registered(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000004400', '0000000010', '0000000000', 'OK'])
+    assert modem_mock.registered is True
+
+
+def test_control_state(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000004400', '0000000010', '0000000000', 'OK'])
+    assert isinstance(modem_mock.control_state, int)
+
+
+def test_network_status(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000004400', '0000000010', '0000000000', 'OK'])
+    assert modem_mock.network_status == 'ACTIVE'
+
+
+def test_snr(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000004400', '0000000010', '0000000000', 'OK'])
+    assert modem_mock.snr == 44.0
+
+
+def test_signal_quality(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000004400', '0000000010', '0000000000', 'OK'])
+    assert modem_mock.signal_quality == SignalQuality.GOOD
+
+
+def test_beamsearch(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000004400', '0000000010', '0000000000', 'OK'])
+    assert modem_mock.beamsearch == 'IDLE'
+
+
+def test_satellite(modem_mock: IdpModem, mocker):
+    rv = ['0000000016', '0000004529', '4294959712', '0000000820']
+    rv.append('OK')
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=rv)
+    assert modem_mock.satellite == 'AMER'
+
+
+def test_utc_time(modem_mock: IdpModem, mocker):
+    TEST_TIME = datetime.utcnow().isoformat()[:19]
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=[TEST_TIME.replace('T', ' '), 'OK'])
+    assert modem_mock.utc_time == TEST_TIME + 'Z'
+
+
+def test_cached_status(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000004400', '0000000010', '0000000000', 'OK'])
+    assert modem_mock.control_state == 10
+    sleep(3)
+    assert modem_mock.snr == 44.0
+    assert modem_mock.atcommand.call_count == 1
+
+
+def test_cached_status_expired(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000004400', '0000000010', '0000000000', 'OK'])
+    assert modem_mock.control_state == 10
+    sleep(6)
+    assert modem_mock.snr == 44.0
+    assert modem_mock.atcommand.call_count == 2
+
+    
+def test_gnss_nmea_get(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.gnss_nmea_get',
+                 return_value=TEST_NMEA)
+    nmea = modem_mock.gnss_nmea_get()
+    assert nmea == TEST_NMEA
+
+
+def test_message_send_bytes(modem_mock: IdpModem, mocker):
     TEST_MSG = b'Hello World'
     TEST_DATA = bytearray([128, 1, len(TEST_MSG)]) + TEST_MSG
     mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
                  return_value=['OK'])
-    res = modem.message_mo_send(TEST_DATA)
+    res = modem_mock.message_mo_send(TEST_DATA)
     assert isinstance(res, str)
 
 
-def test_message_send_text(modem_configured, mocker):
-    modem: IdpModem = modem_configured
+def test_message_send_text(modem_mock: IdpModem, mocker):
     TEST_MSG = 'Hello World'
     mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
                  return_value=['OK'])
-    res = modem.message_mo_send(TEST_MSG, sin=128, min=0)
+    res = modem_mock.message_mo_send(TEST_MSG, sin=128, min=0)
     assert isinstance(res, str)
 
 
-def test_message_send_large(modem_configured):
-    modem: IdpModem = modem_configured
+def test_message_send_large(modem_mock: IdpModem, mocker):
     TEST_DATA = bytes(b'A'*6400)
-    res = modem.message_mo_send(TEST_DATA)
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['OK'])
+    res = modem_mock.message_mo_send(TEST_DATA)
     assert isinstance(res, str)
 
 
-def test_s_registers(modem_configured):
-    modem: IdpModem = modem_configured
-    modem._s_registers_read()
-    for name, reg in modem.s_registers.items():
-        assert isinstance(reg.value, int)
+def test_s_register_get(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['0000000000', 'OK'])
+    assert modem_mock.s_register_get(50) == 0
+    modem_mock.atcommand.assert_called_with('ATS50?')
 
 
-def test_event_notification_monitor(modem_configured):
-    modem: IdpModem = modem_configured
-    monitored = modem.event_notification_monitor
-    for event in monitored:
-        assert isinstance(event, EventNotification)
+def test_event_notification_monitor(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['01030', 'OK'])
+    monitored = modem_mock.event_notification_monitor
+    assert EventNotification.MESSAGE_MO_COMPLETE in monitored
+    assert EventNotification.MESSAGE_MT_RECEIVED in monitored
+    assert EventNotification.EVENT_TRACE_CACHED in monitored
 
 
-def test_event_notification_monitor_set(modem_configured):
-    modem: IdpModem = modem_configured
+def test_event_notification_monitor_set(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['OK'])
     to_monitor = [
-        # EventNotification.GNSS_FIX_NEW,
+        EventNotification.MESSAGE_MO_COMPLETE,
+        EventNotification.MESSAGE_MT_RECEIVED,
+        EventNotification.EVENT_TRACE_CACHED,
     ]
-    modem.event_notification_monitor = to_monitor
-    monitored = modem.event_notification_monitor
-    assert monitored == to_monitor
+    modem_mock.event_notification_monitor = to_monitor
+    modem_mock.atcommand.assert_called_with('ATS88=1030')
 
 
-def test_event_notifications(modem_configured):
-    modem: IdpModem = modem_configured
-    events = modem.event_notifications
-    for event in events:
-        assert isinstance(event, EventNotification)
+def test_event_notifications(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['01305', 'OK'])
+    events = modem_mock.event_notifications
+    assert len(events) == 5
+    assert EventNotification.EVENT_TRACE_CACHED in events
+    assert EventNotification.GNSS_FIX_NEW in events
+    assert EventNotification.NETWORK_REGISTERED in events
+    assert EventNotification.MODEM_RESET_COMPLETE in events
+    assert EventNotification.UTC_TIME_SYNC in events
 
 
-def test_trace_event_monitor(modem_configured):
-    modem: IdpModem = modem_configured
-    trace_monitor = modem.trace_event_monitor
-    for mon in trace_monitor:
-        assert isinstance(mon, tuple)    
+def test_trace_event_monitor(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['3.1*,3.2', 'OK'])
+    trace_monitor = modem_mock.trace_event_monitor
+    assert isinstance(trace_monitor, list) and len(trace_monitor) == 2
+    assert (3, 1) in trace_monitor
+    assert (3, 2) in trace_monitor
 
 
-def test_trace_events_cached(modem_configured):
-    modem: IdpModem = modem_configured
-    cached = modem.trace_events_cached
-    for trace in cached:
-        assert isinstance(trace, tuple)
-        detail = modem.trace_event_get(trace, meta=True)
-        assert isinstance(detail, dict)
+def test_trace_event_monitor_set(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['OK'])
+    modem_mock.trace_event_monitor = [(3, 1), (3, 2)]
+    modem_mock.atcommand.assert_called_with('AT%EVMON=3.1,3.2')
 
 
-def test_transmitter_status(modem_configured):
-    modem: IdpModem = modem_configured
-    tstatus = modem.transmitter_status
-    assert isinstance(tstatus, TransmitterStatus)
+def test_trace_events_cached(modem_mock: IdpModem, mocker):
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=['3.1*,3.2', 'OK'])
+    cached = modem_mock.trace_events_cached
+    assert isinstance(cached, list) and len(cached) == 1
+    assert (3, 1) in cached
 
 
-def test_location(modem_configured):
-    modem: IdpModem = modem_configured
-    loc = modem.location
-    try:
-        j = json.dumps(loc.serialize(), skipkeys=True)
-    except:
-        j = 'UNKNOWN'
-    assert isinstance(j, str)
+# ----- Below tests must be connected to live modem when rebooted -----
+unsolicited_data = ''
 
-
-def test_initialization():
-    modem = IdpModem(SERIAL_PORT)
-    modem.connect()
-    initialized = modem.config_init(crc=True)
-    assert initialized
-    modem.disconnect()
-    modem.connect()
-    reinit = modem.config_init(crc=False)
-    assert reinit
-    modem.protocol.crc = True
-    rereinit = modem.config_init(crc=True)
-    assert rereinit
-
-
-unsolicited_data = None
 
 def unsolicited_callback(data: str):
     global unsolicited_data
     unsolicited_data += data
+    _log.info(f'Unsolicited data: {unsolicited_data}')
 
 
-def test_unsolicited():
+def test_unsolicited(modem_connected: IdpModem):
     global unsolicited_data
-    modem = IdpModem(SERIAL_PORT)
-    modem.connect()
-    modem.protocol.event_callback = unsolicited_callback
-    while unsolicited_data is None:
+    assert modem_connected.connected
+    modem_connected.register_unsolicited_callback(unsolicited_callback)
+    modem_connected.atcommand('AT%EXIT=5')
+    while ' AT ' not in unsolicited_data:
+        if unsolicited_data == '':
+            modem_connected.atcommand('\x18')
         pass
-    assert isinstance(unsolicited_data, str)
+    assert isinstance(unsolicited_data, str) and len(unsolicited_data) > 0
