@@ -545,11 +545,49 @@ class GeoBeam(IdpEnum):
     MEAS_RB12 = 92
     MEAS_RB15 = 93
 
+    @property
     def satellite(self):
         return self.name.split('_')[0]
 
+    @property
     def beam(self):
         return self.name.split('_')[1]
     
+    @property
     def id(self):
         return self.value
+
+
+class InmarsatSatellites(Enum):
+    """"""
+    AMER = -98.0
+    AORWSC = -54.0
+    MEAS = 64.0
+    APAC = 143.5
+    EMEA = 24.9
+    
+    @classmethod
+    def closest(self, longitude: float, latitude: float = 0.0):
+        satellite_list = list(map(lambda x: x.value,
+                                  InmarsatSatellites._member_map_.values()))
+        value = min(satellite_list, key=lambda x:abs(x-longitude))
+        name = InmarsatSatellites(value).name
+        if name == 'AORWSC':   #: regional beam
+            if latitude >= 15.0 or latitude <= -45.0:
+                if longitude >= -27.0:
+                    return 'EMEA'
+                return 'AMER'
+        elif name == 'MEAS':   #: not all beams lit
+            if latitude <= -4.5:
+                if longitude >= 63.5:
+                    return 'APAC'
+                return 'EMEA'
+            elif latitude >= 40.9:
+                if longitude <= 45.0:
+                    return 'EMEA'
+                if longitude >= 82.5:
+                    return 'APAC'
+            elif longitude >= 63.5:
+                if latitude <= -4.0 or latitude >= 30.0:
+                    return 'APAC'
+        return name
