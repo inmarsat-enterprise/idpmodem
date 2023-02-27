@@ -22,7 +22,7 @@ from serial.threaded import LineReader, Protocol, ReaderThread
 BUFFER_CLEAR_WAIT = float(os.getenv('BUFFER_CLEAR_WAIT', 0.1))
 BYTE_READER_WAIT = float(os.getenv('BYTE_READER_WAIT', 0.001))
 SERIAL_QUEUE_WAIT = float(os.getenv('SERIAL_QUEUE_WAIT', 0.1))
-VERBOSE_DEBUG = str(os.getenv('VERBOSE_DEBUG', False)).lower() == 'true'
+VERBOSE_DEBUG = 'atcommand' in str(os.getenv('VERBOSE_DEBUG', None)).lower()
 
 
 _log = logging.getLogger(__name__)
@@ -138,8 +138,9 @@ class AtProtocol(LineReader):
         if self.pending_command is not None:
             self.responses.put(line)
         else:
-            if line != '\n':
-                self.events.put(line)
+            if VERBOSE_DEBUG:
+                _log.debug(f'Received unsolicited: {printable_crlf(line)}')
+            self.events.put(line)
 
     def write_line(self, text):
         """Appends a terminator, encodes and writes text to the transport."""
@@ -217,6 +218,7 @@ class AtProtocol(LineReader):
             _log.debug(f'Command {self.pending_command}'
                        f' latency: {latency} seconds'
                        f' Returning: {response}')
+        self.pending_command = None
         return response
 
     def command(self,
@@ -245,22 +247,34 @@ class AtProtocol(LineReader):
 
         """
         with self._lock:  # ensure that just one thread is sending commands at once
+            if not isinstance(command, str) or command == '':
+                raise ValueError(f'Invalid command received')
+            if '%EXIT' in command and '=1' not in command:
+                _log.warning(f'Request to exit AT mode ({command.split("=")[1]})')
+            if command == '\x18':
+                _log.info(f'Request to return to AT mode')
             try:
                 oldbuffer: str = self.responses.get(timeout=BUFFER_CLEAR_WAIT)
                 oldbuffer = oldbuffer.replace('\r', '\\r').replace('\n', '\\n')
                 _log.warning(f'Cleared old buffer: {oldbuffer}')
             except queue.Empty:
                 if VERBOSE_DEBUG:
-                    _log.debug('Buffer clear - ready to transmit command')
-                pass
+                    _log.debug(f'Buffer size {len(self.buffer)}'
+                               ' - ready to transmit command')
             timeout = 1 if timeout < 1 else timeout
             command = apply_crc(command) if self.crc else command
-            self.pending_command = command
+            self.pending_command = command if command != '\x18' else None
             self.response_time = None
             self.command_time = time()
             if VERBOSE_DEBUG:
-                _log.debug(f'Sending {command} at {self.command_time}')
+                if self.pending_command:
+                    debug = printable_crlf(command)
+                else: 
+                    debug = '\\x18'
+                _log.debug(f'Sending {debug} at {self.command_time}')
             self.write_line(command)
+            if not self.pending_command:
+                return ['OK']
             lines = []
             while self.pending_command is not None:
                 try:
