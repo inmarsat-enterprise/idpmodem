@@ -857,7 +857,7 @@ class IdpModem:
         if response[0] == 'ERROR':
             if len(response) < 2 or '102' not in response[1]:
                 self._handle_at_error(response)
-            self._property_cache.pop(CACHE_TAG)
+            self._property_cache.pop(CACHE_TAG, None)
             return
         geographic_info = {
             'geo_beam_id': int(response[0]),
