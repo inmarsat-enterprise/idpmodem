@@ -163,9 +163,10 @@ class IdpModem:
         if name in self._property_cache:
             cached: CachedProperty = self._property_cache[name]
             if cached.is_valid():
-                _log.debug(f'Using cached {name}')
+                if VERBOSE_DEBUG:
+                    _log.debug(f'Using cached {name}')
                 return cached.value
-            _log.debug(f'Removing {name} age: {cached.age}')
+            _log.debug(f'Removing {name} aged: {cached.age}')
             self._property_cache.pop(name, None)
     
     @property
