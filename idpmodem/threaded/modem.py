@@ -372,8 +372,7 @@ class IdpModem:
         response = self.atcommand(command)
         if response[0] == 'ERROR':
             return None
-        #: else
-        response.remove('OK')
+        if 'OK' in response: response.remove('OK')
         volatile_regs = {}
         for r in range(len(response)):
             volatile_regs[register_list[r]] = int(response[r])
@@ -701,7 +700,7 @@ class IdpModem:
                 if 'TIMEOUT' in response[1]:
                     raise AtGnssTimeout(response[1])
             self._handle_at_error(response)
-        response.remove('OK')
+        if 'OK' in response: response.remove('OK')
         time_to_fix = round(time() - request_time, 3)
         if 'gnss_ttf' not in self._statistics:
             self._statistics['gnss_ttf'] = time_to_fix
@@ -1065,7 +1064,7 @@ class IdpModem:
         # %MGRS: "<name>",<msg_no>,<priority>,<sin>,<state>,<size>,<sent_bytes>
         if response[0] == 'ERROR':
             self._handle_at_error(response)
-        response.remove('OK')
+        if 'OK' in response: response.remove('OK')
         for msg in response:
             if ',' in msg:
                 detail = msg.split(',')
@@ -1125,7 +1124,7 @@ class IdpModem:
         #: %MGFN: "name",number,priority,sin,state,length,bytes_received
         if response[0] == 'ERROR':
             self._handle_at_error(response)
-        response.remove('OK')
+        if 'OK' in response: response.remove('OK')
         for msg in response:
             if (',' in msg):
                 detail = msg.split(',')
@@ -1241,7 +1240,7 @@ class IdpModem:
         response = self.atcommand('AT%EVMON', filter=['%EVMON:'])
         if response[0] == 'ERROR':
             self._handle_at_error(response)
-        response.remove('OK')
+        if 'OK' in response: response.remove('OK')
         detail = {
             'monitored': [],
             'cached': [],
@@ -1560,7 +1559,7 @@ class IdpModem:
         response = self.atcommand('AT%SREG')
         if response[0] == 'ERROR':
             self._handle_at_error(response)
-        response.remove('OK')
+        if 'OK' in response: response.remove('OK')
         # header_rows = response[0:1]
         # Sreg RSV CurrentVal NvmValue DefaultValue MinimumValue MaximumVal
         reg_defs = response[2:]
