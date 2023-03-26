@@ -6,8 +6,7 @@ from base64 import b64decode, b64encode
 from datetime import datetime, timezone
 from math import ceil
 from time import time
-from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Callable
 
 from idpmodem.aterror import AtCrcError, AtException, AtGnssTimeout, AtTimeout
 from idpmodem.constants import (EVENT_TRACES, AtErrorCode, BeamSearchState,
@@ -20,6 +19,7 @@ from idpmodem.helpers import printable_crlf
 from idpmodem.location import Location, location_from_nmea
 from idpmodem.s_registers import SRegisters
 from idpmodem.threaded.atcommand import AtProtocol, ByteReaderThread, Serial
+from idpmodem.propertycache import PropertyCache
 
 GNSS_STALE_SECS = int(os.getenv('GNSS_STALE_SECS', 1))
 GNSS_WAIT_SECS = int(os.getenv('GNSS_WAIT_SECS', 35))
@@ -53,25 +53,6 @@ class AtConfiguration:
         self.verbose: bool = True
 
 
-@dataclass
-class CachedProperty:
-    """"""
-    value: Any
-    name: 'str|None' = None
-    ts: float = field(default_factory=time)
-    lifetime: 'float|None' = 1.0
-    
-    @property
-    def age(self) -> int:
-        return int(time() - self.ts)
-
-    @property
-    def is_valid(self):
-        if self.lifetime is None:
-            return True
-        return self.age <= self.lifetime
-
-    
 class IdpModem:
     """Abstracts AT commands to relevant functions for an IDP modem.
     
@@ -129,7 +110,7 @@ class IdpModem:
         self._holdoffs: dict = {}   # used to ignore frequent repeat commands
         self._statistics: dict = {}
         self.s_registers: SRegisters = SRegisters()
-        self._property_cache: 'dict[CachedProperty]' = {}
+        self._property_cache = PropertyCache()
         self._trace_log_mode: bool = False
     
     def connect(self):
@@ -156,21 +137,11 @@ class IdpModem:
             self.serial_port.close()
         self._transport = None
         self._protocol = None
-        self.property_cache_clear()
+        self._property_cache.clear()
     
     def property_cache_clear(self):
         """Clears the property cache."""
-        self._property_cache = {}
-    
-    def _get_cached(self, name: str):
-        if name in self._property_cache:
-            cached: CachedProperty = self._property_cache[name]
-            if cached.is_valid:
-                if LOG_VERBOSE and 'idpmodem-cache' in LOG_VERBOSE:
-                    _log.debug(f'Using cached {name}')
-                return cached.value
-            _log.debug(f'Removing {name} aged: {cached.age}')
-            self._property_cache.pop(name, None)
+        self._property_cache.clear()
     
     def is_connected(self) -> bool:
         try:
@@ -188,15 +159,16 @@ class IdpModem:
         
         Attempts to send a basic `AT` command and check for any response.
 
+        Cached for 1 second.
         """
         if self._transport is None or self._protocol is None:
             return False
         CACHE_TAG = 'connected'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         connected = self.is_connected()
-        self._property_cache[CACHE_TAG] = CachedProperty(connected)
+        self._property_cache.cache(connected, CACHE_TAG)
         return connected
 
     @property
@@ -441,14 +413,16 @@ class IdpModem:
         
     @property
     def mobile_id(self) -> 'str|None':
-        """The unique Mobile ID (Inmarsat serial number)."""
+        """The unique Mobile ID (Inmarsat serial number).
+        
+        Cached indefinitely.
+        """
         CACHE_TAG = 'mobile_id'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         mobile_id = self.mobile_id_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(mobile_id,
-                                                         lifetime=None)
+        self._property_cache.cache(mobile_id, CACHE_TAG, None)
         return mobile_id
 
     def versions_get(self) -> 'dict|None':
@@ -468,14 +442,16 @@ class IdpModem:
         
     @property
     def versions(self) -> 'dict|None':
-        """The hardware, firmware and AT versions."""
+        """The hardware, firmware and AT versions.
+        
+        Cached indefinitely.
+        """
         CACHE_TAG = 'versions'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         versions = self.versions_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(versions,
-                                                         lifetime=None)
+        self._property_cache.cache(versions, CACHE_TAG, None)
         return versions
 
     def manufacturer_get(self) -> 'str|None':
@@ -486,14 +462,16 @@ class IdpModem:
         
     @property
     def manufacturer(self) -> str:
-        """The modem manufacturer reported by `ATI0`."""
+        """The modem manufacturer reported by `ATI0`.
+        
+        Cached indefinitely.
+        """
         CACHE_TAG = 'manufacturer'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         manufacturer = self.manufacturer_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(manufacturer,
-                                                         lifetime=None)
+        self._property_cache.cache(manufacturer, CACHE_TAG, None)
         return manufacturer
 
     def model_get(self) -> 'str|None':
@@ -504,13 +482,16 @@ class IdpModem:
         
     @property
     def model(self) -> str:
-        """The modem model reported by `ATI4`."""
+        """The modem model reported by `ATI4`.
+        
+        Cached indefinitely.
+        """
         CACHE_TAG = 'model'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         model = self.model_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(model, lifetime=None)
+        self._property_cache.cache(model, CACHE_TAG, None)
         return model
 
     def power_mode_get(self) -> 'PowerMode|None':
@@ -535,13 +516,16 @@ class IdpModem:
     
     @property
     def power_mode(self) -> 'PowerMode|None':
-        """The modem power mode setting (enumerated) in `S50`."""
+        """The modem power mode setting (enumerated) in `S50`.
+        
+        Cached until set.
+        """
         CACHE_TAG = 'power_mode'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         power_mode = self.power_mode_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(power_mode)
+        self._property_cache.cache(power_mode, CACHE_TAG, None)
         return power_mode
     
     @power_mode.setter
@@ -549,7 +533,7 @@ class IdpModem:
         CACHE_TAG = 'power_mode'
         try:
             self.power_mode_set(value)
-            self._property_cache.pop(CACHE_TAG, None)
+            self._property_cache.remove(CACHE_TAG)
         except:
             _log.error(f'Failed to set power_mode {value}')
     
@@ -576,13 +560,18 @@ class IdpModem:
     
     @property
     def wakeup_period(self) -> 'WakeupPeriod|None':
-        """The modem wakeup period setting (enumerated) in `S51`."""
+        """The modem wakeup period setting (enumerated) in `S51`.
+        
+        May be remotely changed by MT message.
+        
+        Cached for shorter of 1 second or until set.
+        """
         CACHE_TAG = 'wakeup_period'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         wakeup_period = self.wakeup_period_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(wakeup_period)
+        self._property_cache.cache(wakeup_period, CACHE_TAG)
         return wakeup_period
 
     @wakeup_period.setter
@@ -590,7 +579,7 @@ class IdpModem:
         CACHE_TAG = 'wakeup_period'
         try:
             self.wakeup_period_set(value)
-            self._property_cache.pop(CACHE_TAG, None)
+            self._property_cache.remove(CACHE_TAG)
         except:
             _log.error(f'Failed to set wakeup_period {value}')
     
@@ -602,13 +591,16 @@ class IdpModem:
     
     @property
     def temperature(self) -> int:
-        """Temperature in degrees Celsius (`S85`)."""
+        """Temperature in degrees Celsius (`S85`).
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'temperature'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         temperature = self.temperature_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(temperature)
+        self._property_cache.cache(temperature, CACHE_TAG)
         return temperature
 
     def gnss_refresh_interval_get(self) -> int:
@@ -623,13 +615,16 @@ class IdpModem:
     
     @property
     def gnss_refresh_interval(self) -> int:
-        """GNSS refresh interval in seconds (`S55`)."""
+        """GNSS refresh interval in seconds (`S55`).
+        
+        Cached until set.
+        """
         CACHE_TAG = 'gnss_refresh_interval'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         gnss_refresh = self.gnss_refresh_interval_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(gnss_refresh)
+        self._property_cache.cache(gnss_refresh, CACHE_TAG, None)
         return gnss_refresh
 
     @gnss_refresh_interval.setter
@@ -637,7 +632,7 @@ class IdpModem:
         CACHE_TAG = 'gnss_refresh_interval'
         try:
             self.gnss_refresh_interval_set(value)
-            self._property_cache.pop(CACHE_TAG, None)
+            self._property_cache.remove(CACHE_TAG)
         except:
             _log.error(f'Failed to set gnss_refresh_interval {value}')
 
@@ -729,14 +724,17 @@ class IdpModem:
     
     @property
     def location(self) -> 'Location|None':
-        """The modem location derived from NMEA data."""
+        """The modem location derived from NMEA data.
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'location'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         location = self.location_get()
         if location is not None:
-            self._property_cache[CACHE_TAG] = CachedProperty(location)
+            self._property_cache.cache(location, CACHE_TAG)
         return location
 
     def gnss_jamming_get(self) -> bool:
@@ -749,13 +747,16 @@ class IdpModem:
 
     @property
     def gnss_jamming(self) -> bool:
-        """The GNSS jamming detection status (`S56`)."""
+        """The GNSS jamming detection status (`S56`).
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'gnss_jamming'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         gnss_jamming = self.gnss_jamming_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(gnss_jamming)
+        self._property_cache.cache(gnss_jamming, CACHE_TAG)
         return gnss_jamming
 
     def gnss_mode_get(self) -> 'GnssMode':
@@ -778,21 +779,25 @@ class IdpModem:
 
     @property
     def gnss_mode(self) -> GnssMode:
-        """The GNSS operating mode setting (`S39`)."""
+        """The GNSS operating mode setting (`S39`).
+        
+        Cached until set.
+        """
         CACHE_TAG = 'gnss_mode'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         gnss_mode = self.gnss_mode_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(gnss_mode)
+        self._property_cache.cache(gnss_mode, CACHE_TAG, None)
         return gnss_mode
 
     @gnss_mode.setter
     def gnss_mode(self, mode: 'GnssMode|int'):
+        """The GNSS operating mode setting (`S39`)."""
         CACHE_TAG = 'gnss_mode'
         try:
             self.gnss_mode_set(mode)
-            self._property_cache.pop(CACHE_TAG, None)
+            self._property_cache.remove(CACHE_TAG)
         except:
             _log.error(f'Failed to set gnss_mode {mode}')
 
@@ -805,14 +810,17 @@ class IdpModem:
 
     @property
     def transmitter_status(self) -> TransmitterStatus:
-        """The transmitter status reported by `S54`"""
+        """The transmitter status reported by `S54`.
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'transmitter_status'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        cached = self.transmitter_status_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(cached)
-        return cached
+        tx_status = self.transmitter_status_get()
+        self._property_cache.cache(tx_status, CACHE_TAG)
+        return tx_status
 
     def satellite_status_get(self) -> dict:
         """Retrieves key satellite status information.
@@ -838,49 +846,66 @@ class IdpModem:
         """The control state enumerated value.
         
         Trace Class 3, Subclass 1, Data 22
+        
+        Cached for 1 second.
         """
         CACHE_TAG = 'satellite_status'
-        cached: dict = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is None:
             cached = self.satellite_status_get()
-            self._property_cache[CACHE_TAG] = CachedProperty(cached)
+            self._property_cache.cache(cached, CACHE_TAG)
         return cached.get('control_state', None)
     
     @property
     def network_status(self) -> 'str|None':
-        """The network status derived from control state."""
+        """The network status derived from control state.
+        
+        Cached for 1 second.
+        """
         if self.control_state is not None:
             return self.control_state.name
 
     @property
     def registered(self) -> bool:
-        """Indicates the modem is registered on the network."""
+        """Indicates the modem is registered on the network.
+        
+        Cached for 1 second.
+        """
         return self.control_state == 10
 
     @property
     def beamsearch_state(self) -> 'BeamSearchState|None':
-        """The beam search state (Trace Class 3, Subclass 1, Data 23)"""
+        """The beam search state (Trace Class 3, Subclass 1, Data 23).
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'satellite_status'
-        cached: dict = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is None:
             cached = self.satellite_status_get()
-            self._property_cache[CACHE_TAG] = CachedProperty(cached)
+            self._property_cache.cache(cached, CACHE_TAG)
         return cached.get('beamsearch_state', None)
     
     @property
     def beamsearch(self) -> 'str|None':
-        """The beam search state description."""
+        """The beam search state description.
+        
+        Cached for 1 second.
+        """
         if self.beamsearch_state is not None:
             return self.beamsearch_state.name
 
     @property
     def snr(self) -> 'float|None':
-        """The average main beam Carrier-to-Noise (C/N0)."""
+        """The average main beam Carrier-to-Noise (C/N0).
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'satellite_status'
-        cached: dict = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is None:
             cached = self.satellite_status_get()
-            self._property_cache[CACHE_TAG] = CachedProperty(cached)
+            self._property_cache.cache(cached, CACHE_TAG)
         return cached.get('snr', None)
             
     @property
@@ -920,17 +945,23 @@ class IdpModem:
     
     @property
     def beam_id(self) -> 'str|None':
-        """The current active regional beam ID of the active satellite."""
+        """The current active regional beam ID of the active satellite.
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'satellite_geographic_info'
-        cached: dict = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is None:
             cached = self.satellite_geographic_info_get()
-            self._property_cache[CACHE_TAG] = CachedProperty(cached)
+            self._property_cache.cache(cached, CACHE_TAG)
         return cached.get('geo_beam_id', None)
         
     @property
     def satellite(self) -> 'str|None':
-        """The current active satellite name."""
+        """The current active satellite name.
+        
+        Cached for 1 second.
+        """
         if GeoBeam.is_valid(self.beam_id):
             return GeoBeam(self.beam_id).satellite
     
@@ -1247,13 +1278,16 @@ class IdpModem:
     
     @property
     def trace_event_monitor(self) -> 'list[tuple[int, int]]':
-        """The list of class/subclass pairs being monitored to cache."""
+        """The list of class/subclass pairs being monitored to cache.
+        
+        Cached until set.
+        """
         CACHE_TAG = 'trace_event_monitor'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         tem = self.trace_event_detail_get()['monitored']
-        self._property_cache[CACHE_TAG] = CachedProperty(tem)
+        self._property_cache.cache(tem, CACHE_TAG, None)
         return tem
         
     @trace_event_monitor.setter
@@ -1262,19 +1296,22 @@ class IdpModem:
         CACHE_TAG = 'trace_event_monitor'
         try:
             self.trace_event_monitor_set(events)
-            self._property_cache.pop(CACHE_TAG, None)
+            self._property_cache.remove(CACHE_TAG)
         except:
             _log.error(f'Failed to set trace_event_monitor {events}')
 
     @property
     def trace_events_cached(self) -> 'list[tuple[int, int]]':
-        """The list of trace events cached for retrieval."""
+        """The list of trace events cached for retrieval.
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'trace_events_cached'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         tec = self.trace_event_detail_get()['cached']
-        self._property_cache[CACHE_TAG] = CachedProperty(tec)
+        self._property_cache.cache(tec, CACHE_TAG)
         return tec
 
     def trace_event_get(self,
@@ -1400,14 +1437,16 @@ class IdpModem:
     
     @property
     def event_notification_monitor(self) -> 'list[EventNotification]':
-        """The list of events monitored to assert the notification pin (`S88`)."""
+        """The list of events monitored to assert the notification pin (`S88`).
+        
+        Cached until set.
+        """
         CACHE_TAG = 'event_notification_monitor'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         events_monitored = self.event_notification_monitor_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(events_monitored,
-                                                         lifetime=None)
+        self._property_cache.cache(events_monitored, CACHE_TAG, None)
         return events_monitored
     
     @event_notification_monitor.setter
@@ -1415,7 +1454,7 @@ class IdpModem:
         CACHE_TAG = 'event_notification_monitor'
         try:
             self.event_notification_monitor_set(event_list)
-            self._property_cache.pop(CACHE_TAG, None)
+            self._property_cache.remove(CACHE_TAG)
         except:
             _log.error(f'Failed to set event_notification_monitor {event_list}')
 
@@ -1428,13 +1467,16 @@ class IdpModem:
     
     @property
     def event_notifications(self) -> 'list[EventNotification]':
-        """The list of active events reported in `S89`."""
+        """The list of active events reported in `S89`.
+        
+        Cached for 1 second.
+        """
         CACHE_TAG = 'event_notifications'
-        cached = self._get_cached(CACHE_TAG)
+        cached = self._property_cache.get_cached(CACHE_TAG)
         if cached is not None:
             return cached
         events = self.event_notifications_get()
-        self._property_cache[CACHE_TAG] = CachedProperty(events)
+        self._property_cache.cache(events, CACHE_TAG)
         return events
     
     def shutdown(self) -> bool:
