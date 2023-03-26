@@ -22,8 +22,8 @@ from serial.threaded import LineReader, Protocol, ReaderThread
 BUFFER_CLEAR_WAIT = float(os.getenv('BUFFER_CLEAR_WAIT', 0.1))
 BYTE_READER_WAIT = float(os.getenv('BYTE_READER_WAIT', 0.001))
 SERIAL_QUEUE_WAIT = float(os.getenv('SERIAL_QUEUE_WAIT', 0.1))
-VERBOSE_DEBUG = 'atcommand' in str(os.getenv('VERBOSE_DEBUG', None)).lower()
-
+VERBOSE_DEBUG = ('atcommand' in str(os.getenv('VERBOSE_DEBUG', None)).lower() or
+                 'atcommand' in str(os.getenv('LOG_VERBOSE', None)))
 
 _log = logging.getLogger(__name__)
 
