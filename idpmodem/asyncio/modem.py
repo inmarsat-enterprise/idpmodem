@@ -17,7 +17,7 @@ from idpmodem.aterror import AtException, AtGnssTimeout
 from idpmodem.constants import (AT_ERROR_CODES, EVENT_TRACES, GEOBEAMS,
                                 POWER_MODES, WAKEUP_PERIODS, BeamSearchState,
                                 DataFormat, EventNotification, MessagePriority,
-                                MessageState, SatlliteControlState, TransmitterStatus)
+                                MessageState, SatelliteControlState, TransmitterStatus)
 from idpmodem.location import Location, location_from_nmea
 from idpmodem.s_registers import SRegisters
 from idpmodem.asyncio.atcommand import AtProtocol
@@ -854,13 +854,13 @@ class IdpModem:
     @property
     def control_state(self) -> 'int|None':
         self.satellite_status_get()
-        return SatlliteControlState(self._ctrl_state)
+        return SatelliteControlState(self._ctrl_state)
     
     @property
     def network_status(self) -> 'str|None':
         if self._ctrl_state is None:
             self.satellite_status_get()
-        return SatlliteControlState(self._ctrl_state).name
+        return SatelliteControlState(self._ctrl_state).name
 
     @property
     def beamsearch_state(self) -> 'int|None':

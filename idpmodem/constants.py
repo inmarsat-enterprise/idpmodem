@@ -41,7 +41,7 @@ CONTROL_STATES = {
 }
 
 
-class SatlliteControlState(IntEnum):
+class SatelliteControlState(IntEnum):
     STOPPED = 0
     GNSS_WAIT = 1
     SEARCH_START = 2
@@ -403,7 +403,7 @@ EVENT_TRACE_SATELLITE_GENERAL = EventTrace(
         }),
         ('gnss_state_timer', 'uint'),
         ('reserved21', 'uint'),
-        ('satellite_control_state', SatlliteControlState),
+        ('satellite_control_state', SatelliteControlState),
         ('beam_search_state', BeamSearchState),
     )
 )
