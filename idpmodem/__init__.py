@@ -1,4 +1,5 @@
 """Library for interfacing with an IsatData Pro modem for satellite IoT."""
+__version__ = '2.3.5'
 
 # Workaround for legacy async client
 from idpmodem.asyncio import atcommand_async
