@@ -12,7 +12,7 @@ from idpmodem.aterror import AtCrcError, AtException, AtGnssTimeout, AtTimeout
 from idpmodem.constants import (EVENT_TRACES, AtErrorCode, BeamSearchState,
                                 DataFormat, EventNotification, GeoBeam,
                                 GnssMode, MessagePriority, MessageState,
-                                PowerMode, SatlliteControlState,
+                                PowerMode, SatelliteControlState,
                                 SignalLevelRegional, SignalQuality,
                                 TransmitterStatus, WakeupPeriod)
 from idpmodem.helpers import printable_crlf
@@ -792,7 +792,6 @@ class IdpModem:
 
     @gnss_mode.setter
     def gnss_mode(self, mode: 'GnssMode|int'):
-        """The GNSS operating mode setting (`S39`)."""
         CACHE_TAG = 'gnss_mode'
         try:
             self.gnss_mode_set(mode)
@@ -824,10 +823,12 @@ class IdpModem:
     def satellite_status_get(self) -> dict:
         """Retrieves key satellite status information.
         
+        Derived from Class 3 Subclass 1 C/N, Satellite Control State,
+        Beam Search State.
+        
         Returns:
-            A dictionary with `snr`, `control_state`, `beamsearch_state`
-            derived from Class 3 Subclass 1 C/N, Satellite Control State,
-            Beam Search State
+            A dictionary with `snr` (float), `control_state` 
+                (SatelliteControlState), `beamsearch_state` (BeamSearchState)
         
         """
         command = ('ATS90=3 S91=1 S92=1 S116? S122? S123?')
@@ -835,13 +836,13 @@ class IdpModem:
         if response[0] != 'ERROR':
             return {
                 'snr': round(int(response[0]) / 100.0, 2),
-                'control_state': SatlliteControlState(int(response[1])),
+                'control_state': SatelliteControlState(int(response[1])),
                 'beamsearch_state': BeamSearchState(int(response[2])),
             }
         self._handle_at_error(response)
     
     @property
-    def control_state(self) -> 'SatlliteControlState|None':
+    def control_state(self) -> 'SatelliteControlState|None':
         """The control state enumerated value.
         
         Trace Class 3, Subclass 1, Data 22
@@ -927,23 +928,29 @@ class IdpModem:
     def satellite_geographic_info_get(self) -> 'dict|None':
         """Retrieves satellite geographic information.
         
-        Derived from Class 3 Subclass 5
+        Derived from Class 3 Subclass 5.
+        If the satellite has not been acquired, the AT error code 102 will
+        return from the modem and produce a `None` response.
+        
+        Returns:
+            A dictionary with `geo_beam_id` (int), `latitude` (int),
+                `longitude` (int), `geo_sat_longitude` (float)
         
         """
-        command = ('ATS90=3 S91=5 S92=1 S102? S104? S105? S106?')
+        command = ('ATS90=3 S91=5 S92=1 S100? S102? S109?')
         response = self.atcommand(command)
         if response[0] != 'ERROR':
             return {
-                'geo_beam_id': int(response[0]),
-                'latitude': int(response[1]),
-                'longitude': int(response[2]),
-                'geo_sat_longitude': int(response[3]) / 100.0,
+                'vcid': int(response[0]),
+                'geo_beam_id': int(response[1]),
+                'rl_coding_rate': int(response[1]),
             }
         if len(response) < 2 or '102' not in response[1]:
             self._handle_at_error(response)
+        _log.warning('Satellite not yet acquired - returning None')
     
     @property
-    def beam_id(self) -> 'str|None':
+    def beam_id(self) -> 'int|None':
         """The current active regional beam ID of the active satellite.
         
         Cached for 1 second.
@@ -1277,7 +1284,7 @@ class IdpModem:
     
     @property
     def trace_event_monitor(self) -> 'list[tuple[int, int]]':
-        """The list of class/subclass pairs being monitored to cache.
+        """The list of class/subclass pairs being monitored as events.
         
         Cached until set.
         """
@@ -1291,7 +1298,6 @@ class IdpModem:
         
     @trace_event_monitor.setter
     def trace_event_monitor(self, events: 'list[tuple[int, int]]'):
-        """Set a list of trace class/subclass pairs to monitor and cache."""
         CACHE_TAG = 'trace_event_monitor'
         try:
             self.trace_event_monitor_set(events)
