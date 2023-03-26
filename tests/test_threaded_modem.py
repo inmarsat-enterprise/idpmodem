@@ -19,6 +19,10 @@ TEST_NMEA = [
     '$GPGSV,2,1,08,01,05,166,35,04,08,189,32,07,66,295,30,08,80,107,26,0*68',
     '$GPGSV,2,2,08,09,25,218,43,14,11,271,38,21,28,141,37,27,45,053,33,0*6E',
 ]
+TEST_LOCATION = {
+    'latitude': 45.28508,
+    'longitude': -75.848587,
+}
 
 
 _log = logging.getLogger(__name__)
@@ -143,7 +147,30 @@ def test_location(modem_mock: IdpModem, mocker):
     TEST_NMEA.append('OK')
     mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
                  return_value=TEST_NMEA)
-    assert isinstance(modem_mock.location, Location)
+    loc = modem_mock.location
+    assert isinstance(loc, Location)
+    assert loc.latitude == TEST_LOCATION['latitude']
+    sleep(0.5)
+    assert loc.longitude == TEST_LOCATION['longitude']
+    modem_mock.atcommand.call_count == 1
+    sleep (0.6)
+    assert loc.latitude == TEST_LOCATION['latitude']
+    modem_mock.atcommand.call_count == 2
+
+
+def test_location_get(modem_mock: IdpModem, mocker):
+    TEST_NMEA.append('OK')
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=TEST_NMEA)
+    loc_prop = modem_mock.location
+    loc_got = modem_mock.location_get()
+    modem_mock.atcommand.call_count == 2
+    assert loc_prop.latitude == TEST_LOCATION['latitude']
+    assert loc_got.latitude == TEST_LOCATION['latitude']
+    sleep(1.2)
+    assert loc_prop.latitude == TEST_LOCATION['latitude']
+    assert loc_got.latitude == TEST_LOCATION['latitude']
+    modem_mock.atcommand.call_count == 3
 
 
 def test_gnss_timeout(modem_mock: IdpModem, mocker):
@@ -219,6 +246,19 @@ def test_beamsearch(modem_mock: IdpModem, mocker):
     assert modem_mock.beamsearch == 'IDLE'
 
 
+def test_cached_multi_status(modem_mock: IdpModem, mocker):
+    rv = ['0000004400', '0000000010', '0000000000', 'OK']
+    mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
+                 return_value=rv)
+    assert modem_mock.control_state == SatlliteControlState.ACTIVE
+    assert modem_mock.network_status == 'ACTIVE'
+    assert modem_mock.registered is True
+    assert modem_mock.beamsearch == 'IDLE'
+    assert modem_mock.snr == 44.0
+    assert modem_mock.signal_quality == SignalQuality.GOOD
+    modem_mock.atcommand.assert_called_once_with('ATS90=3 S91=1 S92=1 S116? S122? S123?')
+
+
 def test_satellite(modem_mock: IdpModem, mocker):
     rv = ['0000000016', '0000004529', '4294959712', '0000000820']
     rv.append('OK')
@@ -238,7 +278,7 @@ def test_cached_status(modem_mock: IdpModem, mocker):
     mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
                  return_value=['0000004400', '0000000010', '0000000000', 'OK'])
     assert modem_mock.control_state == 10
-    sleep(3)
+    sleep(0.5)
     assert modem_mock.snr == 44.0
     assert modem_mock.atcommand.call_count == 1
 
@@ -247,7 +287,7 @@ def test_cached_status_expired(modem_mock: IdpModem, mocker):
     mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
                  return_value=['0000004400', '0000000010', '0000000000', 'OK'])
     assert modem_mock.control_state == 10
-    sleep(6)
+    sleep(1.2)
     assert modem_mock.snr == 44.0
     assert modem_mock.atcommand.call_count == 2
 
