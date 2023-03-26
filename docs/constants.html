@@ -575,14 +575,52 @@ class GeoBeam(IdpEnum):
     MEAS_RB12 = 92
     MEAS_RB15 = 93
 
+    @property
     def satellite(self):
         return self.name.split(&#39;_&#39;)[0]
 
+    @property
     def beam(self):
         return self.name.split(&#39;_&#39;)[1]
     
+    @property
     def id(self):
-        return self.value</code></pre>
+        return self.value
+
+
+class InmarsatSatellites(Enum):
+    &#34;&#34;&#34;&#34;&#34;&#34;
+    AMER = -98.0
+    AORWSC = -54.0
+    MEAS = 64.0
+    APAC = 143.5
+    EMEA = 24.9
+    
+    @classmethod
+    def closest(self, longitude: float, latitude: float = 0.0):
+        satellite_list = list(map(lambda x: x.value,
+                                  InmarsatSatellites._member_map_.values()))
+        value = min(satellite_list, key=lambda x:abs(x-longitude))
+        name = InmarsatSatellites(value).name
+        if name == &#39;AORWSC&#39;:   #: regional beam
+            if latitude &gt;= 15.0 or latitude &lt;= -45.0:
+                if longitude &gt;= -27.0:
+                    return &#39;EMEA&#39;
+                return &#39;AMER&#39;
+        elif name == &#39;MEAS&#39;:   #: not all beams lit
+            if latitude &lt;= -4.5:
+                if longitude &gt;= 63.5:
+                    return &#39;APAC&#39;
+                return &#39;EMEA&#39;
+            elif latitude &gt;= 40.9:
+                if longitude &lt;= 45.0:
+                    return &#39;EMEA&#39;
+                if longitude &gt;= 82.5:
+                    return &#39;APAC&#39;
+            elif longitude &gt;= 63.5:
+                if latitude &lt;= -4.0 or latitude &gt;= 30.0:
+                    return &#39;APAC&#39;
+        return name</code></pre>
 </details>
 </section>
 <section>
@@ -1325,12 +1363,15 @@ data type (e.g. <code>uint</code>) or a mapping (<code>dict</code> or <code>IntE
     MEAS_RB12 = 92
     MEAS_RB15 = 93
 
+    @property
     def satellite(self):
         return self.name.split(&#39;_&#39;)[0]
 
+    @property
     def beam(self):
         return self.name.split(&#39;_&#39;)[1]
     
+    @property
     def id(self):
         return self.value</code></pre>
 </details>
@@ -1596,44 +1637,41 @@ data type (e.g. <code>uint</code>) or a mapping (<code>dict</code> or <code>IntE
 <div class="desc"></div>
 </dd>
 </dl>
-<h3>Methods</h3>
+<h3>Instance variables</h3>
 <dl>
-<dt id="idpmodem.constants.GeoBeam.beam"><code class="name flex">
-<span>def <span class="ident">beam</span></span>(<span>self)</span>
-</code></dt>
+<dt id="idpmodem.constants.GeoBeam.beam"><code class="name">var <span class="ident">beam</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def beam(self):
+<pre><code class="python">@property
+def beam(self):
     return self.name.split(&#39;_&#39;)[1]</code></pre>
 </details>
 </dd>
-<dt id="idpmodem.constants.GeoBeam.id"><code class="name flex">
-<span>def <span class="ident">id</span></span>(<span>self)</span>
-</code></dt>
+<dt id="idpmodem.constants.GeoBeam.id"><code class="name">var <span class="ident">id</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def id(self):
+<pre><code class="python">@property
+def id(self):
     return self.value</code></pre>
 </details>
 </dd>
-<dt id="idpmodem.constants.GeoBeam.satellite"><code class="name flex">
-<span>def <span class="ident">satellite</span></span>(<span>self)</span>
-</code></dt>
+<dt id="idpmodem.constants.GeoBeam.satellite"><code class="name">var <span class="ident">satellite</span></code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def satellite(self):
+<pre><code class="python">@property
+def satellite(self):
     return self.name.split(&#39;_&#39;)[0]</code></pre>
 </details>
 </dd>
@@ -1776,6 +1814,117 @@ data type (e.g. <code>uint</code>) or a mapping (<code>dict</code> or <code>IntE
 def is_valid(cls, value: int) -&gt; bool:
     &#34;&#34;&#34;True if the value exists in the enumeration.&#34;&#34;&#34;
     return value in [v.value for v in cls.__members__.values()]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="idpmodem.constants.InmarsatSatellites"><code class="flex name class">
+<span>class <span class="ident">InmarsatSatellites</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InmarsatSatellites(Enum):
+    &#34;&#34;&#34;&#34;&#34;&#34;
+    AMER = -98.0
+    AORWSC = -54.0
+    MEAS = 64.0
+    APAC = 143.5
+    EMEA = 24.9
+    
+    @classmethod
+    def closest(self, longitude: float, latitude: float = 0.0):
+        satellite_list = list(map(lambda x: x.value,
+                                  InmarsatSatellites._member_map_.values()))
+        value = min(satellite_list, key=lambda x:abs(x-longitude))
+        name = InmarsatSatellites(value).name
+        if name == &#39;AORWSC&#39;:   #: regional beam
+            if latitude &gt;= 15.0 or latitude &lt;= -45.0:
+                if longitude &gt;= -27.0:
+                    return &#39;EMEA&#39;
+                return &#39;AMER&#39;
+        elif name == &#39;MEAS&#39;:   #: not all beams lit
+            if latitude &lt;= -4.5:
+                if longitude &gt;= 63.5:
+                    return &#39;APAC&#39;
+                return &#39;EMEA&#39;
+            elif latitude &gt;= 40.9:
+                if longitude &lt;= 45.0:
+                    return &#39;EMEA&#39;
+                if longitude &gt;= 82.5:
+                    return &#39;APAC&#39;
+            elif longitude &gt;= 63.5:
+                if latitude &lt;= -4.0 or latitude &gt;= 30.0:
+                    return &#39;APAC&#39;
+        return name</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="idpmodem.constants.InmarsatSatellites.AMER"><code class="name">var <span class="ident">AMER</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.InmarsatSatellites.AORWSC"><code class="name">var <span class="ident">AORWSC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.InmarsatSatellites.APAC"><code class="name">var <span class="ident">APAC</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.InmarsatSatellites.EMEA"><code class="name">var <span class="ident">EMEA</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="idpmodem.constants.InmarsatSatellites.MEAS"><code class="name">var <span class="ident">MEAS</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="idpmodem.constants.InmarsatSatellites.closest"><code class="name flex">
+<span>def <span class="ident">closest</span></span>(<span>longitude: float, latitude: float = 0.0)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def closest(self, longitude: float, latitude: float = 0.0):
+    satellite_list = list(map(lambda x: x.value,
+                              InmarsatSatellites._member_map_.values()))
+    value = min(satellite_list, key=lambda x:abs(x-longitude))
+    name = InmarsatSatellites(value).name
+    if name == &#39;AORWSC&#39;:   #: regional beam
+        if latitude &gt;= 15.0 or latitude &lt;= -45.0:
+            if longitude &gt;= -27.0:
+                return &#39;EMEA&#39;
+            return &#39;AMER&#39;
+    elif name == &#39;MEAS&#39;:   #: not all beams lit
+        if latitude &lt;= -4.5:
+            if longitude &gt;= 63.5:
+                return &#39;APAC&#39;
+            return &#39;EMEA&#39;
+        elif latitude &gt;= 40.9:
+            if longitude &lt;= 45.0:
+                return &#39;EMEA&#39;
+            if longitude &gt;= 82.5:
+                return &#39;APAC&#39;
+        elif longitude &gt;= 63.5:
+            if latitude &lt;= -4.0 or latitude &gt;= 30.0:
+                return &#39;APAC&#39;
+    return name</code></pre>
 </details>
 </dd>
 </dl>
@@ -2698,6 +2847,17 @@ NONE, MARGINAL, GOOD: a scale to be used as greaterOrEqual threshold</p></div>
 <h4><code><a title="idpmodem.constants.IdpEnum" href="#idpmodem.constants.IdpEnum">IdpEnum</a></code></h4>
 <ul class="">
 <li><code><a title="idpmodem.constants.IdpEnum.is_valid" href="#idpmodem.constants.IdpEnum.is_valid">is_valid</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="idpmodem.constants.InmarsatSatellites" href="#idpmodem.constants.InmarsatSatellites">InmarsatSatellites</a></code></h4>
+<ul class="two-column">
+<li><code><a title="idpmodem.constants.InmarsatSatellites.AMER" href="#idpmodem.constants.InmarsatSatellites.AMER">AMER</a></code></li>
+<li><code><a title="idpmodem.constants.InmarsatSatellites.AORWSC" href="#idpmodem.constants.InmarsatSatellites.AORWSC">AORWSC</a></code></li>
+<li><code><a title="idpmodem.constants.InmarsatSatellites.APAC" href="#idpmodem.constants.InmarsatSatellites.APAC">APAC</a></code></li>
+<li><code><a title="idpmodem.constants.InmarsatSatellites.EMEA" href="#idpmodem.constants.InmarsatSatellites.EMEA">EMEA</a></code></li>
+<li><code><a title="idpmodem.constants.InmarsatSatellites.MEAS" href="#idpmodem.constants.InmarsatSatellites.MEAS">MEAS</a></code></li>
+<li><code><a title="idpmodem.constants.InmarsatSatellites.closest" href="#idpmodem.constants.InmarsatSatellites.closest">closest</a></code></li>
 </ul>
 </li>
 <li>
