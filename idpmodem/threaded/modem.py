@@ -25,7 +25,9 @@ GNSS_STALE_SECS = int(os.getenv('GNSS_STALE_SECS', 1))
 GNSS_WAIT_SECS = int(os.getenv('GNSS_WAIT_SECS', 35))
 SAT_STATUS_HOLDOFF = 5
 MODEM_REBOOT_HOLDOFF = os.getenv('MODEM_REBOOT_HOLDOFF')
-VERBOSE_DEBUG = str(os.getenv('VERBOSE_DEBUG', False)).lower() == 'true'
+VERBOSE_DEBUG = (str(os.getenv('VERBOSE_DEBUG', False)).lower() == 'true' or
+                 'idpmodem' in str(os.getenv('LOG_VERBOSE', False)))
+LOG_VERBOSE = os.getenv('LOG_VERBOSE')
 
 _log = logging.getLogger(__name__)
 
@@ -63,6 +65,7 @@ class CachedProperty:
     def age(self) -> int:
         return int(time() - self.ts)
 
+    @property
     def is_valid(self):
         if self.lifetime is None:
             return True
@@ -162,13 +165,23 @@ class IdpModem:
     def _get_cached(self, name: str):
         if name in self._property_cache:
             cached: CachedProperty = self._property_cache[name]
-            if cached.is_valid():
-                if VERBOSE_DEBUG:
+            if cached.is_valid:
+                if LOG_VERBOSE and 'idpmodem-cache' in LOG_VERBOSE:
                     _log.debug(f'Using cached {name}')
                 return cached.value
             _log.debug(f'Removing {name} aged: {cached.age}')
             self._property_cache.pop(name, None)
     
+    def is_connected(self) -> bool:
+        try:
+            res = self.atcommand('AT')
+            if res is not None:
+                return True
+        except AtCrcError:
+            return True
+        except AtTimeout:
+            return False
+        
     @property
     def connected(self) -> bool:
         """Indicates if the modem is connected.
@@ -182,15 +195,7 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        connected = False
-        try:
-            res = self.atcommand('AT')
-            if res is not None:
-                connected = True
-        except AtCrcError:
-            connected = True
-        except AtTimeout:
-            pass
+        connected = self.is_connected()
         self._property_cache[CACHE_TAG] = CachedProperty(connected)
         return connected
 
@@ -427,6 +432,13 @@ class IdpModem:
         self._at_config.crc = enable
         return True
 
+    def mobile_id_get(self) -> 'str|None':
+        """Retrieves the mobile ID of the modem."""
+        response = self.atcommand('AT+GSN', filter=['+GSN:'])
+        if response[0] != 'ERROR':
+            return response[0]
+        self._handle_at_error(response)
+        
     @property
     def mobile_id(self) -> 'str|None':
         """The unique Mobile ID (Inmarsat serial number)."""
@@ -434,14 +446,26 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('AT+GSN', filter=['+GSN:'])
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        mobile_id = response[0]
+        mobile_id = self.mobile_id_get()
         self._property_cache[CACHE_TAG] = CachedProperty(mobile_id,
-                                                            lifetime=None)
+                                                         lifetime=None)
         return mobile_id
 
+    def versions_get(self) -> 'dict|None':
+        response = self.atcommand('AT+GMR', filter=['+GMR:'])
+        if response[0] != 'ERROR':
+            version_meta = {}
+            versions = response[0].split(',')
+            if len(versions) == 3:
+                version_meta['firmware'] = versions[0]
+                version_meta['hardware'] = versions[1]
+                version_meta['at'] = versions[2]
+            else:
+                for i, v in enumerate(versions):
+                    version_meta[i] = v
+            return version_meta
+        self._handle_at_error(response)
+        
     @property
     def versions(self) -> 'dict|None':
         """The hardware, firmware and AT versions."""
@@ -449,22 +473,17 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('AT+GMR', filter=['+GMR:'])
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        version_meta = {}
-        versions = response[0].split(',')
-        if len(versions) == 3:
-            version_meta['firmware'] = versions[0]
-            version_meta['hardware'] = versions[1]
-            version_meta['at'] = versions[2]
-        else:
-            for i, v in enumerate(versions):
-                version_meta[i] = v
-        self._property_cache[CACHE_TAG] = CachedProperty(version_meta,
+        versions = self.versions_get()
+        self._property_cache[CACHE_TAG] = CachedProperty(versions,
                                                          lifetime=None)
-        return version_meta
+        return versions
 
+    def manufacturer_get(self) -> 'str|None':
+        response = self.atcommand('ATI0')
+        if response[0] != 'ERROR':
+            return response[0]
+        self._handle_at_error(response)
+        
     @property
     def manufacturer(self) -> str:
         """The modem manufacturer reported by `ATI0`."""
@@ -472,14 +491,17 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('ATI0')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        manufacturer = response[0]
+        manufacturer = self.manufacturer_get()
         self._property_cache[CACHE_TAG] = CachedProperty(manufacturer,
                                                          lifetime=None)
         return manufacturer
 
+    def model_get(self) -> 'str|None':
+        response = self.atcommand('ATI4')
+        if response[0] != 'ERROR':
+            return response[0]
+        self._handle_at_error(response)
+        
     @property
     def model(self) -> str:
         """The modem model reported by `ATI4`."""
@@ -487,29 +509,17 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('ATI4')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        model = response[0]
+        model = self.model_get()
         self._property_cache[CACHE_TAG] = CachedProperty(model, lifetime=None)
         return model
 
-    @property
-    def power_mode(self) -> 'PowerMode|None':
-        """The modem power mode setting (enumerated) in `S50`."""
-        CACHE_TAG = 'power_mode'
-        cached = self._get_cached(CACHE_TAG)
-        if cached is not None:
-            return cached
+    def power_mode_get(self) -> 'PowerMode|None':
         response = self.atcommand('ATS50?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        power_mode = PowerMode(int(response[0]))
-        self._property_cache[CACHE_TAG] = CachedProperty(power_mode)
-        return power_mode
-    
-    @power_mode.setter
-    def power_mode(self, value: 'str|int|PowerMode'):
+        if response[0] != 'ERROR':
+            return PowerMode(int(response[0]))
+        self._handle_at_error(response)
+        
+    def power_mode_set(self, value: 'str|int|PowerMode') -> bool:
         if isinstance(value, str):
             if value not in PowerMode.__members__:
                 raise ValueError(f'Invalid PowerMode {value}')
@@ -519,26 +529,38 @@ class IdpModem:
         if VERBOSE_DEBUG:
             _log.debug(f'Setting modem power mode {PowerMode(value)}')
         response = self.atcommand(f'ATS50={value}')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        self._property_cache.pop('power_mode', None)
+        if response[0] != 'ERROR':
+            return True
+        return False
     
     @property
-    def wakeup_period(self) -> 'WakeupPeriod|None':
-        """The modem wakeup period setting (enumerated) in `S51`."""
-        CACHE_TAG = 'wakeup_period'
+    def power_mode(self) -> 'PowerMode|None':
+        """The modem power mode setting (enumerated) in `S50`."""
+        CACHE_TAG = 'power_mode'
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
+        power_mode = self.power_mode_get()
+        self._property_cache[CACHE_TAG] = CachedProperty(power_mode)
+        return power_mode
+    
+    @power_mode.setter
+    def power_mode(self, value: 'str|int|PowerMode'):
+        CACHE_TAG = 'power_mode'
+        try:
+            self.power_mode_set(value)
+            self._property_cache.pop(CACHE_TAG, None)
+        except:
+            _log.error(f'Failed to set power_mode {value}')
+    
+    def wakeup_period_get(self) -> 'WakeupPeriod|None':
+        """The modem wakeup period setting (enumerated) in `S51`."""
         response = self.atcommand('ATS51?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        wakeup_period = WakeupPeriod(int(response[0]))
-        self._property_cache[CACHE_TAG] = CachedProperty(wakeup_period)
-        return wakeup_period
-
-    @wakeup_period.setter
-    def wakeup_period(self, value: 'str|int|WakeupPeriod'):
+        if response[0] != 'ERROR':
+            return WakeupPeriod(int(response[0]))
+        self._handle_at_error(response)
+    
+    def wakeup_period_set(self, value: 'str|int|WakeupPeriod') -> bool:
         if isinstance(value, str):
             if value not in WakeupPeriod.__members__:
                 raise ValueError(f'Invalid WakeupPeriod {value}')
@@ -548,9 +570,35 @@ class IdpModem:
         if VERBOSE_DEBUG:
             _log.debug(f'Setting modem power mode {WakeupPeriod(value)}')
         response = self.atcommand(f'ATS51={value}')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        self._property_cache.pop('wakeup_period', None)
+        if response[0] != 'ERROR':
+            return True
+        return False
+    
+    @property
+    def wakeup_period(self) -> 'WakeupPeriod|None':
+        """The modem wakeup period setting (enumerated) in `S51`."""
+        CACHE_TAG = 'wakeup_period'
+        cached = self._get_cached(CACHE_TAG)
+        if cached is not None:
+            return cached
+        wakeup_period = self.wakeup_period_get()
+        self._property_cache[CACHE_TAG] = CachedProperty(wakeup_period)
+        return wakeup_period
+
+    @wakeup_period.setter
+    def wakeup_period(self, value: 'str|int|WakeupPeriod'):
+        CACHE_TAG = 'wakeup_period'
+        try:
+            self.wakeup_period_set(value)
+            self._property_cache.pop(CACHE_TAG, None)
+        except:
+            _log.error(f'Failed to set wakeup_period {value}')
+    
+    def temperature_get(self) -> int:
+        response = self.atcommand('ATS85?')
+        if response[0] != 'ERROR':
+            return int(float(response[0]) / 10)
+        self._handle_at_error(response)
     
     @property
     def temperature(self) -> int:
@@ -559,13 +607,20 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('ATS85?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        temperature = int(float(response[0]) / 10)
+        temperature = self.temperature_get()
         self._property_cache[CACHE_TAG] = CachedProperty(temperature)
         return temperature
 
+    def gnss_refresh_interval_get(self) -> int:
+        """GNSS refresh interval in seconds (`S55`)."""
+        response = self.atcommand(f'ATS55?')
+        if response[0] != 'ERROR':
+            return int(response[0])
+        self._handle_at_error(response)
+    
+    def gnss_refresh_interval_set(self, value: int) -> bool:
+        return self.gnss_continuous_set(value)
+    
     @property
     def gnss_refresh_interval(self) -> int:
         """GNSS refresh interval in seconds (`S55`)."""
@@ -573,17 +628,18 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand(f'ATS55?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        gnss_refresh = int(response[0])
+        gnss_refresh = self.gnss_refresh_interval_get()
         self._property_cache[CACHE_TAG] = CachedProperty(gnss_refresh)
         return gnss_refresh
 
     @gnss_refresh_interval.setter
     def gnss_refresh_interval(self, value: int):
-        if self.gnss_continuous_set(value):
-            self._property_cache.pop('gnss_refresh_interval', None)
+        CACHE_TAG = 'gnss_refresh_interval'
+        try:
+            self.gnss_refresh_interval_set(value)
+            self._property_cache.pop(CACHE_TAG, None)
+        except:
+            _log.error(f'Failed to set gnss_refresh_interval {value}')
 
     def gnss_continuous_set(self,
                             interval: int = 0,
@@ -660,6 +716,17 @@ class IdpModem:
             self._statistics['gnss_ttf'] = avg_ttf
         return response
 
+    def location_get(self) -> 'Location|None':
+        """The modem location derived from NMEA data."""
+        try:
+            nmea_sentences = self.gnss_nmea_get(self._loc_query['stale_secs'],
+                                                self._loc_query['wait_secs'])
+            location = location_from_nmea(nmea_sentences)
+            return location
+        except AtGnssTimeout:
+            _log.warning('GNSS request timed out')
+            return None
+    
     @property
     def location(self) -> 'Location|None':
         """The modem location derived from NMEA data."""
@@ -667,14 +734,18 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        try:
-            nmea_sentences = self.gnss_nmea_get(self._loc_query['stale_secs'],
-                                                self._loc_query['wait_secs'])
-            location = location_from_nmea(nmea_sentences)
+        location = self.location_get()
+        if location is not None:
             self._property_cache[CACHE_TAG] = CachedProperty(location)
-            return location
-        except:
-            self._property_cache.pop(CACHE_TAG, None)
+        return location
+
+    def gnss_jamming_get(self) -> bool:
+        """The GNSS jamming detection status (`S56`)."""
+        response = self.atcommand('ATS56?')
+        if response[0] != 'ERROR':
+            gnss_jamming = ((int(response[0]) & 0b100) >> 2 == 1)
+            return gnss_jamming            
+        self._handle_at_error(response)
 
     @property
     def gnss_jamming(self) -> bool:
@@ -683,12 +754,27 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('ATS56?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        gnss_jamming = ((int(response[0]) & 0b100) >> 2 == 1)
+        gnss_jamming = self.gnss_jamming_get()
         self._property_cache[CACHE_TAG] = CachedProperty(gnss_jamming)
         return gnss_jamming
+
+    def gnss_mode_get(self) -> 'GnssMode':
+        """The GNSS operating mode setting (`S39`)."""
+        response = self.atcommand('ATS39?')
+        if response[0] != 'ERROR':
+            return GnssMode(int(response[0]))
+        self._handle_at_error(response)
+
+    def gnss_mode_set(self, mode: 'GnssMode|int') -> bool:
+        if not isinstance(mode, GnssMode):
+            if not GnssMode.is_valid(mode):
+                raise ValueError(f'Invalid GNSS Mode {mode}')
+        else:
+            mode = mode.value
+        response = self.atcommand(f'ATS39={mode}')
+        if response[0] != 'ERROR':
+            return True
+        return False
 
     @property
     def gnss_mode(self) -> GnssMode:
@@ -697,24 +783,25 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('ATS39?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        gnss_mode = GnssMode(int(response[0]))
+        gnss_mode = self.gnss_mode_get()
         self._property_cache[CACHE_TAG] = CachedProperty(gnss_mode)
         return gnss_mode
 
     @gnss_mode.setter
     def gnss_mode(self, mode: 'GnssMode|int'):
-        if not isinstance(mode, GnssMode):
-            if not GnssMode.is_valid(mode):
-                raise ValueError(f'Invalid GNSS Mode {mode}')
-        else:
-            mode = mode.value
-        response = self.atcommand(f'ATS39={mode}')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        self._property_cache.pop('gnss_mode', None)
+        CACHE_TAG = 'gnss_mode'
+        try:
+            self.gnss_mode_set(mode)
+            self._property_cache.pop(CACHE_TAG, None)
+        except:
+            _log.error(f'Failed to set gnss_mode {mode}')
+
+    def transmitter_status_get(self) -> TransmitterStatus:
+        """The transmitter status reported by `S54`"""
+        response = self.atcommand('ATS54?')
+        if response[0] != 'ERROR':
+            return TransmitterStatus(int(response[0]))
+        self._handle_at_error(response)
 
     @property
     def transmitter_status(self) -> TransmitterStatus:
@@ -723,13 +810,29 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('ATS54?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        status = TransmitterStatus(int(response[0]))
-        self._property_cache[CACHE_TAG] = CachedProperty(status)
-        return status
+        cached = self.transmitter_status_get()
+        self._property_cache[CACHE_TAG] = CachedProperty(cached)
+        return cached
 
+    def satellite_status_get(self) -> dict:
+        """Retrieves key satellite status information.
+        
+        Returns:
+            A dictionary with `snr`, `control_state`, `beamsearch_state`
+            derived from Class 3 Subclass 1 C/N, Satellite Control State,
+            Beam Search State
+        
+        """
+        command = ('ATS90=3 S91=1 S92=1 S116? S122? S123?')
+        response = self.atcommand(command)
+        if response[0] != 'ERROR':
+            return {
+                'snr': round(int(response[0]) / 100.0, 2),
+                'control_state': SatlliteControlState(int(response[1])),
+                'beamsearch_state': BeamSearchState(int(response[2])),
+            }
+        self._handle_at_error(response)
+    
     @property
     def control_state(self) -> 'SatlliteControlState|None':
         """The control state enumerated value.
@@ -739,11 +842,9 @@ class IdpModem:
         CACHE_TAG = 'satellite_status'
         cached: dict = self._get_cached(CACHE_TAG)
         if cached is None:
-            self._satellite_status_get()
-            cached: dict = self._get_cached(CACHE_TAG)
-        ctrl_state = cached.get('ctrl_state', None)
-        if ctrl_state is not None:
-            return SatlliteControlState(ctrl_state)
+            cached = self.satellite_status_get()
+            self._property_cache[CACHE_TAG] = CachedProperty(cached)
+        return cached.get('control_state', None)
     
     @property
     def network_status(self) -> 'str|None':
@@ -762,11 +863,9 @@ class IdpModem:
         CACHE_TAG = 'satellite_status'
         cached: dict = self._get_cached(CACHE_TAG)
         if cached is None:
-            self._satellite_status_get()
-            cached: dict = self._get_cached(CACHE_TAG)
-        beamsearch_state = cached.get('beamsearch_state', None)
-        if beamsearch_state is not None:
-            return BeamSearchState(beamsearch_state)
+            cached = self.satellite_status_get()
+            self._property_cache[CACHE_TAG] = CachedProperty(cached)
+        return cached.get('beamsearch_state', None)
     
     @property
     def beamsearch(self) -> 'str|None':
@@ -780,8 +879,8 @@ class IdpModem:
         CACHE_TAG = 'satellite_status'
         cached: dict = self._get_cached(CACHE_TAG)
         if cached is None:
-            self._satellite_status_get()
-            cached: dict = self._get_cached(CACHE_TAG)
+            cached = self.satellite_status_get()
+            self._property_cache[CACHE_TAG] = CachedProperty(cached)
         return cached.get('snr', None)
             
     @property
@@ -801,42 +900,33 @@ class IdpModem:
             return SignalQuality.LOW
         return SignalQuality.WEAK
     
-    def _satellite_status_get(self) -> None:
-        """Populates various cache parameters to be referenced indirectly.
+    def satellite_geographic_info_get(self) -> 'dict|None':
+        """Retrieves satellite geographic information.
         
-        snr, ctrl_state, beamsearch_state are derived from trace class events.
+        Derived from Class 3 Subclass 5
         
         """
-        CACHE_TAG = 'satellite_status'
-        cached = self._get_cached(CACHE_TAG)
-        if cached is not None:
-            _log.debug('Using cached status'
-                       f' ({self._property_cache[CACHE_TAG].age} s)')
-            return
-        # Trace events:
-        #   Class 3 Subclass 1 C/N, Satellite Control State, Beam Search State
-        command = ('ATS90=3 S91=1 S92=1 S116? S122? S123?')
+        command = ('ATS90=3 S91=5 S92=1 S102? S104? S105? S106?')
         response = self.atcommand(command)
-        if response[0] == 'ERROR':
+        if response[0] != 'ERROR':
+            return {
+                'geo_beam_id': int(response[0]),
+                'latitude': int(response[1]),
+                'longitude': int(response[2]),
+                'geo_sat_longitude': int(response[3]) / 100.0,
+            }
+        if len(response) < 2 or '102' not in response[1]:
             self._handle_at_error(response)
-        satellite_status = {
-            'snr': round(int(response[0]) / 100.0, 2),
-            'ctrl_state': int(response[1]),
-            'beamsearch_state': int(response[2]),
-        }
-        self._property_cache[CACHE_TAG] = CachedProperty(satellite_status,
-                                                         lifetime=5)
-
+    
     @property
     def beam_id(self) -> 'str|None':
         """The current active regional beam ID of the active satellite."""
         CACHE_TAG = 'satellite_geographic_info'
         cached: dict = self._get_cached(CACHE_TAG)
         if cached is None:
-            self._satellite_geographic_info()
-            cached: dict = self._get_cached(CACHE_TAG)
-        geo_beam_id = cached.get('geo_beam_id', None)
-        return geo_beam_id
+            cached = self.satellite_geographic_info_get()
+            self._property_cache[CACHE_TAG] = CachedProperty(cached)
+        return cached.get('geo_beam_id', None)
         
     @property
     def satellite(self) -> 'str|None':
@@ -844,38 +934,20 @@ class IdpModem:
         if GeoBeam.is_valid(self.beam_id):
             return GeoBeam(self.beam_id).satellite
     
-    def _satellite_geographic_info(self):
-        """"""
-        CACHE_TAG = 'satellite_geographic_info'
-        cached = self._get_cached(CACHE_TAG)
-        if cached is not None:
-            _log.debug('Using cached status'
-                       f' ({self._property_cache[CACHE_TAG].age} s)')
-            return
-        #   Class 3 Subclass 5 Geo Beam ID
-        command = ('ATS90=3 S91=5 S92=1 S102? S104? S105? S106?')
-        response = self.atcommand(command)
-        if response[0] == 'ERROR':
-            if len(response) < 2 or '102' not in response[1]:
-                self._handle_at_error(response)
-            self._property_cache.pop(CACHE_TAG, None)
-            return
-        geographic_info = {
-            'geo_beam_id': int(response[0]),
-            'latitude': int(response[1]),
-            'longitude': int(response[2]),
-            'geo_sat_longitude': int(response[3]) / 100.0,
-        }
-        self._property_cache[CACHE_TAG] = CachedProperty(geographic_info,
-                                                         lifetime=5)
-        
-    @property
-    def utc_time(self) -> str:
+    def utc_time_get(self) -> str:
         """Gets current UTC time of the modem in ISO8601 format."""
         response = self.atcommand('AT%UTC', filter=['%UTC:'])
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        return response[0].replace(' ', 'T') + 'Z'
+        if response[0] != 'ERROR':
+            return response[0].replace(' ', 'T') + 'Z'
+        self._handle_at_error(response)
+
+    @property
+    def utc_time(self) -> 'str|None':
+        """Gets current UTC time of the modem in ISO8601 format."""
+        try:
+            return self.utc_time_get()
+        except:
+            _log.error('Unable to retrieve UTC time from modem')
 
     def message_mo_send(self,
                         data: 'bytes|bytearray|str',
@@ -1128,7 +1200,7 @@ class IdpModem:
             _log.error(f'Error deleting message {name}{err}')
         return response[0] == 'OK'
 
-    def _trace_detail(self) -> dict:
+    def trace_event_detail_get(self) -> dict:
         """Gets a dictionary of monitored and cached class/subclass pairs.
         
         Returns:
@@ -1153,19 +1225,10 @@ class IdpModem:
                     detail['cached'].append((trace_class, trace_subclass))
         return detail
 
-    @property
-    def trace_event_monitor(self) -> 'list[tuple[int, int]]':
-        """The list of class/subclass pairs being monitored to cache."""
-        CACHE_TAG = 'trace_event_monitor'
-        cached = self._get_cached(CACHE_TAG)
-        if cached is not None:
-            return cached
-        tem = self._trace_detail()['monitored']
-        self._property_cache[CACHE_TAG] = CachedProperty(tem)
-        return tem
-        
-    @trace_event_monitor.setter
-    def trace_event_monitor(self, events: 'list[tuple[int, int]]'):
+    def trace_event_monitor_get(self) -> 'list[tuple[int, int]]':
+        return self.trace_event_detail_get()['monitored']
+    
+    def trace_event_monitor_set(self, events: 'list[tuple[int, int]]') -> bool:
         """Set a list of trace class/subclass pairs to monitor and cache."""
         command = 'AT%EVMON='
         for event in events:
@@ -1175,9 +1238,33 @@ class IdpModem:
             command += f'{trace_class}.{trace_subclass}'
         _log.debug(f'Setting trace event monitoring for {events}')
         response = self.atcommand(command)
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        self._property_cache.pop('trace_event_monitor', None)
+        if response[0] != 'ERROR':
+            return True
+        return False
+
+    def trace_event_cache_get(self) -> 'list[tuple[int, int]]':
+        return self.trace_event_detail_get()['cached']
+    
+    @property
+    def trace_event_monitor(self) -> 'list[tuple[int, int]]':
+        """The list of class/subclass pairs being monitored to cache."""
+        CACHE_TAG = 'trace_event_monitor'
+        cached = self._get_cached(CACHE_TAG)
+        if cached is not None:
+            return cached
+        tem = self.trace_event_detail_get()['monitored']
+        self._property_cache[CACHE_TAG] = CachedProperty(tem)
+        return tem
+        
+    @trace_event_monitor.setter
+    def trace_event_monitor(self, events: 'list[tuple[int, int]]'):
+        """Set a list of trace class/subclass pairs to monitor and cache."""
+        CACHE_TAG = 'trace_event_monitor'
+        try:
+            self.trace_event_monitor_set(events)
+            self._property_cache.pop(CACHE_TAG, None)
+        except:
+            _log.error(f'Failed to set trace_event_monitor {events}')
 
     @property
     def trace_events_cached(self) -> 'list[tuple[int, int]]':
@@ -1186,7 +1273,7 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        tec = self._trace_detail()['cached']
+        tec = self.trace_event_detail_get()['cached']
         self._property_cache[CACHE_TAG] = CachedProperty(tec)
         return tec
 
@@ -1292,6 +1379,25 @@ class IdpModem:
                 events.append(notification)
         return events
 
+    def event_notification_monitor_get(self) -> 'list[EventNotification]':
+        """The list of events monitored to assert the notification pin (`S88`)."""
+        response = self.atcommand('ATS88?')
+        if response[0] != 'ERROR':
+            return self._list_events(int(response[0]))
+        self._handle_at_error(response)
+    
+    def event_notification_monitor_set(self,
+                                       event_list: 'list[EventNotification]',
+                                       ) -> bool:
+        bitmask = 0
+        for event in event_list:
+            bitmask = bitmask | event
+        _log.debug(f'Setting event notifications: {event_list}')
+        response = self.atcommand(f'ATS88={bitmask}')
+        if response[0] != 'ERROR':
+            return True
+        return False
+    
     @property
     def event_notification_monitor(self) -> 'list[EventNotification]':
         """The list of events monitored to assert the notification pin (`S88`)."""
@@ -1299,25 +1405,27 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('ATS88?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        events_monitored = self._list_events(int(response[0]))
+        events_monitored = self.event_notification_monitor_get()
         self._property_cache[CACHE_TAG] = CachedProperty(events_monitored,
                                                          lifetime=None)
         return events_monitored
     
     @event_notification_monitor.setter
     def event_notification_monitor(self, event_list: 'list[EventNotification]'):
-        bitmask = 0
-        for event in event_list:
-            bitmask = bitmask | event
-        _log.debug(f'Setting event notifications: {event_list}')
-        response = self.atcommand(f'ATS88={bitmask}')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        self._property_cache.pop('event_notification_monitor', None)
+        CACHE_TAG = 'event_notification_monitor'
+        try:
+            self.event_notification_monitor_set(event_list)
+            self._property_cache.pop(CACHE_TAG, None)
+        except:
+            _log.error(f'Failed to set event_notification_monitor {event_list}')
 
+    def event_notifications_get(self) -> 'list[EventNotification]':
+        """The list of active events reported in `S89`."""
+        response = self.atcommand('ATS89?')
+        if response[0] != 'ERROR':
+            return self._list_events(int(response[0]))
+        self._handle_at_error(response)
+    
     @property
     def event_notifications(self) -> 'list[EventNotification]':
         """The list of active events reported in `S89`."""
@@ -1325,37 +1433,10 @@ class IdpModem:
         cached = self._get_cached(CACHE_TAG)
         if cached is not None:
             return cached
-        response = self.atcommand('ATS89?')
-        if response[0] == 'ERROR':
-            self._handle_at_error(response)
-        events = self._list_events(int(response[0]))
+        events = self.event_notifications_get()
         self._property_cache[CACHE_TAG] = CachedProperty(events)
         return events
     
-    def satellite_status_get(self) -> dict:
-        """Gets various satellite acquisition metrics.
-        
-        Returns:
-            Dictionary including:
-            - `satellite` (str)
-            - `beam_id` (str)
-            - `network_status` (str)
-            - `control_state` (int)
-            - `beamsearch` (str)
-            - `beamsearch_state` (int)
-            - `snr` (float)
-        
-        """
-        return {
-            'satellite': self.satellite,
-            'beam_id': self.beam_id,
-            'network_status': self.network_status,
-            'control_state': self.control_state,
-            'beamsearch': self.beamsearch,
-            'beamsearch_state': self.beamsearch_state,
-            'snr': self.snr,
-        }
-
     def shutdown(self) -> bool:
         """Tell the modem to prepare for power-down."""
         _log.warning('Attempting to shut down modem')
