@@ -250,7 +250,7 @@ def test_cached_multi_status(modem_mock: IdpModem, mocker):
     rv = ['0000004400', '0000000010', '0000000000', 'OK']
     mocker.patch('idpmodem.threaded.modem.IdpModem.atcommand',
                  return_value=rv)
-    assert modem_mock.control_state == SatlliteControlState.ACTIVE
+    assert modem_mock.control_state == SatelliteControlState.ACTIVE
     assert modem_mock.network_status == 'ACTIVE'
     assert modem_mock.registered is True
     assert modem_mock.beamsearch == 'IDLE'
