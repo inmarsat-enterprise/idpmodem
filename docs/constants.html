@@ -71,7 +71,7 @@ CONTROL_STATES = {
 }
 
 
-class SatlliteControlState(IntEnum):
+class SatelliteControlState(IntEnum):
     STOPPED = 0
     GNSS_WAIT = 1
     SEARCH_START = 2
@@ -433,7 +433,7 @@ EVENT_TRACE_SATELLITE_GENERAL = EventTrace(
         }),
         (&#39;gnss_state_timer&#39;, &#39;uint&#39;),
         (&#39;reserved21&#39;, &#39;uint&#39;),
-        (&#39;satellite_control_state&#39;, SatlliteControlState),
+        (&#39;satellite_control_state&#39;, SatelliteControlState),
         (&#39;beam_search_state&#39;, BeamSearchState),
     )
 )
@@ -2241,8 +2241,8 @@ def closest(self, longitude: float, latitude: float = 0.0):
 </li>
 </ul>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState"><code class="flex name class">
-<span>class <span class="ident">SatlliteControlState</span></span>
+<dt id="idpmodem.constants.SatelliteControlState"><code class="flex name class">
+<span>class <span class="ident">SatelliteControlState</span></span>
 <span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
 </code></dt>
 <dd>
@@ -2251,7 +2251,7 @@ def closest(self, longitude: float, latitude: float = 0.0):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class SatlliteControlState(IntEnum):
+<pre><code class="python">class SatelliteControlState(IntEnum):
     STOPPED = 0
     GNSS_WAIT = 1
     SEARCH_START = 2
@@ -2276,63 +2276,63 @@ def closest(self, longitude: float, latitude: float = 0.0):
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="idpmodem.constants.SatlliteControlState.ACTIVE"><code class="name">var <span class="ident">ACTIVE</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.ACTIVE"><code class="name">var <span class="ident">ACTIVE</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.BB_DOWNLOAD"><code class="name">var <span class="ident">BB_DOWNLOAD</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.BB_DOWNLOAD"><code class="name">var <span class="ident">BB_DOWNLOAD</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.BEAM_ACQUIRED"><code class="name">var <span class="ident">BEAM_ACQUIRED</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.BEAM_ACQUIRED"><code class="name">var <span class="ident">BEAM_ACQUIRED</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.BEAM_FOUND"><code class="name">var <span class="ident">BEAM_FOUND</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.BEAM_FOUND"><code class="name">var <span class="ident">BEAM_FOUND</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.BEAM_SEARCH"><code class="name">var <span class="ident">BEAM_SEARCH</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.BEAM_SEARCH"><code class="name">var <span class="ident">BEAM_SEARCH</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.BEAM_SWITCH"><code class="name">var <span class="ident">BEAM_SWITCH</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.BEAM_SWITCH"><code class="name">var <span class="ident">BEAM_SWITCH</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.BLOCKED"><code class="name">var <span class="ident">BLOCKED</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.BLOCKED"><code class="name">var <span class="ident">BLOCKED</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.CONFIRM_PREVIOUS_BEAM"><code class="name">var <span class="ident">CONFIRM_PREVIOUS_BEAM</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.CONFIRM_PREVIOUS_BEAM"><code class="name">var <span class="ident">CONFIRM_PREVIOUS_BEAM</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.CONFIRM_REQUESTED_BEAM"><code class="name">var <span class="ident">CONFIRM_REQUESTED_BEAM</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.CONFIRM_REQUESTED_BEAM"><code class="name">var <span class="ident">CONFIRM_REQUESTED_BEAM</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.CONNECT_CONFIRMED_BEAM"><code class="name">var <span class="ident">CONNECT_CONFIRMED_BEAM</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.CONNECT_CONFIRMED_BEAM"><code class="name">var <span class="ident">CONNECT_CONFIRMED_BEAM</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.GNSS_WAIT"><code class="name">var <span class="ident">GNSS_WAIT</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.GNSS_WAIT"><code class="name">var <span class="ident">GNSS_WAIT</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.RECEIVE_ONLY"><code class="name">var <span class="ident">RECEIVE_ONLY</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.RECEIVE_ONLY"><code class="name">var <span class="ident">RECEIVE_ONLY</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.REGISTERING"><code class="name">var <span class="ident">REGISTERING</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.REGISTERING"><code class="name">var <span class="ident">REGISTERING</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.SEARCH_START"><code class="name">var <span class="ident">SEARCH_START</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.SEARCH_START"><code class="name">var <span class="ident">SEARCH_START</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="idpmodem.constants.SatlliteControlState.STOPPED"><code class="name">var <span class="ident">STOPPED</span></code></dt>
+<dt id="idpmodem.constants.SatelliteControlState.STOPPED"><code class="name">var <span class="ident">STOPPED</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -2901,23 +2901,23 @@ NONE, MARGINAL, GOOD: a scale to be used as greaterOrEqual threshold</p></div>
 </ul>
 </li>
 <li>
-<h4><code><a title="idpmodem.constants.SatlliteControlState" href="#idpmodem.constants.SatlliteControlState">SatlliteControlState</a></code></h4>
+<h4><code><a title="idpmodem.constants.SatelliteControlState" href="#idpmodem.constants.SatelliteControlState">SatelliteControlState</a></code></h4>
 <ul class="">
-<li><code><a title="idpmodem.constants.SatlliteControlState.ACTIVE" href="#idpmodem.constants.SatlliteControlState.ACTIVE">ACTIVE</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.BB_DOWNLOAD" href="#idpmodem.constants.SatlliteControlState.BB_DOWNLOAD">BB_DOWNLOAD</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.BEAM_ACQUIRED" href="#idpmodem.constants.SatlliteControlState.BEAM_ACQUIRED">BEAM_ACQUIRED</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.BEAM_FOUND" href="#idpmodem.constants.SatlliteControlState.BEAM_FOUND">BEAM_FOUND</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.BEAM_SEARCH" href="#idpmodem.constants.SatlliteControlState.BEAM_SEARCH">BEAM_SEARCH</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.BEAM_SWITCH" href="#idpmodem.constants.SatlliteControlState.BEAM_SWITCH">BEAM_SWITCH</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.BLOCKED" href="#idpmodem.constants.SatlliteControlState.BLOCKED">BLOCKED</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.CONFIRM_PREVIOUS_BEAM" href="#idpmodem.constants.SatlliteControlState.CONFIRM_PREVIOUS_BEAM">CONFIRM_PREVIOUS_BEAM</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.CONFIRM_REQUESTED_BEAM" href="#idpmodem.constants.SatlliteControlState.CONFIRM_REQUESTED_BEAM">CONFIRM_REQUESTED_BEAM</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.CONNECT_CONFIRMED_BEAM" href="#idpmodem.constants.SatlliteControlState.CONNECT_CONFIRMED_BEAM">CONNECT_CONFIRMED_BEAM</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.GNSS_WAIT" href="#idpmodem.constants.SatlliteControlState.GNSS_WAIT">GNSS_WAIT</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.RECEIVE_ONLY" href="#idpmodem.constants.SatlliteControlState.RECEIVE_ONLY">RECEIVE_ONLY</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.REGISTERING" href="#idpmodem.constants.SatlliteControlState.REGISTERING">REGISTERING</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.SEARCH_START" href="#idpmodem.constants.SatlliteControlState.SEARCH_START">SEARCH_START</a></code></li>
-<li><code><a title="idpmodem.constants.SatlliteControlState.STOPPED" href="#idpmodem.constants.SatlliteControlState.STOPPED">STOPPED</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.ACTIVE" href="#idpmodem.constants.SatelliteControlState.ACTIVE">ACTIVE</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.BB_DOWNLOAD" href="#idpmodem.constants.SatelliteControlState.BB_DOWNLOAD">BB_DOWNLOAD</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.BEAM_ACQUIRED" href="#idpmodem.constants.SatelliteControlState.BEAM_ACQUIRED">BEAM_ACQUIRED</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.BEAM_FOUND" href="#idpmodem.constants.SatelliteControlState.BEAM_FOUND">BEAM_FOUND</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.BEAM_SEARCH" href="#idpmodem.constants.SatelliteControlState.BEAM_SEARCH">BEAM_SEARCH</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.BEAM_SWITCH" href="#idpmodem.constants.SatelliteControlState.BEAM_SWITCH">BEAM_SWITCH</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.BLOCKED" href="#idpmodem.constants.SatelliteControlState.BLOCKED">BLOCKED</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.CONFIRM_PREVIOUS_BEAM" href="#idpmodem.constants.SatelliteControlState.CONFIRM_PREVIOUS_BEAM">CONFIRM_PREVIOUS_BEAM</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.CONFIRM_REQUESTED_BEAM" href="#idpmodem.constants.SatelliteControlState.CONFIRM_REQUESTED_BEAM">CONFIRM_REQUESTED_BEAM</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.CONNECT_CONFIRMED_BEAM" href="#idpmodem.constants.SatelliteControlState.CONNECT_CONFIRMED_BEAM">CONNECT_CONFIRMED_BEAM</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.GNSS_WAIT" href="#idpmodem.constants.SatelliteControlState.GNSS_WAIT">GNSS_WAIT</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.RECEIVE_ONLY" href="#idpmodem.constants.SatelliteControlState.RECEIVE_ONLY">RECEIVE_ONLY</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.REGISTERING" href="#idpmodem.constants.SatelliteControlState.REGISTERING">REGISTERING</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.SEARCH_START" href="#idpmodem.constants.SatelliteControlState.SEARCH_START">SEARCH_START</a></code></li>
+<li><code><a title="idpmodem.constants.SatelliteControlState.STOPPED" href="#idpmodem.constants.SatelliteControlState.STOPPED">STOPPED</a></code></li>
 </ul>
 </li>
 <li>
