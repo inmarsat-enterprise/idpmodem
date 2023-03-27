@@ -533,8 +533,8 @@ class IdpModem:
         try:
             self.power_mode_set(value)
             self._property_cache.remove(CACHE_TAG)
-        except:
-            _log.error(f'Failed to set power_mode {value}')
+        except Exception as err:
+            _log.error(f'Failed to set power_mode {value}: {err}')
     
     def wakeup_period_get(self) -> 'WakeupPeriod|None':
         """The modem wakeup period setting (enumerated) in `S51`."""
@@ -579,8 +579,8 @@ class IdpModem:
         try:
             self.wakeup_period_set(value)
             self._property_cache.remove(CACHE_TAG)
-        except:
-            _log.error(f'Failed to set wakeup_period {value}')
+        except Exception as err:
+            _log.error(f'Failed to set wakeup_period {value}: {err}')
     
     def temperature_get(self) -> int:
         response = self.atcommand('ATS85?')
@@ -632,8 +632,8 @@ class IdpModem:
         try:
             self.gnss_refresh_interval_set(value)
             self._property_cache.remove(CACHE_TAG)
-        except:
-            _log.error(f'Failed to set gnss_refresh_interval {value}')
+        except Exception as err:
+            _log.error(f'Failed to set gnss_refresh_interval {value}: {err}')
 
     def gnss_continuous_set(self,
                             interval: int = 0,
@@ -796,8 +796,8 @@ class IdpModem:
         try:
             self.gnss_mode_set(mode)
             self._property_cache.remove(CACHE_TAG)
-        except:
-            _log.error(f'Failed to set gnss_mode {mode}')
+        except Exception as err:
+            _log.error(f'Failed to set gnss_mode {mode}: {err}')
 
     def transmitter_status_get(self) -> TransmitterStatus:
         """The transmitter status reported by `S54`"""
@@ -1302,8 +1302,8 @@ class IdpModem:
         try:
             self.trace_event_monitor_set(events)
             self._property_cache.remove(CACHE_TAG)
-        except:
-            _log.error(f'Failed to set trace_event_monitor {events}')
+        except Exception as err:
+            _log.error(f'Failed to set trace_event_monitor {events}: {err}')
 
     @property
     def trace_events_cached(self) -> 'list[tuple[int, int]]':
@@ -1460,8 +1460,9 @@ class IdpModem:
         try:
             self.event_notification_monitor_set(event_list)
             self._property_cache.remove(CACHE_TAG)
-        except:
-            _log.error(f'Failed to set event_notification_monitor {event_list}')
+        except Exception as err:
+            _log.error(f'Failed to set event_notification_monitor {event_list}'
+                       f': {err}')
 
     def event_notifications_get(self) -> 'list[EventNotification]':
         """The list of active events reported in `S89`."""
