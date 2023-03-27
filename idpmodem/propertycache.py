@@ -80,9 +80,12 @@ class PropertyCache:
             `KeyError` if the tag is not in the cache.
             
         """
-        cached = self._cache.pop(tag)
+        cached = self._cache.pop(tag, None)
         if self._vlog():
-            _log.debug(f'Removed {tag} aged {cached.age} seconds')
+            if cached:
+                _log.debug(f'Removed {tag} aged {cached.age} seconds')
+            else:
+                _log.debug(f'{tag} was not cached')
     
     def get_cached(self, tag: str) -> Any:
         """Retrieves the cached property value if valid.
