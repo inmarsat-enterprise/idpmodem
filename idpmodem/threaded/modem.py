@@ -823,18 +823,19 @@ class IdpModem:
     def satellite_status_get(self) -> dict:
         """Retrieves key satellite status information.
         
-        Derived from Class 3 Subclass 1 C/N, Satellite Control State,
+        Derived from Class 3 Subclass 1: VCID, C/N, Satellite Control State,
         Beam Search State.
         
         Returns:
-            A dictionary with `snr` (float), `control_state` 
+            A dictionary with `channel_id` (int), `snr` (float), `control_state` 
                 (SatelliteControlState), `beamsearch_state` (BeamSearchState)
         
         """
-        command = ('ATS90=3 S91=1 S92=1 S116? S122? S123?')
+        command = ('ATS90=3 S91=1 S92=1 S101? S116? S122? S123?')
         response = self.atcommand(command)
         if response[0] != 'ERROR':
             return {
+                'channel_id': int(response[0]),
                 'snr': round(int(response[0]) / 100.0, 2),
                 'control_state': SatelliteControlState(int(response[1])),
                 'beamsearch_state': BeamSearchState(int(response[2])),
