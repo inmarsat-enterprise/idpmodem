@@ -33,7 +33,7 @@ class EnumField(FieldCodec):
             not all(isinstance(item, str) for item in items)):
             raise ValueError('Items must a list of strings')
         self._items = items
-        min_size = optimal_bits((0, len(items) - 1))
+        min_size = 1 if len(items) <= 1 else optimal_bits((0, len(items) - 1))
         if not isinstance(size, int) or size < min_size:
             raise ValueError(f'Size must be integer greater than {min_size}')
         self._size = size
