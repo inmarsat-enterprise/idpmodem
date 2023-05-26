@@ -831,14 +831,16 @@ class IdpModem:
                 (SatelliteControlState), `beamsearch_state` (BeamSearchState)
         
         """
-        command = ('ATS90=3 S91=1 S92=1 S101? S116? S122? S123?')
+        command = ('ATS90=3 S91=1 S92=1 S116? S122? S123? S101? S108? S119?')
         response = self.atcommand(command)
         if response[0] != 'ERROR':
             return {
-                'channel_id': int(response[0]),
                 'snr': round(int(response[0]) / 100.0, 2),
                 'control_state': SatelliteControlState(int(response[1])),
                 'beamsearch_state': BeamSearchState(int(response[2])),
+                'channel_id': int(response[3]),
+                'tx_suspend_flags': int(response[4]),
+                'system_flags': int(response[5]), 
             }
         self._handle_at_error(response)
     
