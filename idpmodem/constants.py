@@ -288,6 +288,10 @@ class EventNotification(IntFlag):
 
 
 class TransmitterStatus(IdpEnum):
+    UNKNOWN = 0
+    RX_STOPPED = 1
+    RX_SEARCHING = 2
+    RX_ACQUIRING = 3
     RX_ONLY_NOT_REGISTERED = 4
     OK = 5
     SUSPENDED = 6
